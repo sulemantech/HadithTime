@@ -8,8 +8,18 @@ import androidx.navigation.NavHostController
 import com.hadithtime.SettingScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import com.hadithtime.levels.LevelOneScreen
 import com.hadithtime.HomeScreen
+import com.hadithtime.levels.LevelTwoScreen
 import com.hadithtime.SplashScreen
+import com.hadithtime.levels.LevelFiveScreen
+import com.hadithtime.levels.LevelFourScreen
+import com.hadithtime.levels.LevelThreeScreen
+import com.hadithtime.levels.TitleScreenLevel1
+import com.hadithtime.levels.TitleScreenLevel2
+import com.hadithtime.levels.TitleScreenLevel3
+import com.hadithtime.levels.TitleScreenLevel4
+import com.hadithtime.levels.TitleScreenLevel5
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -31,19 +41,59 @@ fun AppNavHost(navController: NavHostController) {
         composable("home") {
             HomeScreen(navController)
         }
+        composable("TitleOneScreen") {
+            TitleScreenLevel1(navController)
+        }
+        composable("TitleTwoScreen") {
+            TitleScreenLevel2(navController)
+        }
+        composable("TitleThreeScreen") {
+            TitleScreenLevel3(navController)
+        }
+        composable("TitleFourScreen") {
+            TitleScreenLevel4(navController)
+        }
+        composable("TitleFiveScreen") {
+            TitleScreenLevel5(navController)
+        }
 
-        composable("cleanliness") {
-            CleanlinessScreen(
+        composable("LevelOneScreen") {
+            LevelOneScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
+        composable("LevelTwoScreen") {
+            LevelTwoScreen(
+                onNavigateToSettings = { navController.navigate("settings") },
+                onHomeClick = { navController.navigate("home") }
+            )
+        }
+        composable("LevelThreeScreen") {
+            LevelThreeScreen(
+                onNavigateToSettings = { navController.navigate("settings") },
+                onHomeClick = { navController.navigate("home") }
+            )
+        }
+        composable("LevelFourScreen") {
+            LevelFourScreen(
+                onNavigateToSettings = { navController.navigate("settings") },
+                onHomeClick = { navController.navigate("home") }
+            )
+        }
+        composable("LevelFiveScreen") {
+            LevelFiveScreen(
+                onNavigateToSettings = { navController.navigate("settings") },
+                onHomeClick = { navController.navigate("home") }
+            )
+        }
+
         composable("settings") {
             SettingScreen(
                // onHomeClick = { navController.navigate("home") }
             )
         }
-
     }
 }
 

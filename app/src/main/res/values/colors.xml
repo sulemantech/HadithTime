@@ -11,4 +11,12 @@
     <color name="slider_color">#FFBF32</color>
     <color name="statusBarColor">#6A90C0</color>
     <color name="dua1">#FFBFBF</color>
+    <color name="dua1_title">#C2E240</color>
+    <color name="level_one_color">#FF5278AE</color>
+    <color name="level_three_color">#FF931A</color>
+    <color name="level_title_three_color">#DDA55C</color>
+    <color name="level_title_four_color">#009BC7</color>
+    <color name="level_title_four_bottom">#B5DEB5</color>
+    <color name="level_title_five_color">#1281C5</color>
+    <color name="level_title_five_bottom">#C3D835</color>
 </resources>

@@ -1,22 +1,30 @@
 package com.hadithtime
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun HomeScreen(navController: NavController) {
+
+    val systemUiController = rememberSystemUiController()
+    val navigationBarColor = colorResource(id = R.color.white)
+    val statusBarColor = colorResource(id = R.color.level_one_color)
+    SideEffect {
+        systemUiController.setStatusBarColor(color = statusBarColor)
+        systemUiController.setNavigationBarColor(color = navigationBarColor)
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -28,12 +36,26 @@ fun HomeScreen(navController: NavController) {
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = {
-                navController.navigate("cleanliness")
-            }) {
-                Text("Go to Cleanliness")
+            val levels = listOf(
+                "Level 1" to "TitleOneScreen",
+                "Level 2" to "TitleTwoScreen",
+                "Level 3" to "TitleThreeScreen",
+                "Level 4" to "TitleFourScreen",
+                "Level 5" to "TitleFiveScreen",
+               // "Level 6" to "LevelSixScreen"
+            )
+
+            levels.forEach { (label, route) ->
+                Button(
+                    onClick = { navController.navigate(route) },
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(text = label)
+                }
             }
         }
     }

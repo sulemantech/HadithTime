@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.hadithtime"
+    namespace = "com.hadithtime"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.hadithtime"
+        applicationId = "com.hadithtime"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -61,6 +61,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.animation.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
