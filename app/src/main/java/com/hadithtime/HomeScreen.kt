@@ -44,7 +44,8 @@ fun HomeScreen(navController: NavController) {
                 "Level 3" to "TitleThreeScreen",
                 "Level 4" to "TitleFourScreen",
                 "Level 5" to "TitleFiveScreen",
-               // "Level 6" to "LevelSixScreen"
+                "Level 6" to "TitleSixScreen",
+                "Level 7" to "TitleSevenScreen"
             )
 
             levels.forEach { (label, route) ->

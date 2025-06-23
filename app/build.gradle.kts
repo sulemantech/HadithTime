@@ -1,7 +1,10 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id ("kotlin-kapt")
 }
+
 
 android {
     namespace = "com.hadithtime"
@@ -60,12 +63,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.android)
-    implementation(libs.androidx.foundation.android)
-    implementation(libs.androidx.animation.core.android)
-    implementation(libs.androidx.animation.core.android)
-    implementation(libs.androidx.animation.core.android)
-    implementation(libs.androidx.animation.core.android)
-    implementation(libs.androidx.animation.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,9 +70,41 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation ("com.airbnb.android:lottie-compose:6.0.0")
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.32.0")
+    implementation( "androidx.compose.animation:animation:1.4.0")
+    implementation ("androidx.compose.foundation:foundation:1.4.0")
 
-    implementation (libs.accompanist.systemuicontroller)
-    implementation ("androidx.navigation:navigation-compose:2.9.0")
+    implementation ("androidx.compose.ui:ui:1.6.0")
+    implementation ("androidx.compose.material:material:1.6.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.5")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+    implementation( "com.google.accompanist:accompanist-flowlayout:0.30.1")
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.34.0")
+
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.compose.material3:material3:1.0.0")
+    implementation("androidx.compose.foundation:foundation:1.6.0") // Or the latest version
+    implementation("androidx.compose.material3:material3:1.2.0") // Or the latest version
 
 
 }
+
+fun kapt(s: String) {
+
+}
+
+

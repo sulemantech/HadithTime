@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -32,10 +33,12 @@ fun TitleScreenLevel5(navController: NavController) {
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
     // Animations
+    // Animations
     val girlOffsetX = remember { Animatable(-300f) }
-    val bubbleOffsetY = remember { Animatable(-100f) }
+
     val bubbleAlpha = remember { Animatable(0f) }
-    val bubbleOffsetX = remember { Animatable(-200f) } // Start from left
+    val bubbleOffsetY = remember { Animatable(20f) } // Start slightly down
+    val bubbleScale = remember { Animatable(0.5f) }  // Start small
 
     LaunchedEffect(Unit) {
         girlOffsetX.animateTo(
@@ -46,8 +49,15 @@ fun TitleScreenLevel5(navController: NavController) {
         delay(300)
 
         launch {
-            bubbleOffsetX.animateTo(
-                targetValue = 0f,
+            bubbleScale.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
+            )
+        }
+
+        launch {
+            bubbleOffsetY.animateTo(
+                targetValue = -20f, // Float upward
                 animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
             )
         }
@@ -55,7 +65,7 @@ fun TitleScreenLevel5(navController: NavController) {
         launch {
             bubbleAlpha.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 700)
+                animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
             )
         }
 
@@ -68,15 +78,15 @@ fun TitleScreenLevel5(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
-        // Background
+        // Background Image
         Image(
-            painter = painterResource(id = R.drawable.level_five_title_bg),
+            painter = painterResource(id = R.drawable.level_five_bg),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
+        // Top Badge
         Image(
             painter = painterResource(id = R.drawable.level_five_badge),
             contentDescription = "Badge",
@@ -86,32 +96,36 @@ fun TitleScreenLevel5(navController: NavController) {
                 .height(40.dp)
                 .width(120.dp)
         )
+
         // Girl Image (bottom-left)
         Image(
             painter = painterResource(id = R.drawable.level_five_girl),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .height(400.dp)
-                .width(224.dp)
                 .padding(start = 20.dp)
                 .offset(x = girlOffsetX.value.dp)
+                .height(400.dp)
+                .width(224.dp)
         )
-        Column(
+
+        // Bubble Animation (appears from girl’s mouth)
+        Image(
+            painter = painterResource(id = R.drawable.level_five_bubble),
+            contentDescription = null,
             modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(x = 25.dp + bubbleOffsetX.value.dp, y = 290.dp)
-                .alpha(bubbleAlpha.value),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.level_five_bubble),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(180.dp)
-                    .width(300.dp)
-            )
-        }
+                .align(Alignment.BottomStart)
+                .offset(
+                    x = 40.dp, // adjust X as per girl's mouth
+                    y = (-350).dp + bubbleOffsetY.value.dp // adjust Y upward
+                )
+                .graphicsLayer(
+                    scaleX = bubbleScale.value,
+                    scaleY = bubbleScale.value
+                )
+                .alpha(bubbleAlpha.value)
+                .size(width = 300.dp, height = 180.dp)
+        )
     }
 }
 

@@ -39,10 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.font.FontWeight.Companion.W400
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,13 +48,13 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
 
 @Composable
-fun LevelTwoScreen(
+fun LevelSevenScreen(
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {}
 ) {
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
-    val statusBarColor = colorResource(id = R.color.dua1)
+    val statusBarColor = colorResource(id = R.color.level_title_five_color)
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -71,12 +68,12 @@ fun LevelTwoScreen(
         val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
 
         Image(
-            painter = painterResource(id = R.drawable.dua1),
+            painter = painterResource(id = R.drawable.dua7),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-
+               // .height(685.dp)
         )
 
         Column(
@@ -84,33 +81,34 @@ fun LevelTwoScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar2(
-                title = "Etiquette of Drinking",
+            TopBar7(
+                title = "Planting a tree is a\n" +
+                        "charity",
                 onSettingsClick = onNavigateToSettings,
                 onHomeClick = onHomeClick
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            HadithCard2()
+            HadithCard7()
 
             Spacer(modifier = Modifier.weight(1f))
 
         }
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            PlayerControls2()
+            PlayerControls7()
         }
     }
 }
 
 @Composable
-fun HadithCard2() {
+fun HadithCard7() {
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
     val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(25.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         // Blurred Background Layer
@@ -118,7 +116,7 @@ fun HadithCard2() {
             modifier = Modifier
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color.White.copy(alpha = 0.1f))
-                .blur(120.dp) // Apply blur only to background
+                .blur(220.dp) // Apply blur only to background
                 .matchParentSize()
         )
 
@@ -126,30 +124,29 @@ fun HadithCard2() {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(25.dp))
-                .background(Color.White.copy(alpha = 0.35f))
+                .background(Color.White.copy(alpha = 0.55f)) // Glass card color
                 .border(
                     width = 1.dp,
                     color = Color.White.copy(alpha = 0.4f),
                     shape = RoundedCornerShape(25.dp)
                 )
                 .fillMaxWidth()
-                .height(350.dp)
+                .height(400.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 35.dp, bottom = 16.dp)
+                    .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "قَالَ رَسُولُ الله ﷺ \n" +
-                            "لَا يَشْرَبَنَّ أَحَدٌ مِنْكُمْ قَائِمًا",
-                    fontSize = 24.sp,
+                    text ="وَعَنْ أَنَسٍ رضى الله عنه قَالَ: قَالَ رَسُولُ اللَّهِ  ﷺ \u200F :\n" +
+                            "مَا مِنْ مُسْلِمٍ يَغْرِسُ غَرْسًا أَوْ يَزْرَعُ زَرْعًا فَيَأْكُلُ مِنْهُ إِنْسَانٌ أَوْ طَيْرٌ أَوْ بَهِيمَةٌ إِلَّا كَانَت لَهُ صَدَقَة",  fontSize = 22.sp,
                     textAlign = TextAlign.Center,
                     color = Color.Black,
                     fontFamily = MyArabicFont,
-                    lineHeight = 44.sp
+                    lineHeight = 28.sp
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -157,21 +154,16 @@ fun HadithCard2() {
                 Text(
                     text = "(صحيح مُسلم)",
                     fontSize = 14.sp,
-                    color = Color.Black,
-                    fontFamily = MyArabicFont,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Clip,
-                    modifier = Modifier.fillMaxWidth()
+                    color = Color.DarkGray,
+                    fontFamily = MyEnglishFont,
+                    textAlign = TextAlign.Center
                 )
 
-
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "The Messenger of Allah ﷺ said:",
-                    fontSize = 20.sp,
+                    text = "Narrated Anas (May Allah be pleased with him) said: The Messenger of Allah (ﷺ) said:",
+                    fontSize = 16.sp,
                     fontFamily = MyEnglishFont,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -180,32 +172,30 @@ fun HadithCard2() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "“None of you should drink while standing.”",
+                    text = "If any Muslim plants a tree or sows seed, and a human, bird, or animal eats from it, it will be counted as charity for him.",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = MyEnglishFont,
                     color = Color.Black,
-                    lineHeight = 28.sp,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "(Sahih al-Muslim)",
-                    fontSize = 12.sp,
+                    text = "(Sahih al-Bukhari)",
+                    fontSize = 14.sp,
                     fontFamily = MyEnglishFont,
-                    color = Color.Black,
+                    color = Color.DarkGray,
                     textAlign = TextAlign.Center
                 )
             }
-
         }
     }
 }
 
 @Composable
-fun PlayerControls2() {
+fun PlayerControls7() {
     var sliderValue by remember { mutableStateOf(7f) }
     var memorizeEnabled by remember { mutableStateOf(false) }
     val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
@@ -321,7 +311,7 @@ fun PlayerControls2() {
 }
 
 @Composable
-fun TopBar2(
+fun TopBar7(
     title: String,
     onSettingsClick: () -> Unit,
     onHomeClick: () -> Unit
@@ -374,9 +364,9 @@ fun TopBar2(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCleanlinessScreen2() {
+fun PreviewCleanlinessScreen7() {
     HadithTimeTheme {
-        LevelTwoScreen(
+        LevelSevenScreen(
             onNavigateToSettings = {},
             onHomeClick = {}
         )

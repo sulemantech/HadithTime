@@ -45,22 +45,28 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.DuaViewModel
 import com.hadithtime.R
 import com.hadithtime.components.TopBar
-
+import com.hadithtime.duas
+import com.hadithtime.model.Dua
 @Composable
 fun LevelOneScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
-    onHomeClick: () -> Unit = {}
+    onHomeClick: () -> Unit = {},
 ) {
+
+    var currentIndex by remember { mutableStateOf(0) }
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_one_color)
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -73,9 +79,7 @@ fun LevelOneScreen(
             painter = painterResource(id = R.drawable.background_img),
             contentDescription = "Background",
             contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(685.dp)
+            modifier = Modifier.fillMaxWidth()
         )
 
         Column(
@@ -83,96 +87,97 @@ fun LevelOneScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
+            TopBar1(
                 title = "Cleanliness",
                 onSettingsClick = onNavigateToSettings,
                 onHomeClick = onHomeClick
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            HadithCard()
+
+            val currentDua = duas[currentIndex]
+            HadithCard(dua = currentDua)
 
             Spacer(modifier = Modifier.weight(1f))
-
         }
+
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            PlayerControls(navController = navController)
+            PlayerControls(
+                navController = navController,
+                onNextClick = {
+                    currentIndex = (currentIndex + 1) % duas.size
+                }
+            )
         }
     }
 }
 
+
 @Composable
-fun HadithCard() {
+fun HadithCard(dua: Dua) {
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
     val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
 
     Box(
         modifier = Modifier
-            .fillMaxWidth().padding(top = 20.dp, start = 10.dp, end = 10.dp, bottom = 20.dp),
+            .fillMaxWidth()
+            .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color.White.copy(alpha = 0.5f))
-                .shadow(0.dp, RoundedCornerShape(20.dp), clip = false)
         ) {
             Column(
                 modifier = Modifier
-                    .padding(top = 25.dp, bottom = 25.dp , start = 30.dp, end = 30.dp)
+                    .padding(25.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "قَالَ رَسُولُ الله ﷺ\n" +
-                            " الطُّهُورُ شَطْرُ الإِيمَان",
+                    text = dua.arabic,
                     fontSize = 22.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
                     fontFamily = MyArabicFont,
-                    lineHeight = 28.sp
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = "(صحيح مُسلم)",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray,
-                    fontFamily = MyEnglishFont,
-                    textAlign = TextAlign.Center
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 44.sp
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = "The Messenger of Allah ﷺ said:",
-                    fontSize = 16.sp,
-                    fontFamily = MyEnglishFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
+                dua.reference?.let {
+                    Text(
+                        text = it,
+                        fontSize = 20.sp,
+                        fontFamily = MyEnglishFont,
+                        textAlign = TextAlign.Center,
+                        color = Color.Black
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "\"Cleanliness is half of faith \".",
+                    text = dua.Englishtranslation,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = MyEnglishFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "(Sahih al-Bukhari)",
-                    fontSize = 14.sp,
-                    fontFamily = MyEnglishFont,
-                    color = Color.DarkGray,
-                    textAlign = TextAlign.Center
-                )
+                dua.Englishreference?.let {
+                    Text(
+                        text = it,
+                        fontSize = 14.sp,
+                        fontFamily = MyEnglishFont,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
@@ -180,7 +185,7 @@ fun HadithCard() {
 
 
 @Composable
-fun PlayerControls(navController: NavController) {
+fun PlayerControls(navController: NavController, onNextClick: () -> Unit){
     var sliderValue by remember { mutableStateOf(7f) }
     var memorizeEnabled by remember { mutableStateOf(false) }
     val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
@@ -276,10 +281,7 @@ fun PlayerControls(navController: NavController) {
                         modifier = Modifier.size(50.dp)
                     )
                 }
-                IconButton(onClick = {
-                    navController.navigate("TitleTwoScreen")
-
-                }) {
+                IconButton(onClick = onNextClick) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_next),
                         contentDescription = "Next",
@@ -294,6 +296,58 @@ fun PlayerControls(navController: NavController) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun TopBar1(
+    title: String,
+    onSettingsClick: () -> Unit,
+    onHomeClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, start = 4.dp, end = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Home Icon
+        IconButton(
+            onClick = { onHomeClick() },
+            modifier = Modifier.size(56.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_icon),
+                contentDescription = "Home",
+                modifier = Modifier.size(42.dp)
+            )
+        }
+
+        // Title centered
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        // Settings Icon
+        IconButton(
+            onClick = { onSettingsClick() },
+            modifier = Modifier.size(56.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.setting_icon),
+                contentDescription = "Settings",
+                modifier = Modifier.size(42.dp)
+            )
         }
     }
 }

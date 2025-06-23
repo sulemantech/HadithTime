@@ -68,10 +68,10 @@ fun LevelFourScreen(
         Image(
             painter = painterResource(id = R.drawable.dua4),
             contentDescription = "Background",
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(685.dp)
+
         )
 
         Column(
@@ -144,7 +144,7 @@ fun HadithCard4() {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "The Messenger of Allah ﷺ said:",
+                    text = "Abu Malik at-Ash'ari (May Allah be pleased with him) reported: \nThe Messenger of Allah ﷺ said:",
                     fontSize = 16.sp,
                     fontFamily = MyEnglishFont,
                     color = Color.Black,
@@ -152,9 +152,10 @@ fun HadithCard4() {
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
-                    text = "Abu Malik at-Ash'ari (May Allah be pleased with him) reported:",
+                    text = " “Cleanliness is half of faith and\n" +
+                            "al-Hamdu Lillah (all praise and gratitude is for Allah alone)\n" +
+                            "fills the scale.”",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = MyEnglishFont,
@@ -310,7 +311,7 @@ fun TopBar4(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home),
+                painter = painterResource(id = R.drawable.home_icon),
                 contentDescription = "Home",
                 modifier = Modifier.size(42.dp)
             )
@@ -336,7 +337,7 @@ fun TopBar4(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_setting),
+                painter = painterResource(id = R.drawable.setting_icon),
                 contentDescription = "Settings",
                 modifier = Modifier.size(42.dp)
             )

@@ -24,16 +24,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun TitleScreenLevel1(navController: NavController) {
+fun TitleScreenLevel7(navController: NavController) {
     val systemUiController = rememberSystemUiController()
-    val navigationBarColor = colorResource(id = R.color.white)
-    val statusBarColor = colorResource(id = R.color.level_one_color)
-
+    val navigationBarColor = colorResource(id = R.color.level_title_four_bottom)
+    val statusBarColor = colorResource(id = R.color.level_title_four_color)
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
-
+    // Animations
     // Animations
     val girlOffsetX = remember { Animatable(-300f) }
 
@@ -71,8 +70,8 @@ fun TitleScreenLevel1(navController: NavController) {
         }
 
         delay(1000)
-        navController.navigate("LevelOneScreen") {
-            popUpTo("TitleOneScreen") { inclusive = true }
+        navController.navigate("LevelSevenScreen") {
+            popUpTo("TitleSevenScreen") { inclusive = true }
         }
     }
 
@@ -81,7 +80,7 @@ fun TitleScreenLevel1(navController: NavController) {
     ) {
         // Background Image
         Image(
-            painter = painterResource(id = R.drawable.level_one_bg),
+            painter = painterResource(id = R.drawable.level_seven_bg),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -89,7 +88,7 @@ fun TitleScreenLevel1(navController: NavController) {
 
         // Top Badge
         Image(
-            painter = painterResource(id = R.drawable.level_one_badge),
+            painter = painterResource(id = R.drawable.level_seven_badge),
             contentDescription = "Badge",
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -100,7 +99,7 @@ fun TitleScreenLevel1(navController: NavController) {
 
         // Girl Image (bottom-left)
         Image(
-            painter = painterResource(id = R.drawable.level_one_girl),
+            painter = painterResource(id = R.drawable.level_seven_girl),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -112,7 +111,7 @@ fun TitleScreenLevel1(navController: NavController) {
 
         // Bubble Animation (appears from girl’s mouth)
         Image(
-            painter = painterResource(id = R.drawable.level_one_bubble),
+            painter = painterResource(id = R.drawable.level_seven_bubble),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -132,8 +131,8 @@ fun TitleScreenLevel1(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTitleScreen() {
+fun PreviewTitleScreen7() {
     HadithTimeTheme {
-        TitleScreenLevel1(navController = rememberNavController())
+        TitleScreenLevel7(navController = rememberNavController())
     }
 }

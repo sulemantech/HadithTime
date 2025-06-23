@@ -68,10 +68,10 @@ fun LevelThreeScreen(
         Image(
             painter = painterResource(id = R.drawable.dua3),
             contentDescription = "Background",
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(685.dp)
+
         )
 
         Column(
@@ -308,7 +308,7 @@ fun TopBar3(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home),
+                painter = painterResource(id = R.drawable.home_icon),
                 contentDescription = "Home",
                 modifier = Modifier.size(42.dp)
             )
@@ -334,7 +334,7 @@ fun TopBar3(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_setting),
+                painter = painterResource(id = R.drawable.setting_icon),
                 contentDescription = "Settings",
                 modifier = Modifier.size(42.dp)
             )

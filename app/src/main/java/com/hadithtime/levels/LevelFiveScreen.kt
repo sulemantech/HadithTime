@@ -2,6 +2,7 @@ package com.hadithtime.levels
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -52,7 +54,7 @@ fun LevelFiveScreen(
 ) {
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
-    val statusBarColor = colorResource(id = R.color.level_title_five_color)
+    val statusBarColor = colorResource(id = R.color.dua1)
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -68,10 +70,10 @@ fun LevelFiveScreen(
         Image(
             painter = painterResource(id = R.drawable.dua5),
             contentDescription = "Background",
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(685.dp)
+
         )
 
         Column(
@@ -105,16 +107,30 @@ fun HadithCard5() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp, start = 10.dp, end = 10.dp, bottom = 20.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
+        // Blurred Background Layer
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(25.dp))
-                .background(Color.White.copy(alpha = 0.5f))
-                .shadow(0.dp, RoundedCornerShape(20.dp), clip = false)
+                .background(Color.White.copy(alpha = 0.1f))
+                .blur(120.dp) // Apply blur only to background
+                .matchParentSize()
+        )
+
+        // Foreground Content Layer (Sharp Text)
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(25.dp))
+                .background(Color.White.copy(alpha = 0.35f))
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(25.dp)
+                )
                 .fillMaxWidth()
-                .height(400.dp) // 👈 Fixed height for scrollable content
+                .height(400.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -318,7 +334,7 @@ fun TopBar5(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home),
+                painter = painterResource(id = R.drawable.home_icon),
                 contentDescription = "Home",
                 modifier = Modifier.size(42.dp)
             )
@@ -344,7 +360,7 @@ fun TopBar5(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_setting),
+                painter = painterResource(id = R.drawable.setting_icon),
                 contentDescription = "Settings",
                 modifier = Modifier.size(42.dp)
             )
