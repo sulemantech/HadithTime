@@ -70,7 +70,7 @@ fun TitleScreenLevel2(navController: NavController) {
 
         delay(1000)
         navController.navigate("LevelTwoScreen") {
-            popUpTo("TitleTwoScreen") { inclusive = true }
+          //  popUpTo("TitleTwoScreen") { inclusive = true }
         }
     }
 

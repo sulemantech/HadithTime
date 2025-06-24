@@ -1,5 +1,7 @@
 package com.hadithtime.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,6 +27,7 @@ import com.hadithtime.levels.TitleScreenLevel5
 import com.hadithtime.levels.TitleScreenLevel6
 import com.hadithtime.levels.TitleScreenLevel7
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "splash") {
@@ -76,36 +79,42 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable("LevelTwoScreen") {
             LevelTwoScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
         composable("LevelThreeScreen") {
             LevelThreeScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
         composable("LevelFourScreen") {
             LevelFourScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
         composable("LevelFiveScreen") {
             LevelFiveScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
         composable("LevelSixScreen") {
             LevelSixScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
         composable("LevelSevenScreen") {
             LevelSevenScreen(
+                navController = navController,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )

@@ -71,7 +71,7 @@ fun TitleScreenLevel6(navController: NavController) {
 
         delay(1000)
         navController.navigate("LevelSixScreen") {
-            popUpTo("TitleSixScreen") { inclusive = true }
+            //popUpTo("TitleSixScreen") { inclusive = true }
         }
     }
 

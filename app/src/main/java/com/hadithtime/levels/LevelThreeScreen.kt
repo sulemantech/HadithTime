@@ -1,5 +1,7 @@
 package com.hadithtime.levels
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,15 +43,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
+import com.hadithtime.components.HadithCard
+import com.hadithtime.components.PlayerControls
+import com.hadithtime.components.TopBar
+import com.hadithtime.duas
+import com.hadithtime.model.Hadith
 
 @Composable
 fun LevelThreeScreen(
+    navController: NavController,
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {}
 ) {
+    var currentIndex by remember { mutableStateOf(0) }
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_three_color)
@@ -79,274 +90,51 @@ fun LevelThreeScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar3(
+            TopBar(
                 title = "Etiquette of Eating",
                 onSettingsClick = onNavigateToSettings,
                 onHomeClick = onHomeClick
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            HadithCard3()
+            val levelOneDuas = remember { duas.filter { it.level == 3 } }
+
+            val currentDua = levelOneDuas.getOrNull(currentIndex)
+            currentDua?.let {
+                HadithCard(dua = it)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
-
         }
+
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            PlayerControls3()
-        }
-    }
-}
+            val levelOneDuas = remember { duas.filter { it.level == 3 } }
 
-@Composable
-fun HadithCard3() {
-    val MyArabicFont = FontFamily(Font(R.font.al_quran))
-    val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth().padding(top = 20.dp, start = 10.dp, end = 10.dp, bottom = 20.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(25.dp))
-                .background(Color.White.copy(alpha = 0.5f))
-                .shadow(0.dp, RoundedCornerShape(20.dp), clip = false)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(top = 25.dp, bottom = 25.dp , start = 10.dp, end = 10.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "قَالَ رَسُولُ الله ﷺ \n" +
-                            "سَمِّ اللَّهَ , وَكُلْ بِيَمِينِكَ\n",
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    fontFamily = MyArabicFont,
-                    lineHeight = 28.sp
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = "(صحيح مُسلم)",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray,
-                    fontFamily = MyEnglishFont,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "The Messenger of Allah ﷺ said:",
-                    fontSize = 16.sp,
-                    fontFamily = MyEnglishFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "“Mention the Name of Allah and eat with your right hand.”",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = MyEnglishFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = "(Sahih al-Bukhari)",
-                    fontSize = 14.sp,
-                    fontFamily = MyEnglishFont,
-                    color = Color.DarkGray,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PlayerControls3() {
-    var sliderValue by remember { mutableStateOf(7f) }
-    var memorizeEnabled by remember { mutableStateOf(false) }
-    val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
-
-    Surface(
-        color = Color.White,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp,end = 12.dp, bottom = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth().padding(start = 7.dp, end = 7.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "1 of 49",
-                    fontSize = 14.sp,
-                    fontFamily = MyCountFont,
-                    color = Color.Black
-                )
-
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Text(
-//                        text = "Memorize",
-//                        fontSize = 14.sp,
-//                        color = Color.Black
-//                    )
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Switch(
-//                        checked = memorizeEnabled,
-//                        onCheckedChange = { memorizeEnabled = it }
-//                    )
-//                }
-            }
-
-            val sliderColor = colorResource(id = R.color.slider_color)
-
-            Slider(
-                value = sliderValue,
-                onValueChange = { sliderValue = it },
-                valueRange = 0f..40f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = sliderColor,
-                    activeTrackColor = sliderColor,
-                    inactiveTrackColor = sliderColor.copy(alpha = 0.3f)
-                )
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 7.dp, end = 7.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp)
-                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp)
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_repeat),
-                        contentDescription = "Repeat",
-                        modifier = Modifier.size(24.dp, 24.dp)
-                    )
+            PlayerControls(
+                navController = navController,
+                onNextClick = {
+                    if (currentIndex < levelOneDuas.lastIndex) {
+                        currentIndex += 1
+                    }
+                },
+                onPreviousClick = {
+                    if (currentIndex > 0) {
+                        currentIndex -= 1
+                    }
                 }
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_previous),
-                        contentDescription = "Previous",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-                }
-                IconButton(onClick = { },
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_play),
-                        contentDescription = "Play",
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = "Next",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_tabler_heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(24.dp, 24.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TopBar3(
-    title: String,
-    onSettingsClick: () -> Unit,
-    onHomeClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, start = 4.dp, end = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Home Icon
-        IconButton(
-            onClick = { onHomeClick() },
-            modifier = Modifier.size(56.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.home_icon),
-                contentDescription = "Home",
-                modifier = Modifier.size(42.dp)
-            )
-        }
-
-        // Title centered
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Settings Icon
-        IconButton(
-            onClick = { onSettingsClick() },
-            modifier = Modifier.size(56.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.setting_icon),
-                contentDescription = "Settings",
-                modifier = Modifier.size(42.dp)
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Preview(showBackground = true)
 @Composable
 fun PreviewCleanlinessScreen3() {
     HadithTimeTheme {
+        val navController = rememberNavController() // ✅ Create a mock NavController
         LevelThreeScreen(
+            navController = navController,
             onNavigateToSettings = {},
             onHomeClick = {}
         )

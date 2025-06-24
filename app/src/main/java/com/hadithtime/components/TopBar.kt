@@ -37,7 +37,7 @@ fun TopBar(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home),
+                painter = painterResource(id = R.drawable.home_icon),
                 contentDescription = "Home",
                 modifier = Modifier.size(42.dp)
             )
@@ -63,7 +63,7 @@ fun TopBar(
             modifier = Modifier.size(56.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_setting),
+                painter = painterResource(id = R.drawable.setting_icon),
                 contentDescription = "Settings",
                 modifier = Modifier.size(42.dp)
             )

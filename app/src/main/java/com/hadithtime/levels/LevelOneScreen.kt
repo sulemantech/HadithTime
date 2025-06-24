@@ -29,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -45,11 +44,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.hadithtime.DuaViewModel
 import com.hadithtime.R
+import com.hadithtime.components.HadithCard
+import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
 import com.hadithtime.duas
-import com.hadithtime.model.Dua
+import com.hadithtime.model.Hadith
+
 @Composable
 fun LevelOneScreen(
     navController: NavController,
@@ -70,7 +71,7 @@ fun LevelOneScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE0F7FA))
+
     ) {
         val MyArabicFont = FontFamily(Font(R.font.al_quran))
         val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
@@ -87,7 +88,7 @@ fun LevelOneScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar1(
+            TopBar(
                 title = "Cleanliness",
                 onSettingsClick = onNavigateToSettings,
                 onHomeClick = onHomeClick
@@ -95,210 +96,224 @@ fun LevelOneScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            val currentDua = duas[currentIndex]
-            HadithCard(dua = currentDua)
+            val levelOneDuas = remember { duas.filter { it.level == 1 } }
+
+            val currentDua = levelOneDuas.getOrNull(currentIndex)
+            currentDua?.let {
+                HadithCard(dua = it)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
         }
 
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+            val levelOneDuas = remember { duas.filter { it.level == 1 } }
+
             PlayerControls(
                 navController = navController,
                 onNextClick = {
-                    currentIndex = (currentIndex + 1) % duas.size
+                    if (currentIndex < levelOneDuas.lastIndex) {
+                        currentIndex += 1
+                    }
+                },
+                onPreviousClick = {
+                    if (currentIndex > 0) {
+                        currentIndex -= 1
+                    }
                 }
             )
         }
     }
 }
 
-
-@Composable
-fun HadithCard(dua: Dua) {
-    val MyArabicFont = FontFamily(Font(R.font.al_quran))
-    val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(25.dp))
-                .background(Color.White.copy(alpha = 0.5f))
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(25.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = dua.arabic,
-                    fontSize = 22.sp,
-                    fontFamily = MyArabicFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 44.sp
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                dua.reference?.let {
-                    Text(
-                        text = it,
-                        fontSize = 20.sp,
-                        fontFamily = MyEnglishFont,
-                        textAlign = TextAlign.Center,
-                        color = Color.Black
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = dua.Englishtranslation,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = MyEnglishFont,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                dua.Englishreference?.let {
-                    Text(
-                        text = it,
-                        fontSize = 14.sp,
-                        fontFamily = MyEnglishFont,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun PlayerControls(navController: NavController, onNextClick: () -> Unit){
-    var sliderValue by remember { mutableStateOf(7f) }
-    var memorizeEnabled by remember { mutableStateOf(false) }
-    val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
-
-    Surface(
-        color = Color.White,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp,end = 12.dp, bottom = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth().padding(start = 7.dp, end = 7.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "1 of 49",
-                    fontSize = 14.sp,
-                    fontFamily = MyCountFont,
-                    color = Color.Black
-                )
-
-//                Row(verticalAlignment = Alignment.CenterVertically) {
+//@Composable
+//fun HadithCard(dua: Hadith) {
+//    val MyArabicFont = FontFamily(Font(R.font.al_quran))
+//    val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(10.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(25.dp))
+//                .background(Color.White.copy(alpha = 0.5f))
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .padding(25.dp)
+//                    .verticalScroll(rememberScrollState()),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Text(
+//                    text = dua.arabic,
+//                    fontSize = 22.sp,
+//                    fontFamily = MyArabicFont,
+//                    color = Color.Black,
+//                    textAlign = TextAlign.Center,
+//                    lineHeight = 44.sp
+//                )
+//
+//                Spacer(modifier = Modifier.height(12.dp))
+//
+//                dua.reference?.let {
 //                    Text(
-//                        text = "Memorize",
-//                        fontSize = 14.sp,
+//                        text = it,
+//                        fontSize = 20.sp,
+//                        fontFamily = MyEnglishFont,
+//                        textAlign = TextAlign.Center,
 //                        color = Color.Black
 //                    )
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Switch(
-//                        checked = memorizeEnabled,
-//                        onCheckedChange = { memorizeEnabled = it }
+//                }
+//
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                dua.englishReference?.let {
+//                    Text(
+//                        text = it,
+//                        fontSize = 20.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        fontFamily = MyEnglishFont,
+//                        textAlign = TextAlign.Center,
+//                        color = Color.Black
 //                    )
 //                }
-            }
+//
+//                Spacer(modifier = Modifier.height(10.dp))
+//
+//                dua.englishTranslation?.let {
+//                    Text(
+//                        text = it,
+//                        fontSize = 14.sp,
+//                        fontFamily = MyEnglishFont,
+//                        color = Color.Black,
+//                        textAlign = TextAlign.Center
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 
-            val sliderColor = colorResource(id = R.color.slider_color)
 
-            Slider(
-                value = sliderValue,
-                onValueChange = { sliderValue = it },
-                valueRange = 0f..40f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = sliderColor,
-                    activeTrackColor = sliderColor,
-                    inactiveTrackColor = sliderColor.copy(alpha = 0.3f)
-                )
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 7.dp, end = 7.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp)
-                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp)
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_repeat),
-                        contentDescription = "Repeat",
-                        modifier = Modifier.size(24.dp, 24.dp)
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_previous),
-                        contentDescription = "Previous",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-                }
-                IconButton(onClick = { },
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_play),
-                        contentDescription = "Play",
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                IconButton(onClick = onNextClick) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = "Next",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_tabler_heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(24.dp, 24.dp)
-                    )
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun PlayerControls(navController: NavController, onNextClick: () -> Unit, onPreviousClick: () -> Unit){
+//    var sliderValue by remember { mutableStateOf(7f) }
+//    var memorizeEnabled by remember { mutableStateOf(false) }
+//    val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
+//
+//    Surface(
+//        color = Color.White,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = 12.dp,end = 12.dp, bottom = 12.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth().padding(start = 7.dp, end = 7.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = "1 of 49",
+//                    fontSize = 14.sp,
+//                    fontFamily = MyCountFont,
+//                    color = Color.Black
+//                )
+//
+////                Row(verticalAlignment = Alignment.CenterVertically) {
+////                    Text(
+////                        text = "Memorize",
+////                        fontSize = 14.sp,
+////                        color = Color.Black
+////                    )
+////                    Spacer(modifier = Modifier.width(8.dp))
+////                    Switch(
+////                        checked = memorizeEnabled,
+////                        onCheckedChange = { memorizeEnabled = it }
+////                    )
+////                }
+//            }
+//
+//            val sliderColor = colorResource(id = R.color.slider_color)
+//
+//            Slider(
+//                value = sliderValue,
+//                onValueChange = { sliderValue = it },
+//                valueRange = 0f..40f,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(36.dp),
+//                colors = SliderDefaults.colors(
+//                    thumbColor = sliderColor,
+//                    activeTrackColor = sliderColor,
+//                    inactiveTrackColor = sliderColor.copy(alpha = 0.3f)
+//                )
+//            )
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth().padding(start = 7.dp, end = 7.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp)
+//                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp)
+//            }
+//
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 8.dp),
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                IconButton(onClick = { }) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_repeat),
+//                        contentDescription = "Repeat",
+//                        modifier = Modifier.size(24.dp, 24.dp)
+//                    )
+//                }
+//                IconButton(onClick = onPreviousClick) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_previous),
+//                        contentDescription = "Previous",
+//                        modifier = Modifier.size(20.dp, 20.dp)
+//                    )
+//                }
+//                IconButton(onClick = { },
+//                    modifier = Modifier.size(56.dp)
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_play),
+//                        contentDescription = "Play",
+//                        modifier = Modifier.size(50.dp)
+//                    )
+//                }
+//                IconButton(onClick = onNextClick) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_next),
+//                        contentDescription = "Next",
+//                        modifier = Modifier.size(20.dp, 20.dp)
+//                    )
+//                }
+//                IconButton(onClick = {} ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_tabler_heart),
+//                        contentDescription = "Favorite",
+//                        modifier = Modifier.size(24.dp, 24.dp)
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun TopBar1(

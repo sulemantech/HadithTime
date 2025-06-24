@@ -1,0 +1,571 @@
+package com.hadithtime
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.hadithtime.model.HadithDatabase
+import com.hadithtime.model.Hadith
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+
+class DuaViewModel(application: Application) : AndroidViewModel(application) {
+    private val duaDao = HadithDatabase.getDatabase(application).duaDao()
+    val allDuas: Flow<List<Hadith>> = duaDao.getAllDuas()
+
+    // Function to fetch duas for specific level
+    fun getDuasByLevel(level: Int): Flow<List<Hadith>> {
+        return duaDao.getDuasByLevel(level)
+    }
+
+    fun preloadDuas() {
+        viewModelScope.launch {
+            duaDao.deleteAll()
+            duaDao.insertAll(duas) // Use the global duas list
+        }
+    }
+}
+
+val duas = listOf(
+    // Level 1: Duas 1–4
+    Hadith(
+        title = "الْحَياءُ",
+        arabic = "قَالَ رَسُولُ الله ﷺ\nالْحَياءُ شُعْبَةٌ مِّنَ الإيمَان",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "الْحَياءُ",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Modesty is a branch of faith.”",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 1
+    ),
+    Hadith(
+        title = "الإيمان",
+        arabic = "قَالَ رَسُولُ الله ﷺ\nقُلْ: آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "الإيمان",
+        englishReference = "The Messenger of Allah ﷺ said:\n\"Say, ‘I believe in Allah’, then be steadfast.”",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 1
+    ),
+    Hadith(
+        title = "فَضْلُ تَعَلُّمِ الْقُرْآنِ",
+        arabic = "قَالَ رَسُولُ الله ﷺ\nخَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَه",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "فَضْلُ تَعَلُّمِ الْقُرْآنِ",
+        englishReference = "The Messenger of Allah ﷺ said:\n The best amongst you is the one who learns the Qur'an and teaches it.\"",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 1
+    ),
+    Hadith(
+        title = "Dua 4",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n\"\u200F الطُّهُورُ شَطْرُ الإِيمَانِ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "الطّهارة",
+        englishReference = "The Messenger of Allah ﷺ said:\n \"Cleanliness is half of faith \"",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 1
+    ),
+
+    // Level 2: Duas 5–9
+    Hadith(
+        title = "Dua 5",
+        arabic = "قَالَ رَسُولُ الله ﷺ\nمَنْ أَطَاعَنِي دَخَلَ الْجَنَّةَ",
+        reference = "(صحيح بخارى)",
+        arabicTitle = "   طَاعةُ النَّبيِّﷺ",
+        englishReference = "The Messenger of Allah ﷺ said:\n \"Whoever obeys me will enter Paradise,",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 2
+    ),
+    Hadith(
+        title = "Dua 6",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n صَلُّوا الصَّلاَةَ لِوَقْتِهَا",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Observed prayer at its prescribed time.”",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 2
+    ),
+    Hadith(
+        title = "Dua 7",
+        arabic = "قَالَ رَسُولُ الله ﷺ\nسَمِّ اللَّهَ , وَكُلْ بِيَمِينِكَ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Mention the Name of Allah and eat with your right hand.”",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 2
+    ),
+    Hadith(
+        title = "Dua 8",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n لَا يَشْرَبَنَّ أَحَدٌ مِنْكُمْ قَائِمًا",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “None of you should drink while standing.”",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 2
+    ),
+    Hadith(
+        title = "Dua 9",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n لَا تَسُبَّنَّ أَحَدًا",
+        reference = "(سنن ابي داؤد)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Do not abuse anyone.”",
+        englishTranslation = "(Sunan Abi Dawud)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 2
+    ),
+
+    // Level 3: Duas 10–16
+    Hadith(
+        title = "Dua 10",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n  أَفْشُوا السَّلاَمَ بَيْنَكُمْ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Promote greeting amongst you.”",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 11",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n أَفْضَلُ الذِّكْرِ لَا إِلَهَ إِلاَّ اللَّهُ",
+        reference = "(سنن الترمذي)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n There is none worthy of worship except Allah.”",
+        englishTranslation = "(Sunan al-Tirmidhi)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 12",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n إِذَا سَأَلْتَ فَاسْأَلِ اللَّهَ",
+        reference = "(سنن الترمذي)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Whenever you ask (for anything), ask from Allah.”",
+        englishTranslation = "(Sunan al-Tirmidhi)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 13",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n مَنْ لَا يَرْحَمْ لَا يُرْحَمْ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Anyone who does not show mercy, will not be shown mercy.”",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 14",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ",
+        reference = "(سنن الترمذي)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “Be conscious of Allah where ever you are.”",
+        englishTranslation = "(Sunan al-Tirmidhi)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 15",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n‘’Good word is a charity.”",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+    Hadith(
+        title = "Dua 16",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n الْمَرْءُ مَعَ مَنْ أَحَبَّ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n “ A man will be with those whom he loves.\"",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 3
+    ),
+
+    // Level 4: Duas 17–23
+    Hadith(
+        title = "Dua 17",
+        arabic = "وعن ابن عمر رضي الله عنهما أن رسول الله صلى الله عليه وسلم قال\u200F:\n\"\u200Fالْمُسْلِمُ أخُو الْمُسْلِم",
+        reference = "(متفق عليه)",
+        arabicTitle = "...",
+        englishReference = "Ibn 'Umar (May Allah be pleased with both of them) reported: The Messenger of Allah (ﷺ) said,  \n \"A Muslim is a brother of another Muslim.”",
+        englishTranslation = "(Agreed Upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 18",
+        arabic = "وَعَنْ أَبِي هُرَيْرَةَ رضى الله عنه  عَنِ النَّبِيِّ \u200F صلى الله عليه وسلم\u200F قَالَ :\nتَهَادُوْا تَحَابُّوا",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah رضى الله عنه   reported: The Prophet (ﷺ) said:\n \" Exchange gifts, and you will love one another.\"",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 19",
+        arabic = "عَنْ جَابِرٍ رضى الله عنه  ، عَنْ رَسُولِ الله ﷺ قَالَ :\n لاَ تَأْكُلُوا بِالشِّمَالِ فَإِنَّ الشَّيْطَانَ يَأْكُلُ بِالشِّمَالِ",
+        reference = "(سنن ابن ماجه)",
+        arabicTitle = "...",
+        englishReference = "It was narrated from Jabir (May Allah be pleased with him) that the Messenger of Allah (ﷺ) said:\n “Do not eat with your left hand, for Satan eats with his left hand.”",
+        englishTranslation = "(Sunan Ibn Majah)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 20",
+        arabic = "عَنْ أَبِي مَالِكٍ الأَشْعَرِيِّ رضى الله عنه، قَالَ قَالَ رَسُولُ اللَّهِﷺ\n الطُّهُورُ شَطْرُ الإِيمَانِ وَالْحَمْدُ لِلَّهِ تَمْلأُ الْمِيزَانَ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "Abu Malik at-Ash'ari (May Allah be pleased with him) reported: The Messenger of Allah (ﷺ) said:\n “Cleanliness is half of faith and al-Hamdu Lillah (all praise and gratitude is for Allah alone) fills the scale.”",
+        englishTranslation = "(Sunan Ibn Majah)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 21",
+        arabic = "عَنْ عَائِشَةَ رضى الله عنها  قَالَتْ: قَالَ رَسُولُ اللَّهِﷺ\n السِّوَاكُ مَطْهَرَةٌ لِلْفَمِ مَرْضَاةٌ",
+        reference = "(رواه النسائي)",
+        arabicTitle = "...",
+        englishReference = "'Aishah (May Allah be pleased with her) reported: The Prophet (ﷺ) said,\n \"The Miswak (tooth-stick) purifies the mouth and pleases the Rubb.\"",
+        englishTranslation = "(An-Nasa'i)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 22",
+        arabic = "قَالَ رَسُولُ الله ﷺ\n مَنْ جَاءَ مِنْكُمُ الْجُمُعَةَ فَلْيَغْتَسِلْ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n\"Anyone of you coming for the Jumuah prayer should take a bath.\"",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+    Hadith(
+        title = "Dua 23",
+        arabic = "قَالَ رَسُولُ اللَّهِﷺ \u200F:\u200F يَا عَائِشَةُ!\nإِنَّ اللَّهَ رَفِيقٌ يُحِبُّ الرِّفْقَ فِي الأَمْرِ كُلِّهِ",
+        reference = "(متفق عليه)",
+        arabicTitle = "...",
+        englishReference = "The Prophet (ﷺ) said, \"O `Aisha! (May Allah be pleased with her)\n \"Allah is Gentle and He loves gentleness in all matters.\"",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 4
+    ),
+
+    // Level 5: Duas 24–31
+
+    Hadith(
+        title = "dua 24",
+        arabic = "عَنْ عَبْدِ اللَّهِ بْنِ مَسْعُودٍ رضى الله عنه ، عَنِ النَّبِيِّ صلى الله عليه وسلم قَالَ :\n إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "Abdullah bin Mas'ud (May Allah be pleased with him) narrated that the Messenger of Allah (ﷺ),said :\n“Allah is Beautiful and He loves beauty”.   ",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 25",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه ، قَالَ قَالَ رَسُولُ الله ﷺ\nمَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلاَ يُؤْذِ جَارَهُ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\nAnybody who believes in Allah and the Last Day should not harm his neighbor",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 26",
+        arabic = "عن أبي ذررضى الله عنه قال: قال رسول الله ﷺ:\nتَبَسُّمُكَ فِي وَجْهِ أَخِيْكَ لَكَ صَدَقَةٌ",
+        reference = "(رواه الترمذي)",
+        arabicTitle = "...",
+        englishReference = "Abu Dharr (May Allah be pleased with him) reported: Allah’s messenger ﷺ said:\n Your smiling in the face of your brother is charity.",
+        englishTranslation = "(At-Tirmidhi)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 27",
+        arabic = "عَنْ النَّبِيِّ ﷺ قَالَ:\nلَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+        reference = "(متفق عليه\u200F)",
+        arabicTitle = "...",
+        englishReference = "Anas (May Allah be pleased with him) reported:\nThe Prophet (ﷺ) said, \"No one of you shall become a true believer until he desires for his brother what he desires for himself",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 28",
+        arabic = " قَالَ رَسُولُ الله ﷺ\n\"\u200Fإنّ أَحَبَّ الْكَلَامِ إلَى اللهِ\u200F:\u200F سُبْحَانَ اللهِ وَبِحَمْدِهِ",
+        reference = "(صحيح مسلم\u200F)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah ﷺ said:\n“Verily, the words most beloved to Allah are: 'Subhan-Allahi wa bihamdihi' (Allah is free from imperfection and His is the praise)'.\"\u200F\u200F",
+        englishTranslation = "(Sahih al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+
+    Hadith(
+        title = "Dua 29",
+        arabic = "عن أَبِي هُرَيْرَةَ رضى الله عنه ، قَالَ قَالَ رَسُولُ اللَّهِ ﷺ :\nمَنْ صَلَّى عَلَىَّ صَلاَةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا",
+        reference = "(رواه الترمذي)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah (May Allah be pleased with him) reported: The Messenger of Allah (ﷺ) said:\nWhoever sends blessing upon me once, Allah will send blessings upon him ten times",
+        englishTranslation = "c",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 30",
+        arabic = "عَنِ ابْنِ عُمَرَ ـ رضى الله عنهما ـ قَالَ قَالَ رَسُولُ اللَّهِ ﷺ :\nبُنِيَ الإِسْلاَمُ عَلَى خَمْسٍ شَهَادَةِ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَإِقَامِ الصَّلاَةِ، وَإِيتَاءِ الزَّكَاةِ، وَالْحَجِّ، وَصَوْمِ رَمَضَانَ",
+        reference = "Ref 33",
+        arabicTitle = "...",
+        englishReference = "Eng Ref 33",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+    Hadith(
+        title = "Dua 31",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَجُلًا قَالَ لِلنَّبِيِّ ﷺ أَوْصِنِي. قَالَ ﷺ:\nلَا تَغْضَبْ، فَرَدَّدَ مِرَارًا، قَالَ: لَا تَغْضَبْ",
+        reference = "(صحيح البخاري\u200F)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah (May Allah be pleased with him) reported:\nA man asked the Prophet (ﷺ) for advice and he (ﷺ) said, \"Do not get angry\".\n" +
+                "The man asked repeatedly, and he (ﷺ) kept replying, 'Do not get angry'.\"",
+        englishTranslation = "(Sahih al-Bukhari)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 5
+    ),
+
+    // Level 6: Duas 32–39
+
+    Hadith(
+        title = "Dua 32",
+        arabic = "عُمَرَ بْنِ أَبِي سَلَمَةَ \u200F رضى الله عنه  قَالَ : قَالَ النَّبِيُّ \u200Fﷺ \u200F:\nيَا غُلَامُ ! سَمِّ اللَّهَ , وَكُلْ بِيَمِينِكَ , وَكُلْ مِمَّا يَلِيكَ",
+        reference = "(مُتَّفَقٌ عَلَيْهِ)",
+        arabicTitle = "...",
+        englishReference = "Umar bin Abu Salamah  رضي الله عنهreported: The Messenger of Allah (ﷺ), said to me, :\nMention Allah's Name (i.e., say Bismillah), eat with your right hand, and eat from what is near you.",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 33",
+        arabic = "وعن أبي هريرة رضي الله عنه قَالَ: قَالَ رَسُولُ اللَّهِ ﷺ :\n\u200F \" كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ ثَقِيلَتَانِ فِي الْمِيزَانِ حَبِيبَتَانِ إِلَى الرَّحْمَنِ: سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيم",
+        reference = "Ref 36",
+        arabicTitle = "...",
+        englishReference = "Eng Ref 36",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 34",
+        arabic = "عَنْ عَبْدِ اللَّهِ بْنِ عَمْرٍو رضي الله عنه قَالَ: قَالَ رَسُولُ اللَّهِ  ﷺ:\nأعمال توصِلُكَ إلى الجنة",
+        reference = "(رَوَاهُ التِّرْمِذِيّ وَابْن مَاجَه\u200F)",
+        arabicTitle = "...",
+        englishReference = "The Messenger of Allah (ﷺ) said: \"(All of you) worship the Most Merciful (Ar-Rahman), feed others, and spread the (greeting of) Salam; you will enter Paradise in peace.\nNarrated 'Abdullah bin 'Amr (May Allah be pleased with him):",
+        englishTranslation = "(At-Tirmidhi and Ibn-Majahi)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 35",
+        arabic = "وعن أبي هريرة عبد الرحمن بن صخر رضي الله عنه   قَالَ : قَالَ رسول الله \u200Fﷺ \u200F:\n\"\u200F إنَّ اللهَ لَا يَنْظُرُ إلَى أجْسَامِكُمْ ، وَلَا إلى صُوَرِكُمُ، وَلَكِن يَنْظُرُ إلَى قُلُوبِكُمْ وَأَعْمَالِكُم",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah (May Allah be pleased with him) narrated:\n The Messenger of Allah (ﷺ) said, \"Allah does not look at your figures, nor at your faces but He looks at your hearts and deeds\".",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 36",
+        arabic = "وعن أبي هريرة رضي الله عنه قَالَ: قَالَ رَسُولُ اللَّهِ ﷺ :\n اَلْمُؤْمِنُ اَلْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللَّهِ مِنْ الْمُؤْمِنِ الضَّعِيفِ, وَفِي كُلٍّ خَيْرٌ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah رضى الله عنه narrated that the Messenger of Allah (ﷺ) said:\nThe strong believer is better and more beloved to Allah than the weak believer, though there is goodness in both\n" +
+                "1.    To testify that none has the right to be worshipped but Allah and Muhammad (ﷺ)is the Messenger of Allah.\n" +
+                "2.    To establish the prayer.\n" +
+                "3.    To give Zakat (obligatory charity).\n" +
+                "4.    To perform Hajj (Pilgrimage to Mecca)\n" +
+                "To observe fast during the month of Ramadan",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+
+    Hadith(
+        title = "Dua 37",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه ، عَنِ النَّبِيِّ  ﷺ:\nلاَ يَشْكُرُ اللَّهَ مَنْ لاَ يَشْكُرُ النَّاسَ",
+        reference = "(سنن أبي داود\u200F)",
+        arabicTitle = "...",
+        englishReference = "Narrated Abu Hurairah: رضى الله عنه\nThe Prophet (ﷺ) said: \"He who does not thank the people is not thankful to Allah.",
+        englishTranslation = "(Sunan Abi Dawood)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 28",
+        arabic = "وعن أبي هريرة  رضي الله عنه   عَنْهُ أَنَّ رَسُولَ اللَّهِ  ﷺ قَالَ \u200F:\nمَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+        reference = "(رَوَاهُ الْبُخَارِيُ وَمُسْلِمٌ)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah رضى الله عنه narrated that the Messenger of Allah (ﷺ) said:\nHe who believes in Allah and the Last Day, should speak good or remain silent",
+        englishTranslation = "(Al-Bukhari and Al-Muslim)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    Hadith(
+        title = "Dua 39",
+        arabic = "عن عبد الله بن عمرو بن العاص رضي الله عنهما عن النبي ﷺ قال:\nالْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ، وَالْمُهَاجِرُ مَنْ هَجَرَ مَا نَهَى اللَّهُ عَنْهُ",
+        reference = "( مُتَّفَقٌ عَلَيْهِ)",
+        arabicTitle = "...",
+        englishReference = "'Abdullah bin 'Amr bin Al-'as (May Allah be pleased with them) reported: The Prophet (ﷺ) said\n",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 6
+    ),
+    // Level 7: Duas 40–47
+
+    Hadith(
+        title = "Dua 40",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه ، ، قَالَ قَالَ لِي رَسُولُ اللَّهِ  ﷺ:\nأَكْثِرْ مِنْ قَوْلِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ فَإِنَّهَا كَنْزٌ مِنْ كُنُوزِ الْجَنَّةِ",
+        reference = "(رواه الترمذي\u200F)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah (May Allah be pleased with him) said: “The Messenger of Allah (ﷺ) said to me:\n Be frequent in saying: “There is no might or power except by Allah, (Lā ḥawla wa lā quwwata illā billāh).” For verily, it is a treasure from the treasures of Paradise.\"",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 41",
+        arabic = "وَعَنْ عُبَادَةَ بْنِ الصَّامِتِ \u200F رضى الله عنه \u200F- قَالَ : قَالَ رَسُولُ اَللَّهِ  ﷺ \u200F:\nلَا صَلَاةَ لِمَنْ لَمْ يَقْرَأْ بِأُمِّ الْقُرْآنِ",
+        reference = "(مُتَّفَقٌ عَلَيْه)",
+        arabicTitle = "...",
+        englishReference = "Narrated 'Ubada bin As-Samit رضى الله عنه: The Messenger of Allah (ﷺ) said:\nThere is no Salat (prayer) for one who does not recite Ummul-Qur'an (Surat al-Fatiha",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 42",
+        arabic = "عَنْ أَبِيْ هُرَيْرَةَ رضى الله عنه أَنَّ النَّبِيَّ ﷺ قال:\nاَلتَّثَاؤُبُ مِنَ الشَّيْطَانِ فَإِذَا تَثَاءَبَ أَحَدُكُمْ  فَالْيَكْظِمْ مَا اسْتَطَاعَ",
+        reference = "(صحيح مُسلم)",
+        arabicTitle = "...",
+        englishReference = "Narrated Abu Hurairah (May Allah be pleased with him):\n" +
+                "The Prophet (ﷺ) said:\nYawning is from the devil, so when one of you yawns, he should suppress it as much as he can",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 43",
+        arabic = "وعن عدى بن حاتم رضى الله عنه أن  رَسُوْلُ اللهِ  ﷺ   قَالَ:\nاِتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ فَمَنْ لَمْ يَجِدْ فَبِكَلِمَةٍ طَيِّبَةٍ",
+        reference = "(مُتَّفَقٌ عَلَيْه\u200F)",
+        arabicTitle = "...",
+        englishReference = "Adi bin Hatim (May Allah be pleased with him) reported:\n" +
+                " \n" +
+                "The Messenger of Allah (ﷺ) said:    \nProtect yourself from Hellfire, even if it is by giving half a date in charity. If you cannot find that, then with a kind word",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 44",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه ، عَنِ النَّبِيّ  ﷺ \u200F قَالَ :\nيُسَلِّمُ الصَّغِيرُ عَلَى الْكَبِيرِ، وَالْمَارُّ عَلَى الْقَاعِدِ، وَالْقَلِيلُ عَلَى الْكَثِيرِ",
+        reference = "(صحيح البخاري)",
+        arabicTitle = "...",
+        englishReference = "Narrated Abu Huraira (May Allah be pleased with him): The Prophet (ﷺ) said:\nThe young should greet the old, the passerby should greet the sitting one, and the smaller group of persons should greet the large group of persons.",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 45",
+        arabic = "وَعَنْ أَبِي قَتَادَةَ \u200F رضى الله عنه أَنَّ النَّبِيَّ ﷺ قال:\nإِذَا شَرِبَ أَحَدُكُمْ , فَلَا يَتَنَفَّسْ فِي الْإِنَاءِ",
+        reference = "(مُتَّفَقٌ عَلَيْهِ)",
+        arabicTitle = "...",
+        englishReference = "The Prophet (ﷺ) said:\nWhen one of you drinks, he should not breathe into the vessel",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ), Hadith(
+        title = "Dua 47",
+        arabic = "وعن عدى بن حاتم رضى الله عنه أن  رَسُوْلُ اللهِ  ﷺ   قَالَ:\nكَانَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ يُحِبُّ التَّيَمُّنَ مَا اسْتَطَاعَ فِي شَأْنِهِ كُلِّهِ: فِي طُهُورِهِ وَتَرَجُّلِهِ و تَنَعُّلِهِ",
+        reference = "(مُتَّفَقٌ عَلَيْه\u200F)",
+        arabicTitle = "...",
+        englishReference = "Narrated 'A’isha (May Allah be pleased with her) :\nThe Prophet (ﷺ) liked to begin with the right as much as possible in all his affairs, in his purification, combing his hair, and putting on his sandals",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+    Hadith(
+        title = "Dua 47",
+        arabic = "وَعَنْ أَنَسٍ رضى الله عنه قَالَ: قَالَ رَسُولُ اللَّهِ  ﷺ \u200F :\nمَا مِنْ مُسْلِمٍ يَغْرِسُ غَرْسًا أَوْ يَزْرَعُ زَرْعًا فَيَأْكُلُ مِنْهُ إِنْسَانٌ أَوْ طَيْرٌ أَوْ بَهِيمَةٌ إِلَّا كَانَت لَهُ صَدَقَة",
+        reference = "(( مُتَّفَقٌ عَلَيْهِ)",
+        arabicTitle = "...",
+        englishReference = "Narrated Anas (May Allah be pleased with him) said: The Messenger of Allah (ﷺ) said:\nIf any Muslim plants a tree or sows seed, and a human, bird, or animal eats from it, it will be counted as charity for him",
+        englishTranslation = "...",
+        audioUrl = null,
+        backgroundUrl = null,
+        level = 7
+    ),
+)
