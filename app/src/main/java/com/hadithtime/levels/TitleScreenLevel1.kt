@@ -20,26 +20,67 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
+import com.hadithtime.model.LevelAssets
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun TitleScreenLevel1(navController: NavController) {
+fun TitleScreenLevel1(navController: NavController, level: Int, nextIndex: Int) {
+    val levelOneAssets = listOf(
+        LevelAssets(
+            background = R.drawable.level_one_bg,
+            badge = R.drawable.level_one_badge,
+            girl = R.drawable.title_level1_girl1,
+            bubble = R.drawable.title_level1_bubble1,
+            statusBarColor = R.color.dua1,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelOneScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_one_bg,
+            badge = R.drawable.level_one_badge,
+            girl = R.drawable.title_level1_girl2,
+            bubble = R.drawable.title_level1_bubble2,
+            statusBarColor = R.color.dua1,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelOneScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_one_bg,
+            badge = R.drawable.level_one_badge,
+            girl = R.drawable.title_level1_girl3,
+            bubble = R.drawable.title_level1_bubble3,
+            statusBarColor = R.color.dua1,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelOneScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_one_bg,
+            badge = R.drawable.level_one_badge,
+            girl = R.drawable.title_level1_girl4,
+            bubble = R.drawable.title_level1_bubble4,
+            statusBarColor = R.color.dua1,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelOneScreen"
+        )
+    )
+    val assets = levelOneAssets.getOrElse(nextIndex) {
+        levelOneAssets.last() // fallback if index is out of range
+    }
+
     val systemUiController = rememberSystemUiController()
-    val navigationBarColor = colorResource(id = R.color.white)
-    val statusBarColor = colorResource(id = R.color.level_one_color)
+    val statusBarColor = colorResource(id = assets.statusBarColor)
+    val navigationBarColor = colorResource(id = assets.navigationBarColor)
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
 
-    // Animations
     val girlOffsetX = remember { Animatable(-300f) }
-
     val bubbleAlpha = remember { Animatable(0f) }
-    val bubbleOffsetY = remember { Animatable(20f) } // Start slightly down
-    val bubbleScale = remember { Animatable(0.5f) }  // Start small
+    val bubbleOffsetY = remember { Animatable(20f) }
+    val bubbleScale = remember { Animatable(0.5f) }
 
     LaunchedEffect(Unit) {
         girlOffsetX.animateTo(
@@ -58,7 +99,7 @@ fun TitleScreenLevel1(navController: NavController) {
 
         launch {
             bubbleOffsetY.animateTo(
-                targetValue = -20f, // Float upward
+                targetValue = -20f,
                 animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
             )
         }
@@ -71,25 +112,19 @@ fun TitleScreenLevel1(navController: NavController) {
         }
 
         delay(1000)
-        navController.navigate("LevelOneScreen") {
-            //popUpTo("TitleOneScreen") { inclusive = true }
-        }
+        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Background Image
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.level_one_bg),
+            painter = painterResource(id = assets.background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
-        // Top Badge
         Image(
-            painter = painterResource(id = R.drawable.level_one_badge),
+            painter = painterResource(id = assets.badge),
             contentDescription = "Badge",
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -98,9 +133,8 @@ fun TitleScreenLevel1(navController: NavController) {
                 .width(120.dp)
         )
 
-        // Girl Image (bottom-left)
         Image(
-            painter = painterResource(id = R.drawable.level_one_girl),
+            painter = painterResource(id = assets.girl),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -110,15 +144,14 @@ fun TitleScreenLevel1(navController: NavController) {
                 .width(224.dp)
         )
 
-        // Bubble Animation (appears from girl’s mouth)
         Image(
-            painter = painterResource(id = R.drawable.level_one_bubble),
+            painter = painterResource(id = assets.bubble),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .offset(
-                    x = 40.dp, // adjust X as per girl's mouth
-                    y = (-350).dp + bubbleOffsetY.value.dp // adjust Y upward
+                    x = 40.dp,
+                    y = (-350).dp + bubbleOffsetY.value.dp
                 )
                 .graphicsLayer(
                     scaleX = bubbleScale.value,
@@ -132,8 +165,12 @@ fun TitleScreenLevel1(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTitleScreen() {
+fun PreviewTitleScreen1() {
     HadithTimeTheme {
-        TitleScreenLevel1(navController = rememberNavController())
+        TitleScreenLevel1(
+            navController = rememberNavController(),
+            level = 1,
+            nextIndex = 0
+        )
     }
 }

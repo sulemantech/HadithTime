@@ -39,9 +39,9 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             val levels = listOf(
-                "Level 1" to "TitleOneScreen",
-                "Level 2" to "TitleTwoScreen",
-                "Level 3" to "TitleThreeScreen",
+                "Level 1" to "titleScreenLevel1/1/0",
+                "Level 2" to "titleScreenLevel2/2/0",
+                "Level 3" to "titleScreenLevel3/3/0",
                 "Level 4" to "TitleFourScreen",
                 "Level 5" to "TitleFiveScreen",
                 "Level 6" to "TitleSixScreen",

@@ -1,6 +1,7 @@
 package com.hadithtime.levels
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,12 +60,21 @@ import com.hadithtime.model.Hadith
 fun LevelThreeScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
-    onHomeClick: () -> Unit = {}
+    onHomeClick: () -> Unit = {},
+    startIndex: Int = 0
+
 ) {
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex by remember { mutableIntStateOf(startIndex) }
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_three_color)
+
+    val levelOneDuas = remember { duas.filter { it.level == 3 } }
+    val currentDua = levelOneDuas.getOrNull(currentIndex)
+
+    BackHandler {
+        onHomeClick()
+    }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -90,16 +101,16 @@ fun LevelThreeScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
-                title = "Etiquette of Eating",
-                onSettingsClick = onNavigateToSettings,
-                onHomeClick = onHomeClick
-            )
+            currentDua?.let {
+                TopBar(
+                    dua = it,
+                    onSettingsClick = onNavigateToSettings,
+                    onHomeClick = onHomeClick
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
-            val levelOneDuas = remember { duas.filter { it.level == 3 } }
 
-            val currentDua = levelOneDuas.getOrNull(currentIndex)
             currentDua?.let {
                 HadithCard(dua = it)
             }
@@ -114,14 +125,15 @@ fun LevelThreeScreen(
                 navController = navController,
                 onNextClick = {
                     if (currentIndex < levelOneDuas.lastIndex) {
-                        currentIndex += 1
+                        navController.navigate("titleScreenLevel3/3/${currentIndex + 1}")
                     }
                 },
                 onPreviousClick = {
                     if (currentIndex > 0) {
-                        currentIndex -= 1
+                        navController.navigate("titleScreenLevel3/3/${currentIndex - 1}")
                     }
-                }
+                },
+                level = 3
             )
         }
     }

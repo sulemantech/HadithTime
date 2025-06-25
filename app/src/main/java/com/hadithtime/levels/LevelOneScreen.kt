@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,13 +58,20 @@ fun LevelOneScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {},
+    startIndex: Int = 0
 ) {
 
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex by remember { mutableIntStateOf(startIndex) }
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_one_color)
 
+    val levelFiveDuas = remember { duas.filter { it.level == 1 } }
+    val currentDua = levelFiveDuas.getOrNull(currentIndex)
+
+    BackHandler {
+        onHomeClick()
+    }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -88,17 +97,15 @@ fun LevelOneScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
-                title = "Cleanliness",
-                onSettingsClick = onNavigateToSettings,
-                onHomeClick = onHomeClick
-            )
+            currentDua?.let {
+                TopBar(
+                    dua = it,
+                    onSettingsClick = onNavigateToSettings,
+                    onHomeClick = onHomeClick
+                )
+            }
+            Spacer(modifier = Modifier.height(14.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            val levelOneDuas = remember { duas.filter { it.level == 1 } }
-
-            val currentDua = levelOneDuas.getOrNull(currentIndex)
             currentDua?.let {
                 HadithCard(dua = it)
             }
@@ -113,15 +120,17 @@ fun LevelOneScreen(
                 navController = navController,
                 onNextClick = {
                     if (currentIndex < levelOneDuas.lastIndex) {
-                        currentIndex += 1
+                        navController.navigate("titleScreenLevel1/1/${currentIndex + 1}")
                     }
                 },
                 onPreviousClick = {
                     if (currentIndex > 0) {
-                        currentIndex -= 1
+                        navController.navigate("titleScreenLevel1/1/${currentIndex - 1}")
                     }
-                }
+                },
+                level = 1
             )
+
         }
     }
 }
@@ -315,57 +324,57 @@ fun LevelOneScreen(
 //    }
 //}
 
-@Composable
-fun TopBar1(
-    title: String,
-    onSettingsClick: () -> Unit,
-    onHomeClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, start = 4.dp, end = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Home Icon
-        IconButton(
-            onClick = { onHomeClick() },
-            modifier = Modifier.size(56.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.home_icon),
-                contentDescription = "Home",
-                modifier = Modifier.size(42.dp)
-            )
-        }
-
-        // Title centered
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        // Settings Icon
-        IconButton(
-            onClick = { onSettingsClick() },
-            modifier = Modifier.size(56.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.setting_icon),
-                contentDescription = "Settings",
-                modifier = Modifier.size(42.dp)
-            )
-        }
-    }
-}
+//@Composable
+//fun TopBar1(
+//    title: String,
+//    onSettingsClick: () -> Unit,
+//    onHomeClick: () -> Unit
+//) {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(top = 16.dp, start = 4.dp, end = 4.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        // Home Icon
+//        IconButton(
+//            onClick = { onHomeClick() },
+//            modifier = Modifier.size(56.dp)
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.home_icon),
+//                contentDescription = "Home",
+//                modifier = Modifier.size(42.dp)
+//            )
+//        }
+//
+//        // Title centered
+//        Box(
+//            modifier = Modifier.weight(1f),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Text(
+//                text = title,
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 20.sp,
+//                color = Color.White,
+//                textAlign = TextAlign.Center
+//            )
+//        }
+//
+//        // Settings Icon
+//        IconButton(
+//            onClick = { onSettingsClick() },
+//            modifier = Modifier.size(56.dp)
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.setting_icon),
+//                contentDescription = "Settings",
+//                modifier = Modifier.size(42.dp)
+//            )
+//        }
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

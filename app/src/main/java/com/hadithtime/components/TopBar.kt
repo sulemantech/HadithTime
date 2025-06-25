@@ -13,18 +13,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hadithtime.R
+import com.hadithtime.model.Hadith
 
 @Composable
 fun TopBar(
-    title: String,
+    dua: Hadith,
     onSettingsClick: () -> Unit,
     onHomeClick: () -> Unit
 ) {
+    val MyHeadingFont = FontFamily(Font(R.font.fredoka_semibold))
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,13 +52,17 @@ fun TopBar(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
+            dua.Duaheading?.let {
+                Text(
+                    text = it,
+                    fontSize = 22.sp,
+                    fontFamily = MyHeadingFont,
+                    textAlign = TextAlign.Center,
+                   // fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+
         }
 
         // Settings Icon

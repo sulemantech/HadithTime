@@ -48,15 +48,24 @@ fun AppNavHost(navController: NavHostController) {
         composable("home") {
             HomeScreen(navController)
         }
-        composable("TitleOneScreen") {
-            TitleScreenLevel1(navController)
+        composable("titleScreenLevel1/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel1(navController, level = level, nextIndex = index)
         }
-        composable("TitleTwoScreen") {
-            TitleScreenLevel2(navController)
+
+        composable("titleScreenLevel2/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel2(navController, level = level, nextIndex = index)
         }
-        composable("TitleThreeScreen") {
-            TitleScreenLevel3(navController)
+
+        composable("titleScreenLevel3/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel3(navController, level = level, nextIndex = index)
         }
+
         composable("TitleFourScreen") {
             TitleScreenLevel4(navController)
         }
@@ -70,23 +79,30 @@ fun AppNavHost(navController: NavHostController) {
             TitleScreenLevel7(navController)
         }
 
-        composable("LevelOneScreen") {
+        composable("levelOneScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelOneScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelTwoScreen") {
+
+        composable("levelTwoScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelTwoScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelThreeScreen") {
+        composable("levelThreeScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelThreeScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )

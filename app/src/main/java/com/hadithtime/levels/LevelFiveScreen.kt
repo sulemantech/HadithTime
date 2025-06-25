@@ -64,6 +64,8 @@ fun LevelFiveScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.dua1)
+    val levelFiveDuas = remember { duas.filter { it.level == 5 } }
+    val currentDua = levelFiveDuas.getOrNull(currentIndex)
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -90,16 +92,16 @@ fun LevelFiveScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
-                title = "Pillars of Islam",
-                onSettingsClick = onNavigateToSettings,
-                onHomeClick = onHomeClick
-            )
 
+            currentDua?.let {
+                TopBar(
+                    dua = it,
+                    onSettingsClick = onNavigateToSettings,
+                    onHomeClick = onHomeClick
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
-            val levelFiveDuas = remember { duas.filter { it.level == 5 } }
 
-            val currentDua = levelFiveDuas.getOrNull(currentIndex)
             currentDua?.let {
                 HadithCard(dua = it)
             }
@@ -114,14 +116,15 @@ fun LevelFiveScreen(
                 navController = navController,
                 onNextClick = {
                     if (currentIndex < levelFiveDuas.lastIndex) {
-                        currentIndex += 1
+                        navController.navigate("titleScreenLevel5/5/${currentIndex + 1}")
                     }
                 },
                 onPreviousClick = {
                     if (currentIndex > 0) {
-                        currentIndex -= 1
+                        navController.navigate("titleScreenLevel5/5/${currentIndex - 1}")
                     }
-                }
+                },
+                level = 5
             )
         }
     }

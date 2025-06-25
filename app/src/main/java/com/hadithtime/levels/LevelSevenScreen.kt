@@ -64,6 +64,10 @@ fun LevelSevenScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_title_five_color)
+
+    val levelOneDuas = remember { duas.filter { it.level == 7 } }
+    val currentDua = levelOneDuas.getOrNull(currentIndex)
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -90,17 +94,16 @@ fun LevelSevenScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
-                title = "Planting a tree is a\n" +
-                        "charity",
-                onSettingsClick = onNavigateToSettings,
-                onHomeClick = onHomeClick
-            )
+            currentDua?.let {
+                TopBar(
+                    dua = it,
+                    onSettingsClick = onNavigateToSettings,
+                    onHomeClick = onHomeClick
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
-            val levelOneDuas = remember { duas.filter { it.level == 7 } }
 
-            val currentDua = levelOneDuas.getOrNull(currentIndex)
             currentDua?.let {
                 HadithCard(dua = it)
             }
@@ -122,7 +125,8 @@ fun LevelSevenScreen(
                     if (currentIndex > 0) {
                         currentIndex -= 1
                     }
-                }
+                },
+                level = 7
             )
         }
     }

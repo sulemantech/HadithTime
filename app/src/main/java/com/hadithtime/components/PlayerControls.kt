@@ -31,8 +31,13 @@ import androidx.navigation.NavController
 import com.hadithtime.R
 
 @Composable
-fun PlayerControls(navController: NavController, onNextClick: () -> Unit, onPreviousClick: () -> Unit){
-    var sliderValue by remember { mutableStateOf(7f) }
+fun PlayerControls(
+    navController: NavController,
+    onNextClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    level: Int
+)
+{    var sliderValue by remember { mutableStateOf(7f) }
     var memorizeEnabled by remember { mutableStateOf(false) }
     val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
 
@@ -73,7 +78,16 @@ fun PlayerControls(navController: NavController, onNextClick: () -> Unit, onPrev
 //                }
             }
 
-            val sliderColor = colorResource(id = R.color.slider_color)
+            val sliderColor = when (level) {
+                1 -> colorResource(id = R.color.slider_level1)
+                2 -> colorResource(id = R.color.slider_level2)
+                3 -> colorResource(id = R.color.slider_level3)
+                4 -> colorResource(id = R.color.slider_level4)
+                5 -> colorResource(id = R.color.slider_level5)
+                6 -> colorResource(id = R.color.slider_level6)
+                7 -> colorResource(id = R.color.slider_level7)
+                else -> colorResource(id = R.color.slider_color) // default
+            }
 
             Slider(
                 value = sliderValue,

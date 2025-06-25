@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "duas")
 data class Hadith(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val title: String,
+    val Duaheading: String,
     val arabic: String,
     val reference: String?,
     val arabicTitle: String,

@@ -2,14 +2,7 @@ package com.hadithtime.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,10 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hadithtime.R
@@ -40,10 +37,17 @@ fun HadithCard(dua: Hadith) {
             .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Blurred Background Layer (matches parent size, so needs to be sized based on content)
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(RoundedCornerShape(25.dp))
+                .background(Color.White.copy(alpha = 0.15f))
+                .blur(160.dp)
+        )
+
         val contentModifier = Modifier
             .clip(RoundedCornerShape(25.dp))
-            .background(Color.White.copy(alpha = 0.35f))
+            .background(Color.White.copy(alpha = 0.25f))
             .border(
                 width = 1.dp,
                 color = Color.White.copy(alpha = 0.4f),
@@ -51,50 +55,107 @@ fun HadithCard(dua: Hadith) {
             )
             .fillMaxWidth()
 
-        // Use Intrinsic sizing to match the content height
         Box(
             modifier = Modifier
                 .then(contentModifier)
-                .wrapContentHeight() // 👈 This replaces .height(400.dp)
+                .wrapContentHeight()
+                .heightIn(max = 420.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = dua.arabic,
-                    fontSize = 22.sp,
-                    fontFamily = MyArabicFont,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 44.sp
-                )
+                dua.arabic?.let { reference ->
+                    val lines = reference.split("\n", limit = 2)
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = ParagraphStyle(
+                                    lineHeight = 36.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            ) {
+                                if (lines.isNotEmpty()) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.W200,
+                                            fontSize = 24.sp,
+                                            fontFamily = MyArabicFont,
+                                        )
+                                    ) {
+                                        append(lines[0] + "\n")
+                                    }
+                                }
+                                if (lines.size > 1) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 30.sp,
+                                            fontFamily = MyArabicFont
+                                        )
+                                    ) {
+                                        append(lines[1])
+                                    }
+                                }
+                            }
+                        },
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 dua.reference?.let {
                     Text(
                         text = it,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
                         fontFamily = MyEnglishFont,
                         textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                dua.englishReference?.let {
+                dua.englishReference?.let { reference ->
+                    val lines = reference.split("\n", limit = 2)
+
                     Text(
-                        text = it,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = MyEnglishFont,
+                        buildAnnotatedString {
+                            if (lines.isNotEmpty()) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.W200,
+                                        fontSize = 20.sp,
+                                        fontFamily = MyEnglishFont
+                                    )
+                                ) {
+                                    append(lines[0] + "\n")
+                                }
+                            }
+                            if (lines.size > 1) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp,
+                                        fontFamily = MyEnglishFont
+                                    )
+                                ) {
+                                    append(lines[1])
+                                }
+                            }
+                        },
                         textAlign = TextAlign.Center,
-                        color = Color.Black
+                        color = Color.Black,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -103,7 +164,7 @@ fun HadithCard(dua: Hadith) {
                 dua.englishTranslation?.let {
                     Text(
                         text = it,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontFamily = MyEnglishFont,
                         color = Color.Black,
                         textAlign = TextAlign.Center
@@ -111,14 +172,5 @@ fun HadithCard(dua: Hadith) {
                 }
             }
         }
-
-        // Background blur matches content size
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(25.dp))
-                .background(Color.White.copy(alpha = 0.1f))
-                .blur(120.dp)
-                .matchParentSize() // will match the foreground Box size
-        )
     }
 }

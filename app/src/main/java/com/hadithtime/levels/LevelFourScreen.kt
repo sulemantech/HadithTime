@@ -62,6 +62,9 @@ fun LevelFourScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_title_four_color)
+
+    val levelFiveDuas = remember { duas.filter { it.level == 4 } }
+    val currentDua = levelFiveDuas.getOrNull(currentIndex)
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -88,16 +91,15 @@ fun LevelFourScreen(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            TopBar(
-                title = "Purification",
-                onSettingsClick = onNavigateToSettings,
-                onHomeClick = onHomeClick
-            )
-
+            currentDua?.let {
+                TopBar(
+                    dua = it,
+                    onSettingsClick = onNavigateToSettings,
+                    onHomeClick = onHomeClick
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
-            val levelFiveDuas = remember { duas.filter { it.level == 4 } }
 
-            val currentDua = levelFiveDuas.getOrNull(currentIndex)
             currentDua?.let {
                 HadithCard(dua = it)
             }
@@ -119,7 +121,8 @@ fun LevelFourScreen(
                     if (currentIndex > 0) {
                         currentIndex -= 1
                     }
-                }
+                },
+                level = 4
             )
         }
     }

@@ -19,4 +19,11 @@
     <color name="level_title_four_bottom">#B5DEB5</color>
     <color name="level_title_five_color">#1281C5</color>
     <color name="level_title_five_bottom">#C3D835</color>
+    <color name="slider_level1">#6E94C2</color>
+    <color name="slider_level2">#FFC1C1</color>
+    <color name="slider_level3">#F39C27</color>
+    <color name="slider_level4">#12A09E</color>
+    <color name="slider_level5">#4793CC</color>
+    <color name="slider_level6">#89B03F</color>
+    <color name="slider_level7">#90D0FF</color>
 </resources>
