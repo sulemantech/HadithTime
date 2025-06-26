@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,32 +14,122 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
+import com.hadithtime.model.LevelAssets
+import com.hadithtime.model.levelSevenTexts
+import com.hadithtime.model.levelSixTexts
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun TitleScreenLevel7(navController: NavController) {
+fun TitleScreenLevel7(navController: NavController, level: Int, nextIndex: Int) {
+    val levelOneAssets = listOf(
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
+    )
+    val assets = levelOneAssets.getOrElse(nextIndex) {
+        levelOneAssets.last()
+    }
+
+
+    val text = levelSevenTexts.getOrElse(nextIndex) {
+        levelSevenTexts.last()
+    }
     val systemUiController = rememberSystemUiController()
-    val navigationBarColor = colorResource(id = R.color.level_title_four_bottom)
-    val statusBarColor = colorResource(id = R.color.level_title_four_color)
+    val statusBarColor = colorResource(id = assets.statusBarColor)
+    val navigationBarColor = colorResource(id = assets.navigationBarColor)
+
+    val MyEnglishFont = FontFamily(Font(R.font.sandy_kids))
+    val MyArabicFont = FontFamily(Font(R.font.tinta_arabic))
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
-    // Animations
-    // Animations
-    val girlOffsetX = remember { Animatable(-300f) }
 
+    val girlOffsetX = remember { Animatable(-300f) }
     val bubbleAlpha = remember { Animatable(0f) }
-    val bubbleOffsetY = remember { Animatable(20f) } // Start slightly down
-    val bubbleScale = remember { Animatable(0.5f) }  // Start small
+    val bubbleOffsetY = remember { Animatable(20f) }
+    val bubbleScale = remember { Animatable(0.5f) }
 
     LaunchedEffect(Unit) {
         girlOffsetX.animateTo(
@@ -57,7 +148,7 @@ fun TitleScreenLevel7(navController: NavController) {
 
         launch {
             bubbleOffsetY.animateTo(
-                targetValue = -20f, // Float upward
+                targetValue = -20f,
                 animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
             )
         }
@@ -70,25 +161,19 @@ fun TitleScreenLevel7(navController: NavController) {
         }
 
         delay(1000)
-        navController.navigate("LevelSevenScreen") {
-           // popUpTo("TitleSevenScreen") { inclusive = true }
-        }
+        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Background Image
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.level_seven_bg),
+            painter = painterResource(id = assets.background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
-        // Top Badge
         Image(
-            painter = painterResource(id = R.drawable.level_seven_badge),
+            painter = painterResource(id = assets.badge),
             contentDescription = "Badge",
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -97,27 +182,60 @@ fun TitleScreenLevel7(navController: NavController) {
                 .width(120.dp)
         )
 
-        // Girl Image (bottom-left)
-        Image(
-            painter = painterResource(id = R.drawable.level_seven_girl),
-            contentDescription = null,
+        // Girl image with offset animation
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 20.dp)
                 .offset(x = girlOffsetX.value.dp)
                 .height(400.dp)
                 .width(224.dp)
-        )
+        ) {
+            Image(
+                painter = painterResource(id = assets.girl),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
 
-        // Bubble Animation (appears from girl’s mouth)
-        Image(
-            painter = painterResource(id = R.drawable.level_seven_bubble),
-            contentDescription = null,
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 116.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                BoxWithConstraints {
+                    val maxWidth = constraints.maxWidth.toFloat()
+                    var textSize by remember { mutableStateOf(32.sp) }
+
+                    // Estimate if text will overflow and shrink accordingly
+                    Text(
+                        text = text.englishText,
+                        fontSize = textSize,
+                        fontFamily = MyEnglishFont,
+                        lineHeight = 26.sp,
+                        softWrap = false,
+                        onTextLayout = { result ->
+                            if (result.didOverflowWidth) {
+                                textSize *= 0.9 // Reduce size progressively
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = colorResource(R.color.bubble_text)
+                    )
+                }
+            }
+
+        }
+
+        // Bubble with animation
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .offset(
-                    x = 40.dp, // adjust X as per girl's mouth
-                    y = (-350).dp + bubbleOffsetY.value.dp // adjust Y upward
+                    x = 40.dp,
+                    y = (-350).dp + bubbleOffsetY.value.dp
                 )
                 .graphicsLayer(
                     scaleX = bubbleScale.value,
@@ -125,7 +243,42 @@ fun TitleScreenLevel7(navController: NavController) {
                 )
                 .alpha(bubbleAlpha.value)
                 .size(width = 300.dp, height = 180.dp)
-        )
+        ) {
+            Image(
+                painter = painterResource(id = assets.bubble),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 38.dp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                BoxWithConstraints {
+                    val maxWidth = constraints.maxWidth.toFloat()
+                    var textSize by remember { mutableStateOf(31.sp) }
+
+                    // Estimate if text will overflow and shrink accordingly
+                    Text(
+                        text = text.arabicText,
+                        fontSize = textSize,
+                        fontFamily = MyArabicFont,
+                        softWrap = false,
+                        lineHeight = 30.sp,
+                        onTextLayout = { result ->
+                            if (result.didOverflowWidth) {
+                                textSize *= 0.10 // Reduce size progressively
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = colorResource(R.color.bubble_text)
+                    )
+                }
+            }
+
+        }
     }
 }
 
@@ -133,6 +286,9 @@ fun TitleScreenLevel7(navController: NavController) {
 @Composable
 fun PreviewTitleScreen7() {
     HadithTimeTheme {
-        TitleScreenLevel7(navController = rememberNavController())
+        TitleScreenLevel7(navController = rememberNavController(),
+            level = 7,
+            nextIndex = 0
+        )
     }
 }

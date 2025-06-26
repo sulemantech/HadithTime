@@ -39,7 +39,7 @@ fun PlayerControls(
 )
 {    var sliderValue by remember { mutableStateOf(7f) }
     var memorizeEnabled by remember { mutableStateOf(false) }
-    val MyCountFont = FontFamily(Font(R.font.fredoka_expanded_regular))
+    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
 
     Surface(
         color = Color.White,
@@ -95,7 +95,7 @@ fun PlayerControls(
                 valueRange = 0f..40f,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(36.dp),
+                    .height(30.dp),
                 colors = SliderDefaults.colors(
                     thumbColor = sliderColor,
                     activeTrackColor = sliderColor,
@@ -113,8 +113,8 @@ fun PlayerControls(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .fillMaxWidth(),
+                   // .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {

@@ -75,7 +75,7 @@ fun HadithCard(dua: Hadith) {
                         buildAnnotatedString {
                             withStyle(
                                 style = ParagraphStyle(
-                                    lineHeight = 36.sp,
+                                    lineHeight = 44.sp,
                                     textAlign = TextAlign.Center
                                 )
                             ) {
@@ -155,9 +155,11 @@ fun HadithCard(dua: Hadith) {
                         },
                         textAlign = TextAlign.Center,
                         color = Color.Black,
+                        lineHeight = 28.sp, // ✅ Added line height
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+
 
                 Spacer(modifier = Modifier.height(10.dp))
 

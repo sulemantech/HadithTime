@@ -66,17 +66,28 @@ fun AppNavHost(navController: NavHostController) {
             TitleScreenLevel3(navController, level = level, nextIndex = index)
         }
 
-        composable("TitleFourScreen") {
-            TitleScreenLevel4(navController)
+        composable("titleScreenLevel4/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel4(navController, level = level, nextIndex = index)
         }
-        composable("TitleFiveScreen") {
-            TitleScreenLevel5(navController)
+
+        composable("titleScreenLevel5/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel5(navController, level = level, nextIndex = index)
         }
-        composable("TitleSixScreen") {
-            TitleScreenLevel6(navController)
+
+        composable("titleScreenLevel6/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel6(navController, level = level, nextIndex = index)
         }
-        composable("TitleSevenScreen") {
-            TitleScreenLevel7(navController)
+
+        composable("titleScreenLevel7/{level}/{nextIndex}") { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
+            val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
+            TitleScreenLevel7(navController, level = level, nextIndex = index)
         }
 
         composable("levelOneScreen/{index}") { backStackEntry ->
@@ -107,30 +118,38 @@ fun AppNavHost(navController: NavHostController) {
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelFourScreen") {
+        composable("levelFourScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelFourScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelFiveScreen") {
+        composable("levelFiveScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelFiveScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelSixScreen") {
+        composable("levelSixScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelSixScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
         }
-        composable("LevelSevenScreen") {
+        composable("levelSevenScreen/{index}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
             LevelSevenScreen(
                 navController = navController,
+                startIndex = index,
                 onNavigateToSettings = { navController.navigate("settings") },
                 onHomeClick = { navController.navigate("home") }
             )
