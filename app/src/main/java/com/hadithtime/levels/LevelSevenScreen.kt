@@ -50,7 +50,12 @@ fun LevelSevenScreen(
     val levelSevenDuas = remember { duas.filter { it.level == 7 } }
     val currentDua = levelSevenDuas.getOrNull(currentIndex)
 
-    BackHandler { onHomeClick() }
+    BackHandler {
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
+    }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -66,7 +71,7 @@ fun LevelSevenScreen(
                 Image(
                     painter = painterResource(id = R.drawable.dua7),
                     contentDescription = "Background",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -79,7 +84,12 @@ fun LevelSevenScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 

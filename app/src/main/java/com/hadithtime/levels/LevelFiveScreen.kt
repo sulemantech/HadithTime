@@ -47,7 +47,13 @@ fun LevelFiveScreen(
     val levelFiveDuas = remember { duas.filter { it.level == 5 } }
     val currentDua = levelFiveDuas.getOrNull(currentIndex)
 
-    BackHandler { onHomeClick() }
+    BackHandler {
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
@@ -60,7 +66,6 @@ fun LevelFiveScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image only takes the available height before PlayerControls
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua5),
@@ -78,7 +83,12 @@ fun LevelFiveScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 
@@ -92,7 +102,6 @@ fun LevelFiveScreen(
                 }
             }
 
-            // PlayerControls stays below the background image
             PlayerControls(
                 navController = navController,
                 onNextClick = {

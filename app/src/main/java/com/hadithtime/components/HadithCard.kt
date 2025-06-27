@@ -42,7 +42,7 @@ fun HadithCard(dua: Hadith) {
                 .matchParentSize()
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color.White.copy(alpha = 0.15f))
-                .blur(160.dp)
+                .blur(200.dp)
         )
 
         val contentModifier = Modifier
@@ -105,12 +105,12 @@ fun HadithCard(dua: Hadith) {
                         color = Color.Black,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
                         textAlign = TextAlign.Center
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 dua.reference?.let {
                     Text(
@@ -155,13 +155,13 @@ fun HadithCard(dua: Hadith) {
                         },
                         textAlign = TextAlign.Center,
                         color = Color.Black,
-                        lineHeight = 28.sp, // ✅ Added line height
+                        lineHeight = 28.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
 
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 dua.englishTranslation?.let {
                     Text(

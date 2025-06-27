@@ -49,7 +49,10 @@ fun LevelOneScreen(
     val currentDua = levelOneDuas.getOrNull(currentIndex)
 
     BackHandler {
-        onHomeClick()
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
     }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
@@ -67,7 +70,7 @@ fun LevelOneScreen(
                 Image(
                     painter = painterResource(id = R.drawable.dua1),
                     contentDescription = "Background",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -80,7 +83,12 @@ fun LevelOneScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 

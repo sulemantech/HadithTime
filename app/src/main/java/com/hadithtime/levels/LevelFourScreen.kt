@@ -49,7 +49,10 @@ fun LevelFourScreen(
     val currentDua = levelFourDuas.getOrNull(currentIndex)
 
     BackHandler {
-        onHomeClick()
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
     }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
@@ -66,7 +69,7 @@ fun LevelFourScreen(
                 Image(
                     painter = painterResource(id = R.drawable.dua4),
                     contentDescription = "Background",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -79,8 +82,14 @@ fun LevelFourScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
+
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))

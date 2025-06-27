@@ -51,7 +51,12 @@ fun LevelSixScreen(
     val levelSixDuas = remember { duas.filter { it.level == 6 } }
     val currentDua = levelSixDuas.getOrNull(currentIndex)
 
-    BackHandler { onHomeClick() }
+    BackHandler {
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
+    }
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
@@ -68,7 +73,7 @@ fun LevelSixScreen(
                 Image(
                     painter = painterResource(id = R.drawable.dua6),
                     contentDescription = "Background",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -81,7 +86,12 @@ fun LevelSixScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 

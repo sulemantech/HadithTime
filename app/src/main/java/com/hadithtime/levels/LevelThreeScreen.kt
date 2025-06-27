@@ -53,8 +53,12 @@ fun LevelThreeScreen(
     val currentDua = levelThreeDuas.getOrNull(currentIndex)
 
     BackHandler {
-        onHomeClick()
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
     }
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -68,7 +72,7 @@ fun LevelThreeScreen(
 
             Box(modifier = Modifier.weight(1f)) {
                 Image(
-                    painter = painterResource(id = R.drawable.level3_bg),
+                    painter = painterResource(id = R.drawable.dua3),
                     contentDescription = "Background",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
@@ -83,7 +87,12 @@ fun LevelThreeScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 

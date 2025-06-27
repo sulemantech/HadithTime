@@ -490,7 +490,7 @@ val duas = listOf(
 
     Hadith(
         Duaheading = "The Treasure of Paradise",
-        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه ، ، قَالَ قَالَ لِي رَسُولُ اللَّهِ  ﷺ:\nأَكْثِرْ مِنْ قَوْلِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ فَإِنَّهَا كَنْزٌ مِنْ كُنُوزِ الْجَنَّةِ",
+        arabic = "عَنْ أَبِي هُرَيْرَةَ رضى الله عنه قَالَ قَالَ لِي رَسُولُ اللَّهِ  ﷺ:\nأَكْثِرْ مِنْ قَوْلِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ فَإِنَّهَا كَنْزٌ مِنْ كُنُوزِ الْجَنَّةِ",
         reference = "(رواه الترمذي\u200F)",
         arabicTitle = "...",
         englishReference = "Abu Hurairah (May Allah be pleased with him) said: “The Messenger of Allah (ﷺ) said to me:\n Be frequent in saying: “There is no might or power except by Allah, (Lā ḥawla wa lā quwwata illā billāh).” For verily, it is a treasure from the treasures of Paradise.\"",

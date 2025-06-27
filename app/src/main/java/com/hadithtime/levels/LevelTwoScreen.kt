@@ -47,8 +47,12 @@ fun LevelTwoScreen(
     val currentDua = levelTwoDuas.getOrNull(currentIndex)
 
     BackHandler {
-        onHomeClick()
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+            launchSingleTop = true
+        }
     }
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -62,7 +66,7 @@ fun LevelTwoScreen(
 
             Box(modifier = Modifier.weight(1f)) {
                 Image(
-                    painter = painterResource(id = R.drawable.level2_bg),
+                    painter = painterResource(id = R.drawable.dua2),
                     contentDescription = "Background",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
@@ -77,7 +81,12 @@ fun LevelTwoScreen(
                         TopBar(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
-                            onHomeClick = onHomeClick
+                            onHomeClick = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 

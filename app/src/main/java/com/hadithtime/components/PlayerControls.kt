@@ -1,7 +1,10 @@
 package com.hadithtime.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +42,7 @@ fun PlayerControls(
 )
 {    var sliderValue by remember { mutableStateOf(7f) }
     var memorizeEnabled by remember { mutableStateOf(false) }
-    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
+    val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
 
     Surface(
         color = Color.White,
@@ -53,7 +56,7 @@ fun PlayerControls(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(start = 7.dp, end = 7.dp),
+                    .fillMaxWidth().padding(top = 12.dp, start = 7.dp, end = 7.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -61,7 +64,7 @@ fun PlayerControls(
                     text = "1 of 49",
                     fontSize = 14.sp,
                     fontFamily = MyCountFont,
-                    color = Color.Black
+                    color = colorResource(R.color.black_arabic)
                 )
 
 //                Row(verticalAlignment = Alignment.CenterVertically) {
@@ -107,14 +110,14 @@ fun PlayerControls(
                 modifier = Modifier.fillMaxWidth().padding(start = 7.dp, end = 7.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp)
-                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp)
+                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp, color = colorResource(R.color.black_arabic))
+                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
             }
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                   // .padding(top = 8.dp),
+                    .fillMaxWidth()
+                    .padding(top = 5.dp,bottom=8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -132,15 +135,30 @@ fun PlayerControls(
                         modifier = Modifier.size(20.dp, 20.dp)
                     )
                 }
-                IconButton(onClick = { },
-                    modifier = Modifier.size(56.dp)
+                var isPlaying by remember { mutableStateOf(false) }
+
+                val interactionSource = remember { MutableInteractionSource() }
+
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null // disables ripple/focus
+                        ) {
+                            isPlaying = !isPlaying
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_play),
-                        contentDescription = "Play",
+                        painter = painterResource(
+                            id = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play
+                        ),
+                        contentDescription = if (isPlaying) "Pause" else "Play",
                         modifier = Modifier.size(50.dp)
                     )
                 }
+
                 IconButton(onClick = onNextClick) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_next),
@@ -148,11 +166,17 @@ fun PlayerControls(
                         modifier = Modifier.size(20.dp, 20.dp)
                     )
                 }
-                IconButton(onClick = {} ) {
+                var isFavorite by remember { mutableStateOf(false) }
+
+                IconButton(
+                    onClick = { isFavorite = !isFavorite }
+                ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_tabler_heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(24.dp, 24.dp)
+                        painter = painterResource(
+                            id = if (isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
+                        ),
+                        contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

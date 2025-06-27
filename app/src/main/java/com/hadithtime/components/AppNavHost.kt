@@ -39,11 +39,14 @@ fun AppNavHost(navController: NavHostController) {
         ) {
             SplashScreen(
                 onFinished = {
-                    navController.navigate("home") {
+                    navController.navigate("HadithDashboardScreen") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
             )
+        }
+        composable("HadithDashboardScreen") {
+            HadithDashboardScreen(navController, levels)
         }
         composable("home") {
             HomeScreen(navController)
@@ -160,6 +163,7 @@ fun AppNavHost(navController: NavHostController) {
                // onHomeClick = { navController.navigate("home") }
             )
         }
+
     }
 }
 

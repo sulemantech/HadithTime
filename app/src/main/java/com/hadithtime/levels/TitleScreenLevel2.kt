@@ -148,7 +148,7 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
             contentDescription = "Badge",
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 26.dp, end = 16.dp)
+                .padding(top = 46.dp, end = 20.dp)
                 .height(40.dp)
                 .width(120.dp)
         )
@@ -168,20 +168,19 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
                 modifier = Modifier.fillMaxSize()
             )
 
-
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 110.dp)
+                    .padding(bottom = 112.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = text.englishText,
                     fontSize = 36.sp,
+                    lineHeight = 36.sp,
                     fontFamily = MyEnglishFont,
                     modifier = Modifier,
-                    lineHeight = 26.sp,
                     color = colorResource(R.color.bubble_text)
                 )
             }

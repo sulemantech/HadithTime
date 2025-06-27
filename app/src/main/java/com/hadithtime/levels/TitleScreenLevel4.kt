@@ -168,7 +168,7 @@ fun TitleScreenLevel4(navController: NavController, level: Int, nextIndex: Int) 
             contentDescription = "Badge",
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 26.dp, end = 16.dp)
+                .padding(top = 46.dp, end = 20.dp)
                 .height(40.dp)
                 .width(120.dp)
         )
