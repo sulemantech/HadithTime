@@ -48,12 +48,11 @@ fun LevelFiveScreen(
     val currentDua = levelFiveDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("homHadithDashboardScreene") { inclusive = true }
             launchSingleTop = true
         }
     }
-
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
@@ -84,8 +83,8 @@ fun LevelFiveScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

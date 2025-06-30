@@ -53,8 +53,8 @@ fun LevelThreeScreen(
     val currentDua = levelThreeDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
@@ -88,8 +88,8 @@ fun LevelThreeScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

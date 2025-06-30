@@ -49,8 +49,8 @@ fun LevelFourScreen(
     val currentDua = levelFourDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
@@ -83,8 +83,8 @@ fun LevelFourScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

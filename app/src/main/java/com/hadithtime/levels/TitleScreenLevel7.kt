@@ -105,11 +105,24 @@ fun TitleScreenLevel7(navController: NavController, level: Int, nextIndex: Int) 
             navigationBarColor = R.color.dua1_title,
             nextRoute = "levelSevenScreen"
         ),
+        LevelAssets(
+            background = R.drawable.level_seven_bg,
+            badge = R.drawable.level_seven_badge,
+            girl = R.drawable.new_girl_level7,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSevenScreen"
+        ),
     )
+    LaunchedEffect(Unit) {
+        delay(2000)
+        navController.navigate("levelSevenScreen/$nextIndex")
+    }
+
     val assets = levelOneAssets.getOrElse(nextIndex) {
         levelOneAssets.last()
     }
-
 
     val text = levelSevenTexts.getOrElse(nextIndex) {
         levelSevenTexts.last()
@@ -160,8 +173,6 @@ fun TitleScreenLevel7(navController: NavController, level: Int, nextIndex: Int) 
             )
         }
 
-        delay(1000)
-        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

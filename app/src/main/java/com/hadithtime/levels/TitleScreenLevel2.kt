@@ -79,6 +79,12 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
             nextRoute = "levelTwoScreen"
         )
     )
+
+    LaunchedEffect(Unit) {
+        delay(2000)
+        navController.navigate("levelTwoScreen/$nextIndex")
+    }
+
     val assets = levelOneAssets.getOrElse(nextIndex) {
         levelOneAssets.last() // fallback if index is out of range
     }
@@ -130,9 +136,6 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
                 animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
             )
         }
-
-        delay(1000)
-        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

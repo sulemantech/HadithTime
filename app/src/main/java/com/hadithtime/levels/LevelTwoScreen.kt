@@ -5,9 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -47,8 +50,8 @@ fun LevelTwoScreen(
     val currentDua = levelTwoDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
@@ -62,6 +65,8 @@ fun LevelTwoScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(WindowInsets.systemBars.asPaddingValues())
+
         ) {
 
             Box(modifier = Modifier.weight(1f)) {
@@ -82,8 +87,8 @@ fun LevelTwoScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

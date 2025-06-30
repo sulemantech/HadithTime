@@ -97,6 +97,11 @@ fun TitleScreenLevel3(navController: NavController, level: Int, nextIndex: Int) 
             nextRoute = "levelThreeScreen"
         ),
     )
+
+    LaunchedEffect(Unit) {
+        delay(2000)
+        navController.navigate("levelThreeScreen/$nextIndex")
+    }
     val assets = levelOneAssets.getOrElse(nextIndex) {
         levelOneAssets.last() // fallback if index is out of range
     }
@@ -150,8 +155,8 @@ fun TitleScreenLevel3(navController: NavController, level: Int, nextIndex: Int) 
             )
         }
 
-        delay(1000)
-        navController.navigate("${assets.nextRoute}/$nextIndex")
+//        delay(1000)
+//        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -191,7 +196,7 @@ fun TitleScreenLevel3(navController: NavController, level: Int, nextIndex: Int) 
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 112.dp)
+                    .padding(bottom = 100.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {

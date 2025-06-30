@@ -1,5 +1,6 @@
 package com.hadithtime.components
 
+import HadithDataProvider.levels
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
@@ -10,8 +11,8 @@ import androidx.navigation.NavHostController
 import com.hadithtime.SettingScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import com.hadithtime.FavoriteScreen
 import com.hadithtime.levels.LevelOneScreen
-import com.hadithtime.HomeScreen
 import com.hadithtime.levels.LevelTwoScreen
 import com.hadithtime.SplashScreen
 import com.hadithtime.levels.LevelFiveScreen
@@ -48,9 +49,16 @@ fun AppNavHost(navController: NavHostController) {
         composable("HadithDashboardScreen") {
             HadithDashboardScreen(navController, levels)
         }
-        composable("home") {
-            HomeScreen(navController)
+
+        composable("FavoriteScreen") {
+            FavoriteScreen(navController)
         }
+
+        composable("settings") {
+            SettingScreen(
+                navController)
+        }
+
         composable("titleScreenLevel1/{level}/{nextIndex}") { backStackEntry ->
             val level = backStackEntry.arguments?.getString("level")?.toIntOrNull() ?: 1
             val index = backStackEntry.arguments?.getString("nextIndex")?.toIntOrNull() ?: 0
@@ -158,11 +166,7 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
 
-        composable("settings") {
-            SettingScreen(
-               // onHomeClick = { navController.navigate("home") }
-            )
-        }
+
 
     }
 }

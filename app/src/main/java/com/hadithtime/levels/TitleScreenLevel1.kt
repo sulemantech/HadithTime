@@ -71,6 +71,11 @@ fun TitleScreenLevel1(navController: NavController, level: Int, nextIndex: Int) 
         )
     )
 
+    LaunchedEffect(Unit) {
+        delay(2000)
+        navController.navigate("levelOneScreen/$nextIndex")
+    }
+
     val assets = levelOneAssets.getOrElse(nextIndex) {
         levelOneAssets.last()
     }
@@ -124,8 +129,6 @@ fun TitleScreenLevel1(navController: NavController, level: Int, nextIndex: Int) 
             )
         }
 
-        delay(1000)
-        navController.navigate("${assets.nextRoute}/$nextIndex")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

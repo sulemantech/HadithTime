@@ -52,12 +52,11 @@ fun LevelSixScreen(
     val currentDua = levelSixDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
-
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -87,8 +86,8 @@ fun LevelSixScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

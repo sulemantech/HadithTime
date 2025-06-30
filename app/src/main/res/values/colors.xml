@@ -28,4 +28,6 @@
     <color name="slider_level5">#4793CC</color>
     <color name="slider_level6">#89B03F</color>
     <color name="slider_level7">#90D0FF</color>
+    <color name="dashboard_color">#118A7C</color>
+    <color name="dashboard_color_bg">#BEE7ED</color>
 </resources>

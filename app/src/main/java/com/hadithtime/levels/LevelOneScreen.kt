@@ -5,10 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -41,29 +44,26 @@ fun LevelOneScreen(
 ) {
 
     var currentIndex by remember { mutableIntStateOf(startIndex) }
-    val systemUiController = rememberSystemUiController()
-    val navigationBarColor = colorResource(id = R.color.white)
-    val statusBarColor = colorResource(id = R.color.level_one_color)
+
 
     val levelOneDuas = remember { duas.filter { it.level == 1 } }
     val currentDua = levelOneDuas.getOrNull(currentIndex)
 
     BackHandler {
-        navController.navigate("home") {
-            popUpTo("home") { inclusive = true }
+        navController.navigate("HadithDashboardScreen") {
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
-    SideEffect {
-        systemUiController.setStatusBarColor(color = statusBarColor)
-        systemUiController.setNavigationBarColor(color = navigationBarColor)
-    }
+
+
 
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(WindowInsets.systemBars.asPaddingValues())
         ) {
 
             Box(modifier = Modifier.weight(1f)) {
@@ -84,8 +84,8 @@ fun LevelOneScreen(
                             dua = it,
                             onSettingsClick = onNavigateToSettings,
                             onHomeClick = {
-                                navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                navController.navigate("HadithDashboardScreen") {
+                                    popUpTo("HadithDashboardScreen") { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }
