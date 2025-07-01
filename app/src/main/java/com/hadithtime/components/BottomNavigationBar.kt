@@ -82,7 +82,7 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavigationItem(
             selected = currentDestination == "FavoriteScreen",
             onClick = {
-                navController.navigate("FavoriteScreen") {
+                navController.navigate("LearningTrackerScreen") {
                     launchSingleTop = true // Avoid duplicate screens in the stack
                     popUpTo("HadithDashboardScreen") { // Pop everything back to Home screen
                         inclusive = false // Home ko pop na karein, wahan wapas aye

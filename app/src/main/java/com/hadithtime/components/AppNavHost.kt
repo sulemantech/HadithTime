@@ -12,6 +12,7 @@ import com.hadithtime.SettingScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.hadithtime.FavoriteScreen
+import com.hadithtime.LearningTrackerScreen
 import com.hadithtime.levels.LevelOneScreen
 import com.hadithtime.levels.LevelTwoScreen
 import com.hadithtime.SplashScreen
@@ -46,6 +47,10 @@ fun AppNavHost(navController: NavHostController) {
                 }
             )
         }
+        composable("LearningTrackerScreen") {
+            LearningTrackerScreen(navController)
+        }
+
         composable("HadithDashboardScreen") {
             HadithDashboardScreen(navController, levels)
         }

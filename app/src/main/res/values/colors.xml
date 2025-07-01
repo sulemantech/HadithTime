@@ -30,4 +30,6 @@
     <color name="slider_level7">#90D0FF</color>
     <color name="dashboard_color">#118A7C</color>
     <color name="dashboard_color_bg">#BEE7ED</color>
+    <color name="filter_color_bg">#F0F0F0</color>
+    <color name="filter_color">#019AA7</color>
 </resources>

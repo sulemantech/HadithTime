@@ -6,21 +6,38 @@ import androidx.lifecycle.viewModelScope
 import com.hadithtime.model.HadithDatabase
 import com.hadithtime.model.Hadith
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DuaViewModel(application: Application) : AndroidViewModel(application) {
+class HadithViewModel(application: Application) : AndroidViewModel(application) {
+
     private val duaDao = HadithDatabase.getDatabase(application).duaDao()
+
+    // Holds all duas for initial loading if needed
     val allDuas: Flow<List<Hadith>> = duaDao.getAllDuas()
 
-    // Function to fetch duas for specific level
-    fun getDuasByLevel(level: Int): Flow<List<Hadith>> {
-        return duaDao.getDuasByLevel(level)
+    // Holds the currently selected level
+    private val _selectedLevel = MutableStateFlow(0) // 0 = All
+    val selectedLevel: StateFlow<Int> = _selectedLevel
+
+    // Emits the duas matching the current selected level
+    val filteredDuas: StateFlow<List<Hadith>> = _selectedLevel
+        .flatMapLatest { level -> duaDao.getDuasByLevels(level) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun setLevel(level: Int) {
+        _selectedLevel.value = level
     }
 
+    // Preloads all duas into the database
     fun preloadDuas() {
         viewModelScope.launch {
             duaDao.deleteAll()
-            duaDao.insertAll(duas) // Use the global duas list
+            duaDao.insertAll(duas) // Replace with your own pre-defined duas list
         }
     }
 }
@@ -36,6 +53,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 1
     ),
     Hadith(
@@ -47,6 +65,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 1
     ),
     Hadith(
@@ -58,6 +77,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 1
     ),
     Hadith(
@@ -69,6 +89,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 1
     ),
 
@@ -82,6 +103,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 2
     ),
     Hadith(
@@ -93,6 +115,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 2
     ),
     Hadith(
@@ -104,6 +127,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 2
     ),
     Hadith(
@@ -115,6 +139,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 2
     ),
     Hadith(
@@ -126,6 +151,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Abi Dawud)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 2
     ),
 
@@ -139,6 +165,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -150,6 +177,7 @@ val duas = listOf(
         englishTranslation = "(Sunan al-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -161,6 +189,7 @@ val duas = listOf(
         englishTranslation = "(Sunan al-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -172,6 +201,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -183,6 +213,7 @@ val duas = listOf(
         englishTranslation = "(Sunan al-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -194,6 +225,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
     Hadith(
@@ -205,6 +237,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 3
     ),
 
@@ -218,6 +251,7 @@ val duas = listOf(
         englishTranslation = "(Agreed Upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -229,6 +263,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -240,6 +275,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Ibn Majah)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -251,6 +287,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Ibn Majah)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -262,6 +299,7 @@ val duas = listOf(
         englishTranslation = "(An-Nasa'i)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -273,6 +311,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
     Hadith(
@@ -284,6 +323,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 4
     ),
 
@@ -298,6 +338,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -309,6 +350,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -320,6 +362,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -331,6 +374,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -342,6 +386,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
 
@@ -354,6 +399,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -370,6 +416,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
     Hadith(
@@ -382,6 +429,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 5
     ),
 
@@ -396,6 +444,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -412,6 +461,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -423,6 +473,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi and Ibn-Majahi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -434,6 +485,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -450,6 +502,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
 
@@ -462,6 +515,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Abi Dawood)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -473,6 +527,7 @@ val duas = listOf(
         englishTranslation = "(Al-Bukhari and Al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     Hadith(
@@ -484,6 +539,19 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
+        level = 6
+    ),
+    Hadith(
+        Duaheading = "Removing Harm is Charity",
+        arabic = "وَعَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ \u200F:\nيُمِيطُ الأَذَى عَنِ الطَّرِيقِ صَدَقَةٌ",
+        reference = "(رواه البخاري)",
+        arabicTitle = "...",
+        englishReference = "Abu Hurairah (May Allah be pleased with him) reported: The Messenger of Allah (ﷺ) said, \nRemoving harmful thing from the way is an act of charity",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 6
     ),
     // Level 7: Duas 40–47
@@ -497,6 +565,7 @@ val duas = listOf(
         englishTranslation = "(Al-Tirmidhi)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -508,6 +577,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -520,6 +590,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -533,6 +604,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -544,6 +616,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -555,6 +628,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -566,6 +640,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
     Hadith(
@@ -577,6 +652,19 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,
+        icon = R.drawable.icon_card,
+        level = 7
+    ),
+    Hadith(
+        Duaheading = "Truthfulness & Lying",
+        arabic = " قَالَ رَسُولُ اللَّهِ  ﷺ  \u200F :\nإِنَّ الصِّدْقَ يَهْدِي إِلَى الْبِرِّ، وَإِنَّ الْبِرَّ يَهْدِي إِلَى الْجَنَّةِ، وَإِنَّ الرَّجُلَ لَيَصْدُقُ حَتَّى يَكُونَ صِدِّيقًا، وَإِنَّ الْكَذِبَ يَهْدِي إِلَى الْفُجُورِ، وَإِنَّ الْفُجُورَ يَهْدِي إِلَى النَّارِ، وَإِنَّ الرَّجُلَ لَيَكْذِبُ، حَتَّى يُكْتَبَ عِنْدَ اللَّهِ كَذَّابًا",
+        reference = "(رواه البخاري)",
+        arabicTitle = "...",
+        englishReference = "The Prophet (ﷺ) said,\n \"Truthfulness leads to righteousness, and righteousness leads to Paradise. And a man keeps on telling the truth until he becomes a truthful person. Lying leads to Al-Fajur (i.e. wickedness, evil-doing), and Al-Fajur (wickedness) leads to the (Hell) Fire, and a man may keep on telling lies till he is written before Allah, a liar.\"",
+        englishTranslation = "(Agreed upon)",
+        audioUrl = null,
+        backgroundUrl = null,
+        icon = R.drawable.icon_card,
         level = 7
     ),
 )

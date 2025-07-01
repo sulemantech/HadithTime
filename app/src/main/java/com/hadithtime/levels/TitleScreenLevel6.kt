@@ -105,6 +105,15 @@ fun TitleScreenLevel6(navController: NavController, level: Int, nextIndex: Int) 
             navigationBarColor = R.color.dua1_title,
             nextRoute = "levelSixScreen"
         ),
+        LevelAssets(
+            background = R.drawable.level_six_bg,
+            badge = R.drawable.level_six_badge,
+            girl = R.drawable.new_girl_level6,
+            bubble = R.drawable.new_bubble_level1,
+            statusBarColor = R.color.level_title_four_color,
+            navigationBarColor = R.color.dua1_title,
+            nextRoute = "levelSixScreen"
+        ),
     )
     LaunchedEffect(Unit) {
         delay(2000)

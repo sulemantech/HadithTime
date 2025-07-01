@@ -1,6 +1,7 @@
 package com.hadithtime.components
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,14 +36,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -51,6 +56,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
@@ -64,8 +72,18 @@ fun HadithDashboardScreen(
     navController: NavController,
     levels: List<HadithLevel>
 ) {
-    val systemUiController = rememberSystemUiController()
 
+    val context = LocalContext.current
+    val view = LocalView.current
+    LaunchedEffect(Unit) {
+        val window = (context as? Activity)?.window ?: return@LaunchedEffect
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val controller = WindowInsetsControllerCompat(window, view)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+        controller.hide(WindowInsetsCompat.Type.navigationBars())
+    }
+
+    val systemUiController = rememberSystemUiController()
     val scrollState = rememberLazyListState()
     val headerMaxOffset = with(LocalDensity.current) { 100.dp.toPx() }
 
@@ -100,7 +118,7 @@ fun HadithDashboardScreen(
             // 1️⃣ LazyColumn for scrollable content
             LazyColumn(
                 state = scrollState,
-                contentPadding = PaddingValues(top = 370.dp),
+                contentPadding = PaddingValues(top = 350.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
@@ -111,30 +129,31 @@ fun HadithDashboardScreen(
                     Text(
                         text = "Hadith Library",
                         color = colorResource(R.color.black_arabic),
-                        fontFamily = FontFamily(Font(R.font.fredoka_semibold)),
+                        fontFamily = FontFamily(Font(R.font.fredoka_medium)),
                         fontSize = 18.sp,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .padding(start = 16.dp, top = 10.dp)
                     )
                 }
 
                 items(levels) { level ->
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 5.dp)
+                            .padding(top = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .width(80.dp)
-                                .padding(start = 10.dp, top = 10.dp)
+                                .height(120.dp) // height becomes the vertical label's height
+                                // width becomes the label's width
                                 .background(
                                     color = colorResource(id = R.color.background_color),
                                     shape = RoundedCornerShape(20.dp)
-                                )
-                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = level.levelTitle,
@@ -142,12 +161,16 @@ fun HadithDashboardScreen(
                                 color = colorResource(R.color.black_arabic),
                                 fontFamily = FontFamily(Font(R.font.fredoka_semibold)),
                                 fontSize = 14.sp,
+                                textAlign = TextAlign.Center, // ensure centered alignment inside rotated box
+                                modifier = Modifier.rotate(-90f)
                             )
+
                         }
-                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Spacer(modifier = Modifier.width(5.dp))
 
                         LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             items(level.cards) { card ->
@@ -158,8 +181,9 @@ fun HadithDashboardScreen(
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(24.dp))
                     }
+5
+
                 }
             }
 
