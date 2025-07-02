@@ -54,7 +54,7 @@ val levelSixTexts = listOf(
     LevelText("الصلة بين شكر\n الناس و شكر الله", "6. Gratitude:\n People & Allah"),
     LevelText("قول الخير أو الصَّمت", "7. Speak Good\n or Be Silent"),
     LevelText("صِفَات المسلم", "8. Characteristics\n of a Muslim"),
-    LevelText("إمَاطَةُ الأذَى صَدقة", "8. Removing\n Harm is Charity"),
+    LevelText("إمَاطَةُ الأذَى صَدقة", "9. Removing\n Harm is Charity"),
 )
 val levelSevenTexts = listOf(
     LevelText("كَنْزُ الْجَنَّة", "1. The Treasure\n of Paradise"),
@@ -65,5 +65,5 @@ val levelSevenTexts = listOf(
     LevelText("أَدَبُ الشُّرْب", "6. Etiquettes\n of Drinking"),
     LevelText("التَّيَمُّنَ سنّة نَبوية ﷺ", "7. Right-Side\n Sunnah ﷺ"),
     LevelText("غَرسُ الشَّجَرَةُ صَدَقَة", "8. Planting a\n Tree is Charityﷺ"),
-    LevelText("الصِّدْقُ و الكذب", "8. Truthfulness\n & Lyingﷺ"),
+    LevelText("الصِّدْقُ و الكذب", "9. Truthfulness\n & Lyingﷺ"),
 )

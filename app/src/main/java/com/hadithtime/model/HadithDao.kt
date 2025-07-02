@@ -19,7 +19,8 @@ interface HadithDao {
     @Query("DELETE FROM duas")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM duas WHERE :level = 0 OR level = :level")
-    fun getDuasByLevels(level: Int): Flow<List<Hadith>>
+    @Query("SELECT * FROM duas WHERE level IN (:levels)")
+    fun getDuasByLevels(levels: List<Int>): Flow<List<Hadith>>
+
 
 }

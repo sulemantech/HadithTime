@@ -2,6 +2,7 @@ package com.hadithtime.components
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -143,16 +146,16 @@ fun HadithDashboardScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                      //      verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .height(120.dp) // height becomes the vertical label's height
-                                // width becomes the label's width
-                                .background(
-                                    color = colorResource(id = R.color.background_color),
-                                    shape = RoundedCornerShape(20.dp)
-                                ),
+                              //  .height(80.dp)
+                                .paint(
+                                    painter = painterResource(id = R.drawable.level_bg),
+                                    contentScale = ContentScale.Crop // fills box while keeping aspect ratio
+                                )
+                                .clip(RoundedCornerShape(20.dp)), // clip shape AFTER drawable
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -161,19 +164,20 @@ fun HadithDashboardScreen(
                                 color = colorResource(R.color.black_arabic),
                                 fontFamily = FontFamily(Font(R.font.fredoka_semibold)),
                                 fontSize = 14.sp,
-                                textAlign = TextAlign.Center, // ensure centered alignment inside rotated box
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier.rotate(-90f)
                             )
-
                         }
+
 
                         Spacer(modifier = Modifier.width(5.dp))
 
                         LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             items(level.cards) { card ->
+                                Log.d("LazyRow", "Rendering card: ${card.title}, icon=${card.icon}")
                                 HadithCardItem(card) {
                                     val levelNumber = level.levelTitle.filter { it.isDigit() }.toIntOrNull() ?: 1
                                     val indexInLevel = level.cards.indexOf(card)
@@ -182,12 +186,9 @@ fun HadithDashboardScreen(
                             }
                         }
                     }
-5
-
                 }
             }
 
-            // 2️⃣ Sticky header image + stats card
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -224,9 +225,9 @@ fun HadithDashboardScreen(
                             horizontalArrangement = Arrangement.spacedBy(44.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            DashboardStatColumn("Cleanliness", R.drawable.icon_card)
-                            DashboardStatColumn("02 of 49", R.drawable.icon_card)
-                            DashboardStatColumn("10 min", R.drawable.icon_card)
+                            DashboardStatColumn("Cleanliness", R.drawable.group_card)
+                            DashboardStatColumn("02 of 49", R.drawable.group_card)
+                            DashboardStatColumn("10 min", R.drawable.group_card)
                         }
                     }
                 }
@@ -255,7 +256,6 @@ fun HadithCardItem(card: HadithCard, onClick: () -> Unit) {
                     modifier = Modifier.size(74.dp)
                 )
             }
-     //   }
 
         Text(
             text = card.title,

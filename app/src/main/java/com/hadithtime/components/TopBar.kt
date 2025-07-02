@@ -32,7 +32,7 @@ fun TopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 10.dp, start = 8.dp, end = 8.dp),
+            .padding(top = 15.dp, start = 8.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Home Icon

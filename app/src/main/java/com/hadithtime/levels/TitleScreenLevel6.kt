@@ -117,7 +117,7 @@ fun TitleScreenLevel6(navController: NavController, level: Int, nextIndex: Int) 
     )
     LaunchedEffect(Unit) {
         delay(2000)
-        navController.navigate("leveSixScreen/$nextIndex")
+        navController.navigate("levelSixScreen/$nextIndex")
     }
 
     val assets = levelOneAssets.getOrElse(nextIndex) {

@@ -65,8 +65,6 @@ fun LevelTwoScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(WindowInsets.systemBars.asPaddingValues())
-
         ) {
 
             Box(modifier = Modifier.weight(1f)) {
@@ -121,6 +119,7 @@ fun LevelTwoScreen(
             )
         }
     }
+
 }
 
 @Preview(showBackground = true)

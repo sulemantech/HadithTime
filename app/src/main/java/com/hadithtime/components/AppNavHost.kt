@@ -1,6 +1,5 @@
 package com.hadithtime.components
 
-import HadithDataProvider.levels
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
@@ -28,6 +27,7 @@ import com.hadithtime.levels.TitleScreenLevel4
 import com.hadithtime.levels.TitleScreenLevel5
 import com.hadithtime.levels.TitleScreenLevel6
 import com.hadithtime.levels.TitleScreenLevel7
+import com.hadithtime.model.HadithDataProvider.levels
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable

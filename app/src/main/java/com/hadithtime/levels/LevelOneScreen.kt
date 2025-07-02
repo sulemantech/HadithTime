@@ -41,10 +41,12 @@ fun LevelOneScreen(
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {},
     startIndex: Int = 0
+
 ) {
-
     var currentIndex by remember { mutableIntStateOf(startIndex) }
-
+    val systemUiController = rememberSystemUiController()
+    val navigationBarColor = colorResource(id = R.color.white)
+    val statusBarColor = colorResource(id = R.color.level_one_color)
 
     val levelOneDuas = remember { duas.filter { it.level == 1 } }
     val currentDua = levelOneDuas.getOrNull(currentIndex)
@@ -56,14 +58,15 @@ fun LevelOneScreen(
         }
     }
 
-
-
+    SideEffect {
+        systemUiController.setStatusBarColor(color = statusBarColor)
+        systemUiController.setNavigationBarColor(color = navigationBarColor)
+    }
     Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(WindowInsets.systemBars.asPaddingValues())
         ) {
 
             Box(modifier = Modifier.weight(1f)) {

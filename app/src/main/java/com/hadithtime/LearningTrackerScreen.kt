@@ -18,10 +18,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.hadithtime.model.Hadith
 
@@ -31,7 +37,7 @@ fun LearningTrackerScreen(
     viewModel: HadithViewModel = androidx.lifecycle.viewmodel.compose.viewModel() // ✔️ correct way
 ) {
     val filteredDuas by viewModel.filteredDuas.collectAsState()
-    val selectedLevel by viewModel.selectedLevel.collectAsState()
+   // val selectedLevel by viewModel.selectedLevel.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.preloadDuas()
     }
@@ -47,7 +53,7 @@ fun LearningTrackerScreen(
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 18.dp),
+                .padding(top = 25.dp),
             textAlign = TextAlign.Center
         )
         Divider(
@@ -55,7 +61,7 @@ fun LearningTrackerScreen(
             thickness = 1.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 10.dp)
         )
 
         // Filter Tabs Row (not connected yet; just UI for now)
@@ -81,13 +87,13 @@ fun LearningTrackerScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Select Level", fontWeight = FontWeight.SemiBold)
-            var selectedLevels by remember { mutableStateOf<List<Int>>(emptyList()) }
-
+          //  var selectedLevels by remember { mutableStateOf<List<Int>>(emptyList()) }
+            val selectedLevels by viewModel.selectedLevels.collectAsState()
+            val filteredDuas by viewModel.filteredDuas.collectAsState()
             SelectLevelDropdown(
                 selectedLevels = selectedLevels,
-                onLevelsSelected = { levels ->
-                    selectedLevels = levels
-                    // Update VM or filter list accordingly
+                onLevelsSelected = { selected ->
+                    viewModel.setLevels(selected)
                 }
             )
         }
@@ -99,7 +105,12 @@ fun LearningTrackerScreen(
             modifier = Modifier.fillMaxSize().padding(top = 15.dp)
         ) {
             items(filteredDuas) { hadith ->
-                HadithCard(hadith)
+                Hadith(hadith)
+                Divider(
+                    color = Color.Gray.copy(alpha = 0.3f),
+                    thickness = 1.dp,
+                    modifier = Modifier.padding()
+                )
             }
         }
     }
@@ -107,27 +118,29 @@ fun LearningTrackerScreen(
 
 @Composable
 fun FilterChip(label: String, selected: Boolean) {
-    //val backgroundColor = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg)
+    val backgroundColor = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg)
     val textColor = if (selected) Color.White else Color.Black
+    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
+
     Box(
         modifier = Modifier
             .padding(end = 8.dp)
-          //  .background(backgroundColor, shape = RoundedCornerShape(16.dp))
+            .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .clickable { /* handle click */ }
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
-        Text(text = label, color = textColor)
+        Text(text = label, color = textColor, fontFamily = MyCountFont)
     }
 }
-
 @Composable
 fun SelectLevelDropdown(
     selectedLevels: List<Int>,
     onLevelsSelected: (List<Int>) -> Unit
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
-    val displayedText = if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { "$it" }
+    val displayedText = if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
     val currentSelection = remember { mutableStateListOf<Int>().apply { addAll(selectedLevels) } }
+    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
 
     Box {
         Button(
@@ -136,8 +149,8 @@ fun SelectLevelDropdown(
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text(text = displayedText, color = Color.White)
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
+            Text(text = displayedText, color = Color.White,fontFamily = MyCountFont)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White,)
         }
     }
 
@@ -166,14 +179,14 @@ fun SelectLevelDropdown(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select Level")
+                    Text("Select Level",fontFamily = MyCountFont)
                 }
             },
             text = {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                       // .padding(vertical = 8.dp),
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     for (row in 0 until 3) {
@@ -210,6 +223,7 @@ fun SelectLevelDropdown(
 fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val backgroundColor = if (selected) Color(0xFF1E88E5) else Color.LightGray
     val textColor = if (selected) Color.White else Color.Black
+
     Box(
         modifier = Modifier
             .padding(4.dp)
@@ -222,23 +236,34 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun HadithCard(hadith: Hadith) {
-    Card(
-        elevation = CardDefaults.cardElevation(4.dp),
+fun Hadith(hadith: Hadith) {
+    val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
+    val lineDrawable = when (hadith.level) {
+        0 -> R.drawable.line_level1
+        1 -> R.drawable.line_level1
+        2 -> R.drawable.line_level2
+        3 -> R.drawable.line_level3
+        4 -> R.drawable.line_level4
+        5 -> R.drawable.line_level5
+        6 -> R.drawable.line_level6
+        7 -> R.drawable.line_level7
+        else -> R.drawable.line_level1
+    }
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .background(Color.White) // set white background
+           // .padding(vertical = 4.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(40.dp),
-                   // .background(hadith.iconBackground, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -254,21 +279,54 @@ fun HadithCard(hadith: Hadith) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                hadith.englishReference?.let {
+                hadith.englishReference?.let { reference ->
+                    val lines = reference.split("\n", limit = 2)
+
                     Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        buildAnnotatedString {
+                            if (lines.isNotEmpty()) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.W200,
+                                        fontSize = 16.sp,
+                                        fontFamily = MyEnglishFont
+                                    )
+                                ) {
+                                    append(lines[0] + "\n")
+                                }
+                            }
+                            if (lines.size > 1) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        fontFamily = MyEnglishFont
+                                    )
+                                ) {
+                                    append(lines[1])
+                                }
+                            }
+                        },
+                        color = Color.Black,
+                        lineHeight = 28.sp,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-//            Box(
-//                modifier = Modifier
-//                    .width(4.dp)
-//                    .height(40.dp)
-//                    .background(hadith.statusColor, shape = RoundedCornerShape(2.dp))
-//            )
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(34.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = lineDrawable),
+                    contentDescription = "Level indicator line",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
         }
     }
 }
