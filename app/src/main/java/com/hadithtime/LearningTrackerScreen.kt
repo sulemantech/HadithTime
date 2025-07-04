@@ -74,7 +74,7 @@ fun LearningTrackerScreen(
     val systemUiController = rememberSystemUiController()
     val scrollState = rememberLazyListState()
     val headerMaxOffset = with(LocalDensity.current) { 100.dp.toPx() }
-
+    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
     SideEffect {
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
@@ -110,7 +110,8 @@ fun LearningTrackerScreen(
             ) {
                 Text(
                     text = "Learning Tracker",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp,
+                    fontFamily = MyCountFont,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp),
@@ -353,9 +354,9 @@ fun SelectLevelDropdown(
             text = {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxWidth(),
+                      //  .padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     for (row in 0 until 3) {
                         Row(
@@ -380,7 +381,7 @@ fun SelectLevelDropdown(
                             }
                         }
                     }
-                    Divider( // 🔹 Divider above OK/Cancel
+                    Divider(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp),
@@ -392,7 +393,6 @@ fun SelectLevelDropdown(
             shape = RoundedCornerShape(16.dp),
         )
     }
-
 }
 
 @Composable

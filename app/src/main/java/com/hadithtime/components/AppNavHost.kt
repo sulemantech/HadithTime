@@ -7,11 +7,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import com.hadithtime.SettingScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.hadithtime.FavoriteScreen
 import com.hadithtime.LearningTrackerScreen
+import com.hadithtime.SettingScreen
 import com.hadithtime.levels.LevelOneScreen
 import com.hadithtime.levels.LevelTwoScreen
 import com.hadithtime.SplashScreen
@@ -60,8 +60,7 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable("settings") {
-            SettingScreen(
-                navController)
+            SettingScreen(navController)
         }
 
         composable("titleScreenLevel1/{level}/{nextIndex}") { backStackEntry ->

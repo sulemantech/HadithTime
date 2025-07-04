@@ -277,7 +277,7 @@ fun HadithCardItem(card: HadithCard, onClick: () -> Unit) {
             Image(
                 painter = painterResource(id = card.icon),
                 contentDescription = card.title,
-                modifier = Modifier.size(72.dp)
+                modifier = Modifier.size(74.dp)
             )
         }
 
