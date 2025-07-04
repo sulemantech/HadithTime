@@ -56,17 +56,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
+import com.hadithtime.levels.LevelFiveScreen
 import com.hadithtime.model.HadithCard
+import com.hadithtime.model.HadithDataProvider.levels
 import com.hadithtime.model.HadithLevel
+import com.hadithtime.model.levelTwoTexts
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalFoundationApi::class)
@@ -82,9 +93,22 @@ fun HadithDashboardScreen(
         val window = (context as? Activity)?.window ?: return@LaunchedEffect
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val controller = WindowInsetsControllerCompat(window, view)
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
         controller.hide(WindowInsetsCompat.Type.navigationBars())
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val navVisible = insets.isVisible(WindowInsetsCompat.Type.navigationBars())
+            if (navVisible) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(1000L)
+                    controller.hide(WindowInsetsCompat.Type.navigationBars())
+                }
+            }
+            insets
+        }
     }
+
 
     val systemUiController = rememberSystemUiController()
     val scrollState = rememberLazyListState()
@@ -97,7 +121,6 @@ fun HadithDashboardScreen(
         )
     }
 
-    // Calculate header offset based on scroll
     val headerOffset by derivedStateOf {
         val scrollY = if (scrollState.firstVisibleItemIndex == 0) {
             scrollState.firstVisibleItemScrollOffset.toFloat()
@@ -116,46 +139,46 @@ fun HadithDashboardScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-               // .padding(paddingValues) // ⬅️ ensures content respects bottom bar
+            // .padding(paddingValues)
         ) {
             // 1️⃣ LazyColumn for scrollable content
             LazyColumn(
                 state = scrollState,
-                contentPadding = PaddingValues(top = 350.dp),
+                contentPadding = PaddingValues(top = 380.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
                     .padding(paddingValues) // ⬅️ Here! Apply bottom bar padding ONLY to scrollable content.
-                    .padding(WindowInsets.systemBars.asPaddingValues())
+                   // .padding(WindowInsets.systemBars.asPaddingValues())
             ) {
-                stickyHeader {
-                    Text(
-                        text = "Hadith Library",
-                        color = colorResource(R.color.black_arabic),
-                        fontFamily = FontFamily(Font(R.font.fredoka_medium)),
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White)
-                            .padding(start = 16.dp, top = 10.dp)
-                    )
-                }
+//                stickyHeader {
+//                    Text(
+//                        text = "Hadith Library",
+//                        color = colorResource(R.color.black_arabic),
+//                        fontFamily = FontFamily(Font(R.font.fredoka_medium)),
+//                        fontSize = 18.sp,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .background(Color.White)
+//                            .padding(start = 16.dp, top = 15.dp)
+//                    )
+//                }
 
                 items(levels) { level ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 5.dp),
-                      //      verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 5.dp)
+                            .offset(x = (-6).dp)
                     ) {
                         Box(
                             modifier = Modifier
-                              //  .height(80.dp)
+                                .padding(top = 11.dp, bottom = 5.dp)
                                 .paint(
                                     painter = painterResource(id = R.drawable.level_bg),
-                                    contentScale = ContentScale.Crop // fills box while keeping aspect ratio
+                                    contentScale = ContentScale.Fit // fills box while keeping aspect ratio
                                 )
-                                .clip(RoundedCornerShape(20.dp)), // clip shape AFTER drawable
+                                .clip(RoundedCornerShape(20.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -165,12 +188,11 @@ fun HadithDashboardScreen(
                                 fontFamily = FontFamily(Font(R.font.fredoka_semibold)),
                                 fontSize = 14.sp,
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.rotate(-90f)
+                                modifier = Modifier
+                                    .rotate(-90f)
+                                    .padding(top = 5.dp, bottom = 10.dp)
                             )
                         }
-
-
-                        Spacer(modifier = Modifier.width(5.dp))
 
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -179,16 +201,17 @@ fun HadithDashboardScreen(
                             items(level.cards) { card ->
                                 Log.d("LazyRow", "Rendering card: ${card.title}, icon=${card.icon}")
                                 HadithCardItem(card) {
-                                    val levelNumber = level.levelTitle.filter { it.isDigit() }.toIntOrNull() ?: 1
+                                    val levelNumber =
+                                        level.levelTitle.filter { it.isDigit() }.toIntOrNull() ?: 1
                                     val indexInLevel = level.cards.indexOf(card)
                                     navController.navigate("titleScreenLevel$levelNumber/$levelNumber/$indexInLevel")
                                 }
                             }
                         }
+
                     }
                 }
             }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -210,7 +233,7 @@ fun HadithDashboardScreen(
                         .offset(y = 45.dp)
                         .padding(horizontal = 16.dp)
                         .width(380.dp)
-                        .height(127.dp)
+                        .height(115.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -221,11 +244,11 @@ fun HadithDashboardScreen(
                         Row(
                             modifier = Modifier
                                 .wrapContentWidth()
-                                .padding(vertical = 16.dp, horizontal = 11.dp),
+                                .padding(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(44.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            DashboardStatColumn("Cleanliness", R.drawable.group_card)
+                            DashboardStatColumn("Library", R.drawable.group_card)
                             DashboardStatColumn("02 of 49", R.drawable.group_card)
                             DashboardStatColumn("10 min", R.drawable.group_card)
                         }
@@ -242,24 +265,25 @@ fun HadithCardItem(card: HadithCard, onClick: () -> Unit) {
 
     Column(
         modifier = Modifier
-            .width(100.dp)
+            .width(92.dp)
+            .padding(top = 16.dp)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Image(
-                    painter = painterResource(id = card.icon),
-                    contentDescription = card.title,
-                    modifier = Modifier.size(74.dp)
-                )
-            }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painterResource(id = card.icon),
+                contentDescription = card.title,
+                modifier = Modifier.size(72.dp)
+            )
+        }
 
         Text(
             text = card.title,
-            color = Color.Black,
+            color = colorResource(R.color.black_arabic),
             fontFamily = MyCountFont,
             fontSize = 13.sp,
             style = MaterialTheme.typography.bodyMedium,
@@ -271,17 +295,40 @@ fun HadithCardItem(card: HadithCard, onClick: () -> Unit) {
 
 @Composable
 fun DashboardStatColumn(label: String, iconRes: Int) {
+    val MyCountFont = FontFamily(Font(R.font.fredoka_medium))
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(62.dp)
-            .height(75.dp)
+            .padding(top = 2.dp, bottom = 2.dp)
+            .height(80.dp)
     ) {
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = label,
-            modifier = Modifier.size(62.dp),
+            modifier = Modifier
+                .size(62.dp)
+                .padding(bottom = 5.dp),
         )
-        Text(label, style = MaterialTheme.typography.labelSmall)
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 12.sp,
+            fontFamily = MyCountFont,
+            color = colorResource(R.color.black_arabic),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHadithDashboardScreen() {
+    HadithTimeTheme {
+        val navController = rememberNavController()
+        HadithDashboardScreen(
+            navController = navController,
+            levels
+        )
     }
 }

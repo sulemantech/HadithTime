@@ -49,7 +49,7 @@ fun LevelFiveScreen(
 
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
-            popUpTo("homHadithDashboardScreene") { inclusive = true }
+            popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }

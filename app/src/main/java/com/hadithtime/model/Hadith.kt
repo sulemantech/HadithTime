@@ -16,6 +16,8 @@ data class Hadith(
     val audioUrl: String?,
     val backgroundUrl: String?,
     val icon: Int,
-    val level: Int
+    val level: Int,
+    val memorized: Boolean = false,
+    val isFavorite: Boolean = false
 )
 

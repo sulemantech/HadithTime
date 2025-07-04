@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
 class HadithViewModel(application: Application) : AndroidViewModel(application) {
 
     private val duaDao = HadithDatabase.getDatabase(application).duaDao()
@@ -20,16 +22,48 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
     private val _selectedLevels = MutableStateFlow<List<Int>>(emptyList())
     val selectedLevels: StateFlow<List<Int>> = _selectedLevels
 
+    private val _showMemorized = MutableStateFlow(false)
+    val showMemorized: StateFlow<Boolean> = _showMemorized
 
-    val filteredDuas: StateFlow<List<Hadith>> = _selectedLevels
-        .flatMapLatest { levels ->
-            if (levels.isEmpty()) {
-                duaDao.getAllDuas()
-            } else {
-                duaDao.getDuasByLevels(levels)
-            }
+    private val _selectedFilter = MutableStateFlow("All")
+    val selectedFilter: StateFlow<String> = _selectedFilter
+
+    fun setSelectedFilter(filter: String) {
+        _selectedFilter.value = filter
+    }
+
+    fun setShowMemorized(value: Boolean) {
+        _showMemorized.value = value
+    }
+
+    fun toggleFavorite(dua: Hadith) {
+        viewModelScope.launch {
+            duaDao.updateFavorite(dua.id, !dua.isFavorite)
         }
+    }
+    val favoriteDuas: StateFlow<List<Hadith>> = duaDao.getFavoriteDuas()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+
+    val filteredDuas: StateFlow<List<Hadith>> = combine(
+        allDuas, selectedLevels, selectedFilter, favoriteDuas
+    ) { all, levels, filter, favorites ->
+        var filtered = all
+
+        if (levels.isNotEmpty()) {
+            filtered = filtered.filter { it.level in levels }
+        }
+
+        filtered = when (filter) {
+            "All" -> filtered
+            "Memorized" -> filtered.filter { it.memorized }
+            "Favorite" -> favorites
+            "In Progress" -> filtered.filter { !it.memorized }
+            else -> filtered
+        }
+
+        filtered
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun setLevels(levels: List<Int>) {
         _selectedLevels.value = levels
@@ -600,9 +634,7 @@ val duas = listOf(
         arabic = "وعن عدى بن حاتم رضى الله عنه أن  رَسُوْلُ اللهِ  ﷺ   قَالَ:\nاِتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ فَمَنْ لَمْ يَجِدْ فَبِكَلِمَةٍ طَيِّبَةٍ",
         reference = "(مُتَّفَقٌ عَلَيْه\u200F)",
         arabicTitle = "...",
-        englishReference = "Adi bin Hatim (May Allah be pleased with him) reported:\n" +
-                " \n" +
-                "The Messenger of Allah (ﷺ) said:    \nProtect yourself from Hellfire, even if it is by giving half a date in charity. If you cannot find that, then with a kind word",
+        englishReference = "Adi bin Hatim (May Allah be pleased with him) reported:\nThe Messenger of Allah (ﷺ) said:    \nProtect yourself from Hellfire, even if it is by giving half a date in charity. If you cannot find that, then with a kind word",
         englishTranslation = "(Agreed upon)",
         audioUrl = null,
         backgroundUrl = null,

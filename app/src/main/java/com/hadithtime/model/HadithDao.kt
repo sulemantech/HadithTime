@@ -16,6 +16,15 @@ interface HadithDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(duas: List<Hadith>)
 
+    @Query("SELECT * FROM duas WHERE isFavorite = 1")
+    fun getFavoriteDuas(): Flow<List<Hadith>>
+
+    @Query("UPDATE duas SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateFavorite(id: Int, isFavorite: Boolean)
+
+    @Update
+    suspend fun updateDua(dua: Hadith)
+
     @Query("DELETE FROM duas")
     suspend fun deleteAll()
 

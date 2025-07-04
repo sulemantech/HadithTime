@@ -3,6 +3,8 @@ package com.hadithtime.components
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.AlertDialog
@@ -80,7 +82,7 @@ fun BottomNavigationBar(navController: NavController) {
 
         // Favorite
         BottomNavigationItem(
-            selected = currentDestination == "FavoriteScreen",
+            selected = currentDestination == "LearningTrackerScreen",
             onClick = {
                 navController.navigate("LearningTrackerScreen") {
                     launchSingleTop = true // Avoid duplicate screens in the stack
@@ -91,7 +93,7 @@ fun BottomNavigationBar(navController: NavController) {
             },
             icon = {
                 Box(
-                    modifier = if (currentDestination == "FavoriteScreen") Modifier
+                    modifier = if (currentDestination == "LearningTrackerScreen") Modifier
                         .size(36.dp)
                         .background(
                             color = colorResource(id = R.color.dashboard_color_bg),
@@ -101,11 +103,11 @@ fun BottomNavigationBar(navController: NavController) {
                 ) {
                     Icon(
                         painterResource(
-                            id = if (currentDestination == "FavoriteScreen") R.drawable.ic_fav_star_active else R.drawable.ic_fav_star
+                            id = if (currentDestination == "LearningTrackerScreen") R.drawable.ic_fav_star_active else R.drawable.ic_fav_star
                         ),
-                        contentDescription = "FavoriteScreen",
+                        contentDescription = "LearningTrackerScreen",
                         modifier = Modifier.align(Alignment.Center),
-                        tint = if (currentDestination == "FavoriteScreen")
+                        tint = if (currentDestination == "LearningTrackerScreen")
                             colorResource(id = R.color.dashboard_color)
                         else
                             Color.Unspecified
@@ -115,7 +117,7 @@ fun BottomNavigationBar(navController: NavController) {
             label = {
                 Text(
                     "Favorite",
-                    color = if (currentDestination == "FavoriteScreen")
+                    color = if (currentDestination == "LearningTrackerScreen")
                         colorResource(R.color.dashboard_color)
                     else
                         Color.Black,
@@ -229,7 +231,7 @@ fun BottomNavigationBar(navController: NavController) {
                 ) {
                     Icon(
                         painterResource(
-                            id = if (currentDestination == "info") R.drawable.ic_setting_active else R.drawable.ic_setting_inactive
+                            id = if (currentDestination == "info") R.drawable.ic_info_active else R.drawable.ic_info_unacitve
                         ),
                         contentDescription = "info",
                         modifier = Modifier.align(Alignment.Center),

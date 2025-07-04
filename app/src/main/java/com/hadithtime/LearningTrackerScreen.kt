@@ -1,12 +1,23 @@
 package com.hadithtime
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -16,6 +27,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -28,129 +42,268 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.components.BottomNavigationBar
 import com.hadithtime.model.Hadith
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun LearningTrackerScreen(
     navController: NavController,
-    viewModel: HadithViewModel = androidx.lifecycle.viewmodel.compose.viewModel() // ✔️ correct way
+    viewModel: HadithViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val filteredDuas by viewModel.filteredDuas.collectAsState()
-   // val selectedLevel by viewModel.selectedLevel.collectAsState()
+    // val selectedLevel by viewModel.selectedLevel.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.preloadDuas()
     }
+    val context = LocalContext.current
+    val view = LocalView.current
+    LaunchedEffect(Unit) {
+        val window = (context as? Activity)?.window ?: return@LaunchedEffect
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val controller = WindowInsetsControllerCompat(window, view)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+        controller.hide(WindowInsetsCompat.Type.navigationBars())
+    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(18.dp)
-    ) {
-        Text(
-            text = "Learning Tracker",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 25.dp),
-            textAlign = TextAlign.Center
+    val systemUiController = rememberSystemUiController()
+    val scrollState = rememberLazyListState()
+    val headerMaxOffset = with(LocalDensity.current) { 100.dp.toPx() }
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = true
         )
-        Divider(
-            color = Color.Gray,
-            thickness = 1.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp)
-        )
+    }
 
-        // Filter Tabs Row (not connected yet; just UI for now)
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(top = 18.dp)
-        ) {
-            FilterChip("All", selected = true)
-            FilterChip("Memorized", selected = false)
-            FilterChip("Favorite", selected = false)
-            FilterChip("In Progress", selected = false)
+    // Calculate header offset based on scroll
+    val headerOffset by derivedStateOf {
+        val scrollY = if (scrollState.firstVisibleItemIndex == 0) {
+            scrollState.firstVisibleItemScrollOffset.toFloat()
+        } else {
+            headerMaxOffset
         }
-
-        // Select Level Row
-        Row(
+        -scrollY.coerceIn(0f, headerMaxOffset)
+    }
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Text(text = "Select Level", fontWeight = FontWeight.SemiBold)
-          //  var selectedLevels by remember { mutableStateOf<List<Int>>(emptyList()) }
-            val selectedLevels by viewModel.selectedLevels.collectAsState()
-            val filteredDuas by viewModel.filteredDuas.collectAsState()
-            SelectLevelDropdown(
-                selectedLevels = selectedLevels,
-                onLevelsSelected = { selected ->
-                    viewModel.setLevels(selected)
-                }
-            )
-        }
-
-        Divider()
-
-        // List of Hadith Cards
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(top = 15.dp)
-        ) {
-            items(filteredDuas) { hadith ->
-                Hadith(hadith)
-                Divider(
-                    color = Color.Gray.copy(alpha = 0.3f),
-                    thickness = 1.dp,
-                    modifier = Modifier.padding()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(18.dp)
+            ) {
+                Text(
+                    text = "Learning Tracker",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    textAlign = TextAlign.Center
                 )
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                )
+                val selectedFilter by viewModel.selectedFilter.collectAsState()
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(top = 18.dp)
+                ) {
+                    FilterChip(
+                        "All",
+                        selected = selectedFilter == "All"
+                    ) { viewModel.setSelectedFilter("All") }
+                    FilterChip(
+                        "Memorized",
+                        selected = selectedFilter == "Memorized"
+                    ) { viewModel.setSelectedFilter("Memorized") }
+                    FilterChip(
+                        "Favorite",
+                        selected = selectedFilter == "Favorite"
+                    ) { viewModel.setSelectedFilter("Favorite") }
+                    FilterChip(
+                        "In Progress",
+                        selected = selectedFilter == "In Progress"
+                    ) { viewModel.setSelectedFilter("In Progress") }
+                }
+
+                if (selectedFilter == "In Progress") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+
+                    }
+                } else if (selectedFilter == "Memorized") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_play),
+                                    contentDescription = "Play Icon",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Play Memorized",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+                } else if (selectedFilter == "Favorite") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+
+                                Toast.makeText(
+                                    context,
+                                    "Play Favorite clicked!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_play),
+                                    contentDescription = "Play Icon",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Play Favorite",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Select Level", fontWeight = FontWeight.SemiBold)
+                        val selectedLevels by viewModel.selectedLevels.collectAsState()
+                        SelectLevelDropdown(
+                            selectedLevels = selectedLevels,
+                            onLevelsSelected = { selected ->
+                                viewModel.setLevels(selected)
+                            }
+                        )
+                    }
+                }
+
+                Divider()
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 15.dp, bottom = 10.dp)
+                ) {
+                    itemsIndexed(filteredDuas) { index, hadith ->
+                        val levelNumber = hadith.level
+
+                        val indexInLevel = filteredDuas
+                            .filter { it.level == levelNumber }
+                            .indexOfFirst { it == hadith }
+
+                        Hadith(hadith, navController, levelNumber, indexInLevel)
+                        Divider(
+                            color = Color.Gray.copy(alpha = 0.3f),
+                            thickness = 1.dp
+                        )
+                    }
+                }
+
             }
         }
     }
 }
 
 @Composable
-fun FilterChip(label: String, selected: Boolean) {
-    val backgroundColor = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg)
+fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val textColor = if (selected) Color.White else Color.Black
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
 
-    Box(
+    Surface(
+        color = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
-            .padding(end = 8.dp)
-            .background(backgroundColor, shape = RoundedCornerShape(16.dp))
-            .clickable { /* handle click */ }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+           // .padding(horizontal = 4.dp)
+            .clickable { onClick() }
     ) {
-        Text(text = label, color = textColor, fontFamily = MyCountFont)
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            color = textColor,
+            fontFamily = MyCountFont
+        )
     }
 }
+
 @Composable
 fun SelectLevelDropdown(
     selectedLevels: List<Int>,
     onLevelsSelected: (List<Int>) -> Unit
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
-    val displayedText = if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
+    val displayedText =
+        if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
     val currentSelection = remember { mutableStateListOf<Int>().apply { addAll(selectedLevels) } }
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
+    val MyokFont = FontFamily(Font(R.font.fredoka_regular))
 
     Box {
         Button(
             onClick = { dialogOpen = true },
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+            //  contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text(text = displayedText, color = Color.White,fontFamily = MyCountFont)
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White,)
+            Text(text = displayedText, color = Color.White, fontFamily = MyCountFont)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
         }
     }
 
@@ -160,26 +313,41 @@ fun SelectLevelDropdown(
             confirmButton = {
                 TextButton(onClick = {
                     dialogOpen = false
-                    onLevelsSelected(currentSelection.toList()) // pass levels back
+                    onLevelsSelected(currentSelection.toList())
                 }) {
-                    Text("OK")
+                    Text(
+                        "OK", color = colorResource(R.color.filter_color),
+                        fontFamily = MyCountFont
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { dialogOpen = false }) {
-                    Text("Cancel")
+                    Text(
+                        "Cancel", color = colorResource(R.color.filter_color),
+                        fontFamily = MyCountFont
+                    )
                 }
             },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_share_filled),
-                        contentDescription = null,
-                        tint = Color.Black,
-                        modifier = Modifier.size(18.dp)
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.clear),
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Select Level", fontFamily = MyCountFont, fontSize = 16.sp)
+                    }
+                    Divider( // 🔹 Divider below title
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        //  .padding(top = 8.dp),
+                        thickness = 1.dp,
+                        color = Color.Gray.copy(alpha = 0.5f)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select Level",fontFamily = MyCountFont)
                 }
             },
             text = {
@@ -197,7 +365,7 @@ fun SelectLevelDropdown(
                             for (col in 1..3) {
                                 val level = row * 3 + col
                                 if (level <= 7) {
-                                    FilterChip(
+                                    FilterChipDropDown(
                                         label = "Level $level",
                                         selected = level in currentSelection,
                                         onClick = {
@@ -212,31 +380,54 @@ fun SelectLevelDropdown(
                             }
                         }
                     }
+                    Divider( // 🔹 Divider above OK/Cancel
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        thickness = 1.dp,
+                        color = Color.Gray.copy(alpha = 0.5f)
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp),
         )
     }
+
 }
 
 @Composable
-fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (selected) Color(0xFF1E88E5) else Color.LightGray
+fun FilterChipDropDown(label: String, selected: Boolean, onClick: () -> Unit) {
+    val backgroundColor = if (selected) colorResource(R.color.filter_color) else Color.Transparent
     val textColor = if (selected) Color.White else Color.Black
-
+    val myFont = FontFamily(Font(R.font.fredoka_semibold))
     Box(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(end = 8.dp)
+            .border(
+                width = 1.dp,
+                color = if (selected) Color.Black else Color.Gray,
+                shape = RoundedCornerShape(16.dp)
+            )
             .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
-        Text(text = label, color = textColor, style = MaterialTheme.typography.bodySmall)
+        Text(
+            text = label,
+            color = textColor,
+            fontFamily = myFont
+        )
     }
+
 }
 
 @Composable
-fun Hadith(hadith: Hadith) {
+fun Hadith(
+    hadith: Hadith,
+    navController: NavController,
+    levelNumber: Int,
+    indexInLevel: Int
+) {
     val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
     val lineDrawable = when (hadith.level) {
         0 -> R.drawable.line_level1
@@ -249,23 +440,31 @@ fun Hadith(hadith: Hadith) {
         7 -> R.drawable.line_level7
         else -> R.drawable.line_level1
     }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White) // set white background
-           // .padding(vertical = 4.dp)
+           // .background(Color.White)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Gray.copy(alpha = 0.3f)
+                ),
+                onClick = {
+                    navController.navigate("titleScreenLevel$levelNumber/$levelNumber/$indexInLevel")
+                }
+            )
     ) {
         Row(
             modifier = Modifier
-                .padding(top = 8.dp, bottom = 8.dp)
+                .padding(vertical = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) {
                 Image(
                     painter = painterResource(id = hadith.icon),
                     contentDescription = null,
@@ -277,42 +476,49 @@ fun Hadith(hadith: Hadith) {
             }
             Spacer(modifier = Modifier.width(8.dp))
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 0.dp)
             ) {
                 hadith.englishReference?.let { reference ->
                     val lines = reference.split("\n", limit = 2)
-
-                    Text(
-                        buildAnnotatedString {
-                            if (lines.isNotEmpty()) {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.W200,
-                                        fontSize = 16.sp,
-                                        fontFamily = MyEnglishFont
-                                    )
-                                ) {
-                                    append(lines[0] + "\n")
-                                }
-                            }
-                            if (lines.size > 1) {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp,
-                                        fontFamily = MyEnglishFont
-                                    )
-                                ) {
-                                    append(lines[1])
-                                }
-                            }
-                        },
-                        color = Color.Black,
-                        lineHeight = 28.sp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    val annotatedString = buildAnnotatedString {
+                        if (lines.isNotEmpty()) {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.W200,
+                                    fontSize = 16.sp,
+                                    fontFamily = MyEnglishFont
+                                )
+                            ) { append(lines[0] + "\n") }
+                        }
+                        if (lines.size > 1) {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    fontFamily = MyEnglishFont
+                                )
+                            ) { append(lines[1]) }
+                        }
+                    }
+                    Box(
+                        modifier = Modifier.horizontalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = annotatedString,
+                            style = LocalTextStyle.current.copy(
+                                color = Color.Black,
+                                lineHeight = 28.sp
+                            ),
+                            maxLines = 2,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
+
             }
+
             Box(
                 modifier = Modifier
                     .width(4.dp)
@@ -326,7 +532,6 @@ fun Hadith(hadith: Hadith) {
                     modifier = Modifier.fillMaxSize()
                 )
             }
-
         }
     }
 }
