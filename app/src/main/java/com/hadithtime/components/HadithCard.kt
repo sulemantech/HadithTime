@@ -8,6 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -23,13 +27,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.model.Hadith
 
 @Composable
-fun HadithCard(dua: Hadith) {
-    val MyArabicFont = FontFamily(Font(R.font.al_quran))
+fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = viewModel()) {
+    val arabicFontSize = fontSizeSp.sp
+    val AlMajeedFont = FontFamily(Font(R.font.al_quran))
     val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
+   // var arabicFontSize by remember { mutableStateOf(24.sp) }
+    val ArabicFont2 = FontFamily(Font(R.font.vazirmatn_regular))
+    var selectedFont by rememberSaveable { mutableStateOf("Al Majeed Quran") }
+    val fontFamily = when (viewModel.selectedFont) {
+        "Al Majeed Quran" -> AlMajeedFont
+        "Arabic font 2" -> ArabicFont2
+        else -> AlMajeedFont
+    }
+
 
     Box(
         modifier = Modifier
@@ -75,7 +91,7 @@ fun HadithCard(dua: Hadith) {
                         buildAnnotatedString {
                             withStyle(
                                 style = ParagraphStyle(
-                                    lineHeight = 44.sp,
+                                    lineHeight = (arabicFontSize.value * 1.8).sp,
                                     textAlign = TextAlign.Center
                                 )
                             ) {
@@ -83,8 +99,8 @@ fun HadithCard(dua: Hadith) {
                                     withStyle(
                                         style = SpanStyle(
                                             fontWeight = FontWeight.W200,
-                                            fontSize = 24.sp,
-                                            fontFamily = MyArabicFont,
+                                            fontSize = arabicFontSize,
+                                            fontFamily = fontFamily,
                                         )
                                     ) {
                                         append(lines[0] + "\n")
@@ -93,8 +109,8 @@ fun HadithCard(dua: Hadith) {
                                 if (lines.size > 1) {
                                     withStyle(
                                         style = SpanStyle(
-                                            fontSize = 30.sp,
-                                            fontFamily = MyArabicFont
+                                            fontSize = arabicFontSize,
+                                            fontFamily = fontFamily,
                                         )
                                     ) {
                                         append(lines[1])

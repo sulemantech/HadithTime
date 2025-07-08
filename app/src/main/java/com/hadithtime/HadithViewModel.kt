@@ -1,8 +1,16 @@
 package com.hadithtime
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.hadithtime.components.FontSizeManager
 import com.hadithtime.model.HadithDatabase
 import com.hadithtime.model.Hadith
 import kotlinx.coroutines.flow.Flow
@@ -10,73 +18,112 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HadithViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val duaDao = HadithDatabase.getDatabase(application).duaDao()
-    val allDuas: Flow<List<Hadith>> = duaDao.getAllDuas()
+    @SuppressLint("StaticFieldLeak")
+    private val context = application.applicationContext
+
+    private val duaDao = HadithDatabase.getDatabase(context).duaDao()
+    var arabicFontSize by mutableStateOf(24.sp)
+
+    val allDuas: StateFlow<List<Hadith>> = duaDao.getAllDuas()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _selectedLevels = MutableStateFlow<List<Int>>(emptyList())
     val selectedLevels: StateFlow<List<Int>> = _selectedLevels
 
-    private val _showMemorized = MutableStateFlow(false)
-    val showMemorized: StateFlow<Boolean> = _showMemorized
-
     private val _selectedFilter = MutableStateFlow("All")
     val selectedFilter: StateFlow<String> = _selectedFilter
 
-    fun setSelectedFilter(filter: String) {
-        _selectedFilter.value = filter
-    }
-
-    fun setShowMemorized(value: Boolean) {
-        _showMemorized.value = value
-    }
-
-    fun toggleFavorite(dua: Hadith) {
-        viewModelScope.launch {
-            duaDao.updateFavorite(dua.id, !dua.isFavorite)
-        }
-    }
-    val favoriteDuas: StateFlow<List<Hadith>> = duaDao.getFavoriteDuas()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-
     val filteredDuas: StateFlow<List<Hadith>> = combine(
-        allDuas, selectedLevels, selectedFilter, favoriteDuas
-    ) { all, levels, filter, favorites ->
+        allDuas, selectedFilter, selectedLevels
+    ) { all, filter, levels ->
         var filtered = all
 
-        if (levels.isNotEmpty()) {
-            filtered = filtered.filter { it.level in levels }
-        }
+        if (levels.isNotEmpty()) filtered = filtered.filter { it.level in levels }
 
         filtered = when (filter) {
             "All" -> filtered
+            "Favorite" -> filtered.filter { it.isFavorite }
             "Memorized" -> filtered.filter { it.memorized }
-            "Favorite" -> favorites
             "In Progress" -> filtered.filter { !it.memorized }
             else -> filtered
         }
 
         filtered
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    fun setSelectedFilter(filter: String) {
+        _selectedFilter.value = filter
+    }
 
     fun setLevels(levels: List<Int>) {
         _selectedLevels.value = levels
     }
 
-    fun preloadDuas() {
+    fun toggleFavorite(hadith: Hadith) {
+        viewModelScope.launch {
+            val updatedDua = hadith.copy(isFavorite = !hadith.isFavorite)
+            duaDao.updateDua(updatedDua)
+            Log.d("HadithViewModel", "Updated dua ${hadith.id} favorite=${updatedDua.isFavorite}")
+        }
+    }
+
+    fun checkAndPreloadIfEmpty(duas: List<Hadith>) {
+        viewModelScope.launch {
+            val existing = duaDao.getAllDuas().first()
+            if (existing.isEmpty()) {
+                duaDao.insertAll(duas)
+            }
+        }
+    }
+
+    fun preloadDuas(duas: List<Hadith>) {
         viewModelScope.launch {
             duaDao.deleteAll()
             duaDao.insertAll(duas)
         }
     }
-}
 
+    var selectedFont by mutableStateOf("Al Majeed Quran")
+        private set
+
+    private val _fontSize = mutableStateOf(24f)
+    val fontSize: State<Float> = _fontSize
+
+    init {
+        viewModelScope.launch {
+            FontSizeManager.getSelectedFontFlow(context).collect { savedFont ->
+                selectedFont = savedFont
+            }
+        }
+
+        viewModelScope.launch {
+            FontSizeManager.getFontSizeFlow(context).collect {
+                _fontSize.value = it
+            }
+        }
+    }
+
+    fun updateFont(newFont: String) {
+        selectedFont = newFont
+        viewModelScope.launch {
+            FontSizeManager.saveSelectedFont(context, newFont)
+        }
+    }
+
+    fun updateFontSize(newSize: Float) {
+        _fontSize.value = newSize
+        viewModelScope.launch {
+            FontSizeManager.saveFontSize(context, newSize)
+        }
+    }
+}
 
 val duas = listOf(
     // Level 1: Duas 1–4

@@ -33,14 +33,18 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,25 +61,33 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hadithtime.components.BottomNavigationBar
+import androidx.lifecycle.viewmodel.compose.viewModel // ✅ Make sure this is imported
+import com.hadithtime.components.GenderDialog
+import com.hadithtime.components.LanguageDialog
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun SettingScreen(navController: NavController) {
-    var selectedAppLanguage by remember { mutableStateOf("English") }
+fun SettingScreen(
+    navController: NavController,
+    viewModel: HadithViewModel = viewModel()
+) {
+
+    var selectedEnglisLanguage by remember { mutableStateOf("English") }
+    var selectedUrduLanguage by remember { mutableStateOf(false) }
     var selectedTranslation by remember { mutableStateOf("English") }
     var selectedGender by remember { mutableStateOf("Male") }
     var selectedVoice by remember { mutableStateOf("Male") }
     var selectedFont by remember { mutableStateOf("Al Majeed Quran") }
-    var fontSize by remember { mutableStateOf(16f) }
+//    var fontSize by remember { mutableStateOf(16f) }
     var hadithReferenceEnabled by remember { mutableStateOf(false) }
     var autoNextHadithEnabled by remember { mutableStateOf(false) }
-    var readingTitleEnabled by remember { mutableStateOf(true) }
-    var rewardsEnabled by remember { mutableStateOf(true) }
+    var readingTitleEnabled by remember { mutableStateOf(false) }
+    var rewardsEnabled by remember { mutableStateOf(false) }
     var showTranslationDialog by remember { mutableStateOf(false) }
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
     val MyregularFont = FontFamily(Font(R.font.fredoka_regular))
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
-
+    val fontSize by viewModel.fontSize
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
@@ -114,19 +126,15 @@ fun SettingScreen(navController: NavController) {
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
-                // App Language Options
-
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    // English option
+                Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                    // App language label row
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_app_lang),
-                            contentDescription = "English",
+                            contentDescription = "App Language Icon",
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -137,134 +145,36 @@ fun SettingScreen(navController: NavController) {
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 5.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_english),
-                            contentDescription = "English",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            "English", fontSize = 16.sp,
-                            fontFamily = MyregularFont, modifier = Modifier.weight(1f)
-                        )
-                        RadioButton(
-                            selected = selectedAppLanguage == "English",
-                            onClick = { selectedAppLanguage = "English" }
-                        )
-                    }
 
-                    // Urdu option
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(30.dp)
-
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_urdu),
-                            contentDescription = "Urdu",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            "Urdu", fontSize = 16.sp,
-                            fontFamily = MyregularFont,
-                            modifier = Modifier.weight(1f)
-                        )
-                        RadioButton(
-                            selected = selectedAppLanguage == "Urdu",
-                            onClick = { selectedAppLanguage = "Urdu" }
-                        )
-                    }
-                }
-
-                // Dua Translation Row with dropdown
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp)
-                        .clickable { showTranslationDialog = true }
-
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_translation),
-                        contentDescription = "Dua Translation",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = "Dua Translation",
-                        fontSize = 16.sp,
-                        fontFamily = MyregularFont,
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Box(
-                        modifier = Modifier
-                            .background(color = colorResource(R.color.background_color), shape = RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = selectedTranslation,
-                                fontSize = 14.sp,
-                                fontFamily = MyregularFont,
-                                color = Color.Black
+                    // English option
+                    SettingSwitch(
+                        icon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_en),
+                                contentDescription = "English",
+                                modifier = Modifier.size(24.dp)
                             )
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown",
-                                tint = Color.Black
-                            )
-                        }
-                    }
-                }
-
-                // Translation Options Dialog
-                if (showTranslationDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showTranslationDialog = false },
-                        title = { Text("Select Translation Language") },
-                        buttons = {
-                            Column(
-                                modifier = Modifier
-                                    .padding(all = 16.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Text(
-                                    "English",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedTranslation = "English"
-                                            showTranslationDialog = false
-                                        }
-                                        .padding(vertical = 8.dp)
-                                )
-                                Text(
-                                    "Urdu",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedTranslation = "Urdu"
-                                            showTranslationDialog = false
-                                        }
-                                        .padding(vertical = 8.dp)
-                                )
-                            }
+                        },
+                        title = "English",
+                        checked = selectedEnglisLanguage == "English",
+                        onCheckedChange = {
+                            selectedEnglisLanguage = "English"
                         }
                     )
+
+                    SettingSwitch(
+                        icon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_pk),
+                                contentDescription = "Urdu",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        title = "Urdu",
+                        checked = selectedUrduLanguage,
+                        onCheckedChange = { selectedUrduLanguage = it }
+                    )
                 }
-                Spacer(Modifier.height(16.dp))
                 Divider(
                     color = Color.Gray,
                     modifier = Modifier
@@ -272,6 +182,7 @@ fun SettingScreen(navController: NavController) {
                         .padding(vertical = 20.dp)
                 )
             }
+            val selectedFont = viewModel.selectedFont
 
             item {
                 Text("Font Settings", fontSize = 18.sp, fontFamily = MyCountFont)
@@ -281,7 +192,7 @@ fun SettingScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.font),
                         contentDescription = "Dua Translation",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp).padding(start = 8.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
@@ -290,7 +201,11 @@ fun SettingScreen(navController: NavController) {
                     )
                     RadioButton(
                         selected = selectedFont == "Al Majeed Quran",
-                        onClick = { selectedFont = "Al Majeed Quran" }
+                        onClick = { viewModel.updateFont("Al Majeed Quran") },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = colorResource(R.color.filter_color),
+                            unselectedColor = Color.Gray
+                        )
                     )
                 }
 
@@ -298,16 +213,25 @@ fun SettingScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.font),
                         contentDescription = "Dua Translation",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(start = 8.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Arabic font 2", fontSize = 16.sp,
-                        fontFamily = MyregularFont, modifier = Modifier.weight(1f)
+                        text = "Arabic font 2",
+                        fontSize = 16.sp,
+                        fontFamily = MyregularFont,
+                        color = Color.Black,
+                        modifier = Modifier.weight(1f)
                     )
                     RadioButton(
                         selected = selectedFont == "Arabic font 2",
-                        onClick = { selectedFont = "Arabic font 2" }
+                        onClick = { viewModel.updateFont("Arabic font 2") },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = colorResource(R.color.filter_color),
+                            unselectedColor = Color.Gray
+                        )
                     )
                 }
 
@@ -325,7 +249,7 @@ fun SettingScreen(navController: NavController) {
                         Image(
                             painter = painterResource(id = R.drawable.font_size),
                             contentDescription = "Font Size Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
@@ -340,7 +264,7 @@ fun SettingScreen(navController: NavController) {
 
                     // The Arabic text centered
                     Text(
-                        text = "ٱلْـحَـمْـدُ للهِ", // Replace with your actual text
+                        text = "ٱلْـحَـمْـدُ للهِ",
                         fontSize = fontSize.sp,
                         fontFamily = MyArabicFont,
                         textAlign = TextAlign.Center,
@@ -348,6 +272,7 @@ fun SettingScreen(navController: NavController) {
                             .padding(vertical = 8.dp)
                             .fillMaxWidth()
                     )
+                    var arabicFontSize by remember { mutableStateOf(24.sp) }
 
                     // Slider with value indicator at the end
                     Row(
@@ -358,9 +283,16 @@ fun SettingScreen(navController: NavController) {
                     ) {
                         Slider(
                             value = fontSize,
-                            onValueChange = { fontSize = it },
-                            valueRange = 12f..30f,
-                            modifier = Modifier.weight(1f)
+                            onValueChange = { newSize ->
+                                viewModel.updateFontSize(newSize)
+                            },
+                            valueRange = 12f..100f,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = colorResource(R.color.filter_color),
+                                activeTrackColor = colorResource(R.color.filter_color_bg),
+                                inactiveTrackColor = colorResource(R.color.filter_color_bg)
+                            )
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = fontSize.toInt().toString())
@@ -376,8 +308,57 @@ fun SettingScreen(navController: NavController) {
             }
 
             item {
-                Text("Display", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text("Hadith Setting", fontSize = 18.sp, fontFamily = MyCountFont)
                 Spacer(Modifier.height(8.dp))
+
+                var showDialog by remember { mutableStateOf(false) }
+                var selectedTranslation by rememberSaveable { mutableStateOf("English") }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp, start = 8.dp, bottom = 5.dp)
+                        .clickable { showDialog = true }
+
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_translation),
+                        contentDescription = "Hadith Translation",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Hadith Translation",
+                        fontSize = 16.sp,
+                        fontFamily = MyregularFont,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(color = colorResource(R.color.background_color), shape = RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = selectedTranslation,
+                                fontSize = 14.sp,
+                                fontFamily = MyregularFont,
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Image(painter = painterResource(id = R.drawable.button_dropdown), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+
+                LanguageDialog(
+                    showDialog = showDialog,
+                    selectedLanguage = selectedTranslation,
+                    onSelect = { selectedTranslation = it },
+                    onDismiss = { showDialog = false }
+                )
 
                 SettingSwitch(
                     icon = {
@@ -417,12 +398,15 @@ fun SettingScreen(navController: NavController) {
                 Text("Audio", fontSize = 18.sp, fontFamily = MyCountFont)
                 Spacer(Modifier.height(8.dp))
 
+                var showForGenderDialog by remember { mutableStateOf(false) }
+                var selectedGender by rememberSaveable { mutableStateOf("Male") }
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp)
-                        .clickable { showTranslationDialog = true }
+                        .padding(top = 10.dp, start = 8.dp, bottom = 5.dp)
+                        .clickable { showForGenderDialog = true }
 
                 ) {
                     Image(
@@ -449,51 +433,17 @@ fun SettingScreen(navController: NavController) {
                                 fontFamily = MyregularFont,
                                 color = Color.Black
                             )
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown",
-                                tint = Color.Black
-                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Image(painter = painterResource(id = R.drawable.button_dropdown), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
                         }
                     }
                 }
-
-                // Translation Options Dialog
-                if (showTranslationDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showTranslationDialog = false },
-                        title = { Text("Select") },
-                        buttons = {
-                            Column(
-                                modifier = Modifier
-                                    .padding(all = 16.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Text(
-                                    "Male",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedGender = "Male"
-                                            showTranslationDialog = false
-                                        }
-                                        .padding(vertical = 8.dp)
-                                )
-                                Text(
-                                    "Female",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedGender = "Female"
-                                            showTranslationDialog = false
-                                        }
-                                        .padding(vertical = 8.dp)
-                                )
-                            }
-                        }
-                    )
-                }
+                GenderDialog(
+                    showDialog = showForGenderDialog,
+                    selectedLanguage = selectedGender,
+                    onSelect = { selectedGender = it },
+                    onDismiss = { showForGenderDialog = false }
+                )
 
                 SettingSwitch(
                     icon = {
@@ -550,7 +500,7 @@ fun SettingScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.about_app),
                         contentDescription = "Hadith Reference Icon",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp).padding(start = 8.dp)
                     )
                 },
                     onClick = {  }
@@ -562,7 +512,7 @@ fun SettingScreen(navController: NavController) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_rate_app),
                             contentDescription = "Rate App Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
                         )
                     },
                     onClick = { rateApp(context) }
@@ -574,10 +524,10 @@ fun SettingScreen(navController: NavController) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_share_app),
                             contentDescription = "Share App Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
                         )
                     },
-                    onClick = { shareApp(context) } // Pass the action when tapped
+                    onClick = { shareApp(context) }
                 )
 
             }
@@ -591,7 +541,7 @@ fun rateApp(context: Context) {
         context.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("market://details?id=$packageName")
+                Uri.parse("https://play.google.com/store/apps/details?id=com.dualand.app")
             ).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
@@ -600,7 +550,7 @@ fun rateApp(context: Context) {
         context.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=com.dualand.appid=$packageName")
+                Uri.parse("https://play.google.com/store/apps/details?id=com.dualand.app")
             ).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
@@ -636,9 +586,9 @@ fun SettingSwitch(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(start = 8.dp)
     ) {
-        icon()  // <-- Call the composable lambda directly
+        icon()
         Spacer(Modifier.width(8.dp))
         Text(
             title,
@@ -646,7 +596,16 @@ fun SettingSwitch(
             fontSize = 16.sp,
             fontFamily = MyregularFont,
         )
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = colorResource(R.color.filter_color),
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = colorResource(R.color.filter_color_unchecked)
+            )
+        )
     }
 }
 

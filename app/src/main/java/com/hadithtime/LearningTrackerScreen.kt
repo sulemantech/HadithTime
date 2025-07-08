@@ -56,11 +56,13 @@ fun LearningTrackerScreen(
     navController: NavController,
     viewModel: HadithViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+
     val filteredDuas by viewModel.filteredDuas.collectAsState()
     // val selectedLevel by viewModel.selectedLevel.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.preloadDuas()
+        viewModel.checkAndPreloadIfEmpty(duas)
     }
+
     val context = LocalContext.current
     val view = LocalView.current
     LaunchedEffect(Unit) {
@@ -270,7 +272,7 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
 
     Surface(
         color = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         modifier = Modifier
            // .padding(horizontal = 4.dp)
             .clickable { onClick() }
@@ -304,7 +306,8 @@ fun SelectLevelDropdown(
             shape = RoundedCornerShape(20.dp)
         ) {
             Text(text = displayedText, color = Color.White, fontFamily = MyCountFont)
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
+            Spacer(modifier = Modifier.width(8.dp))
+            Image(painter = painterResource(id = R.drawable.dropdown_arrow), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
         }
     }
 
@@ -340,12 +343,12 @@ fun SelectLevelDropdown(
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Select Level", fontFamily = MyCountFont, fontSize = 16.sp)
+                        Text("Clear Filter", fontFamily = MyCountFont, fontSize = 16.sp)
                     }
-                    Divider( // 🔹 Divider below title
+                    Divider(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        //  .padding(top = 8.dp),
+                            .fillMaxWidth()
+                          .padding(top = 4.dp),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
@@ -356,7 +359,7 @@ fun SelectLevelDropdown(
                     modifier = Modifier
                         .fillMaxWidth(),
                       //  .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     for (row in 0 until 3) {
                         Row(
@@ -478,7 +481,7 @@ fun Hadith(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 0.dp)
+                    .padding(end = 9.dp)
             ) {
                 hadith.englishReference?.let { reference ->
                     val lines = reference.split("\n", limit = 2)

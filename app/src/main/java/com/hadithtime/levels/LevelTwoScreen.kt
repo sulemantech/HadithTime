@@ -5,16 +5,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,10 +22,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
@@ -45,10 +47,11 @@ fun LevelTwoScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.dua1)
-
-    val levelTwoDuas = remember { duas.filter { it.level == 2 } }
+    val viewModel: HadithViewModel = viewModel()
+    var arabicFontSize by remember { mutableStateOf(24.sp) }
+    val filteredDuas by viewModel.filteredDuas.collectAsState()
+    val levelTwoDuas = filteredDuas.filter { it.level == 2 }
     val currentDua = levelTwoDuas.getOrNull(currentIndex)
-
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -95,28 +98,37 @@ fun LevelTwoScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    val fontSize = viewModel.fontSize.value
+
                     currentDua?.let {
-                        HadithCard(dua = it)
+                        HadithCard(
+                            dua = it,
+                            fontSizeSp = fontSize
+                        )
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
 
-            PlayerControls(
-                navController = navController,
-                onNextClick = {
-                    if (currentIndex < levelTwoDuas.lastIndex) {
-                        navController.navigate("titleScreenLevel2/2/${currentIndex + 1}")
-                    }
-                },
-                onPreviousClick = {
-                    if (currentIndex > 0) {
-                        navController.navigate("titleScreenLevel2/2/${currentIndex - 1}")
-                    }
-                },
-                level = 2
-            )
+            currentDua?.let { dua ->
+                PlayerControls(
+                    navController = navController,
+                    onNextClick = {
+                        if (currentIndex < levelTwoDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel2/2/${currentIndex + 1}")
+                        }
+                    },
+                    onPreviousClick = {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel2/2/${currentIndex - 1}")
+                        }
+                    },
+                    level = 2,
+                    dua = dua,                // ✅ Pass the current dua here
+                    viewModel = viewModel     // ✅ Pass the viewmodel here
+                )
+            }
         }
     }
 

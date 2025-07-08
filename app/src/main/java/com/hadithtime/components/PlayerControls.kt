@@ -1,5 +1,9 @@
 package com.hadithtime.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,6 +22,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,55 +37,50 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
+import com.hadithtime.model.Hadith
 
 @Composable
 fun PlayerControls(
     navController: NavController,
     onNextClick: () -> Unit,
     onPreviousClick: () -> Unit,
-    level: Int
-)
-{    var sliderValue by remember { mutableStateOf(7f) }
-    var memorizeEnabled by remember { mutableStateOf(false) }
-    val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
+    level: Int,
+    dua: Hadith,
+    viewModel: HadithViewModel
+) {
+    var sliderValue by remember { mutableStateOf(7f) }
+    var isPlaying by remember { mutableStateOf(false) }
 
-    Surface(
-        color = Color.White,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
+    val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
+    val filteredDuas by viewModel.filteredDuas.collectAsState()
+    val updatedDua = filteredDuas.find { it.id == dua.id } ?: dua
+    val currentIndex = filteredDuas.indexOfFirst { it.id == dua.id } + 1
+    val totalCount = filteredDuas.size
+
+    Surface(color = Color.White, modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp,end = 12.dp, bottom = 12.dp)
+                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(top = 12.dp, start = 7.dp, end = 7.dp),
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, start = 7.dp, end = 7.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Text(
-                    text = "1 of 49",
+                    text = "$currentIndex of $totalCount",
                     fontSize = 14.sp,
                     fontFamily = MyCountFont,
                     color = colorResource(R.color.black_arabic)
                 )
-
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Text(
-//                        text = "Memorize",
-//                        fontSize = 14.sp,
-//                        color = Color.Black
-//                    )
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Switch(
-//                        checked = memorizeEnabled,
-//                        onCheckedChange = { memorizeEnabled = it }
-//                    )
-//                }
             }
+
 
             val sliderColor = when (level) {
                 1 -> colorResource(id = R.color.slider_level1)
@@ -90,7 +90,7 @@ fun PlayerControls(
                 5 -> colorResource(id = R.color.slider_level5)
                 6 -> colorResource(id = R.color.slider_level6)
                 7 -> colorResource(id = R.color.slider_level7)
-                else -> colorResource(id = R.color.slider_color) // default
+                else -> colorResource(id = R.color.slider_color)
             }
 
             Slider(
@@ -108,77 +108,62 @@ fun PlayerControls(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 7.dp, end = 7.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 7.dp, end = 7.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "0:07", fontFamily = MyCountFont,fontSize = 14.sp, color = colorResource(R.color.black_arabic))
-                Text(text = "0:40", fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
+                Text("0:07", fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
+                Text("0:40", fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp,bottom=8.dp),
+                    .padding(top = 5.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_repeat),
-                        contentDescription = "Repeat",
-                        modifier = Modifier.size(24.dp, 24.dp)
-                    )
+                IconButton(onClick = { /* Repeat logic */ }) {
+                    Image(painter = painterResource(id = R.drawable.ic_repeat), contentDescription = "Repeat", modifier = Modifier.size(24.dp))
                 }
+
                 IconButton(onClick = onPreviousClick) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_previous),
-                        contentDescription = "Previous",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
+                    Image(painter = painterResource(id = R.drawable.ic_previous), contentDescription = "Previous", modifier = Modifier.size(20.dp))
                 }
-                var isPlaying by remember { mutableStateOf(false) }
 
                 val interactionSource = remember { MutableInteractionSource() }
-
                 Box(
                     modifier = Modifier
                         .size(56.dp)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null // disables ripple/focus
-                        ) {
+                        .clickable(interactionSource = interactionSource, indication = null) {
                             isPlaying = !isPlaying
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(
-                            id = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play
-                        ),
+                        painter = painterResource(id = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
                         contentDescription = if (isPlaying) "Pause" else "Play",
                         modifier = Modifier.size(50.dp)
                     )
                 }
 
                 IconButton(onClick = onNextClick) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = "Next",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
+                    Image(painter = painterResource(id = R.drawable.icon_next), contentDescription = "Next", modifier = Modifier.size(20.dp))
                 }
-                var isFavorite by remember { mutableStateOf(false) }
 
-                IconButton(
-                    onClick = { isFavorite = !isFavorite }
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = if (isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
-                        ),
-                        contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
-                        modifier = Modifier.size(24.dp)
-                    )
+                val favoriteIcon = if (updatedDua.isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
+
+                IconButton(onClick = { viewModel.toggleFavorite(updatedDua) }) {
+                    AnimatedContent(targetState = favoriteIcon, transitionSpec = {
+                        fadeIn() togetherWith fadeOut()
+                    }) { icon ->
+                        Image(
+                            painter = painterResource(id = icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
         }

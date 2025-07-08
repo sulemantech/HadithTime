@@ -2,33 +2,33 @@ package com.hadithtime.levels
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
@@ -46,10 +46,12 @@ fun LevelSevenScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_title_five_color)
+    val viewModel: HadithViewModel = viewModel()
+    var arabicFontSize by remember { mutableStateOf(24.sp) }
 
-    val levelSevenDuas = remember { duas.filter { it.level == 7 } }
+    val filteredDuas by viewModel.filteredDuas.collectAsState()
+    val levelSevenDuas = filteredDuas.filter { it.level == 7 }
     val currentDua = levelSevenDuas.getOrNull(currentIndex)
-
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -95,28 +97,37 @@ fun LevelSevenScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    val fontSize = viewModel.fontSize.value // ← from your state
+
                     currentDua?.let {
-                        HadithCard(dua = it)
+                        HadithCard(
+                            dua = it,
+                            fontSizeSp = fontSize // ✅ pass this
+                        )
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
 
-            PlayerControls(
-                navController = navController,
-                onNextClick = {
-                    if (currentIndex < levelSevenDuas.lastIndex) {
-                        navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
-                    }
-                },
-                onPreviousClick = {
-                    if (currentIndex > 0) {
-                        navController.navigate("titleScreenLevel7/7/${currentIndex - 1}")
-                    }
-                },
-                level = 7
-            )
+            currentDua?.let { dua ->
+                PlayerControls(
+                    navController = navController,
+                    onNextClick = {
+                        if (currentIndex < levelSevenDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
+                        }
+                    },
+                    onPreviousClick = {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel7/7/${currentIndex - 1}")
+                        }
+                    },
+                    level = 7,
+                    dua = dua,
+                    viewModel = viewModel
+                )
+            }
         }
     }
 }
