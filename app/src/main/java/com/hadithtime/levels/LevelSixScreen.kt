@@ -27,11 +27,13 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hadithtime.HadithViewModel
+import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
@@ -55,6 +57,10 @@ fun LevelSixScreen(
     val filteredDuas by viewModel.filteredDuas.collectAsState()
     val levelSixDuas = filteredDuas.filter { it.level == 6 }
     val currentDua = levelSixDuas.getOrNull(currentIndex)
+    val context = LocalContext.current
+    val fontSize = viewModel.fontSize.value
+    val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
+
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -105,7 +111,9 @@ fun LevelSixScreen(
                     currentDua?.let {
                         HadithCard(
                             dua = it,
-                            fontSizeSp = fontSize // ✅ pass this
+                            fontSizeSp = fontSize,
+                            isEnglish = isEnglish
+
                         )
                     }
 

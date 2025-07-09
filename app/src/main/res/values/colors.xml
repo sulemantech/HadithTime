@@ -31,6 +31,7 @@
     <color name="dashboard_color">#118A7C</color>
     <color name="dashboard_color_bg">#BEE7ED</color>
     <color name="filter_color_bg">#F0F0F0</color>
+    <color name="continue_bg">#277884</color>
     <color name="filter_color">#019AA7</color>
     <color name="filter_color_unchecked">#BFBFBF</color>
 </resources>

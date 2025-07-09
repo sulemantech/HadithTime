@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +33,7 @@ import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
+import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
@@ -55,6 +57,10 @@ fun LevelThreeScreen(
     val filteredDuas by viewModel.filteredDuas.collectAsState()
     val levelThreeDuas = filteredDuas.filter { it.level == 3 }
     val currentDua = levelThreeDuas.getOrNull(currentIndex)
+    val context = LocalContext.current
+    val fontSize = viewModel.fontSize.value
+    val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
+
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -106,10 +112,11 @@ fun LevelThreeScreen(
                     currentDua?.let {
                         HadithCard(
                             dua = it,
-                            fontSizeSp = fontSize // ✅ pass this
+                            fontSizeSp = fontSize,
+                            isEnglish = isEnglish
+
                         )
                     }
-
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }

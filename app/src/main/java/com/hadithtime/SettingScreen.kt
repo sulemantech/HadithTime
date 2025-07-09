@@ -41,9 +41,11 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,8 +64,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hadithtime.components.BottomNavigationBar
 import androidx.lifecycle.viewmodel.compose.viewModel // ✅ Make sure this is imported
+import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.GenderDialog
 import com.hadithtime.components.LanguageDialog
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -146,7 +150,11 @@ fun SettingScreen(
                         )
                     }
 
-                    // English option
+                    val context = LocalContext.current
+                    val scope = rememberCoroutineScope()
+                    val isEnglish by FontSizeManager.getEnglishToggle(context).collectAsState(initial = true)
+                    val isUrdu by FontSizeManager.getUrduToggle(context).collectAsState(initial = false)
+
                     SettingSwitch(
                         icon = {
                             Image(
@@ -156,9 +164,11 @@ fun SettingScreen(
                             )
                         },
                         title = "English",
-                        checked = selectedEnglisLanguage == "English",
+                        checked = isEnglish,
                         onCheckedChange = {
-                            selectedEnglisLanguage = "English"
+                            scope.launch {
+                                FontSizeManager.saveEnglishToggle(context, it)
+                            }
                         }
                     )
 
@@ -171,9 +181,14 @@ fun SettingScreen(
                             )
                         },
                         title = "Urdu",
-                        checked = selectedUrduLanguage,
-                        onCheckedChange = { selectedUrduLanguage = it }
+                        checked = isUrdu,
+                        onCheckedChange = {
+                            scope.launch {
+                                FontSizeManager.saveUrduToggle(context, it)
+                            }
+                        }
                     )
+
                 }
                 Divider(
                     color = Color.Gray,

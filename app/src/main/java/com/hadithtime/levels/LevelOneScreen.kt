@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,7 @@ import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
+import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
@@ -53,6 +55,9 @@ fun LevelOneScreen(
     val filteredDuas by viewModel.filteredDuas.collectAsState()
     val levelOneDuas = filteredDuas.filter { it.level == 1 }
     val currentDua = levelOneDuas.getOrNull(currentIndex)
+    val context = LocalContext.current
+    val fontSize = viewModel.fontSize.value
+    val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
 
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
@@ -105,7 +110,9 @@ fun LevelOneScreen(
                     currentDua?.let {
                         HadithCard(
                             dua = it,
-                            fontSizeSp = fontSize // ✅ pass this
+                            fontSizeSp = fontSize,
+                            isEnglish = isEnglish
+
                         )
                     }
 

@@ -64,11 +64,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
+import com.hadithtime.duas
 import com.hadithtime.levels.LevelFiveScreen
 import com.hadithtime.model.HadithCard
 import com.hadithtime.model.HadithDataProvider.levels
@@ -107,6 +110,11 @@ fun HadithDashboardScreen(
             }
             insets
         }
+    }
+    val viewModel: HadithViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.checkAndPreloadIfEmpty(duas)
     }
 
 

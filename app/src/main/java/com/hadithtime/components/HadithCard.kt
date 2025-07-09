@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,20 +35,22 @@ import com.hadithtime.R
 import com.hadithtime.model.Hadith
 
 @Composable
-fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = viewModel()) {
+fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = viewModel(), isEnglish: Boolean,) {
     val arabicFontSize = fontSizeSp.sp
     val AlMajeedFont = FontFamily(Font(R.font.al_quran))
     val MyEnglishFont = FontFamily(Font(R.font.lato_regular))
-   // var arabicFontSize by remember { mutableStateOf(24.sp) }
+    // var arabicFontSize by remember { mutableStateOf(24.sp) }
     val ArabicFont2 = FontFamily(Font(R.font.vazirmatn_regular))
     var selectedFont by rememberSaveable { mutableStateOf("Al Majeed Quran") }
+    val context = LocalContext.current
+    val isEnglish by FontSizeManager.getEnglishToggle(context).collectAsState(initial = true)
+    val isUrdu by FontSizeManager.getUrduToggle(context).collectAsState(initial = false)
+
     val fontFamily = when (viewModel.selectedFont) {
         "Al Majeed Quran" -> AlMajeedFont
         "Arabic font 2" -> ArabicFont2
         else -> AlMajeedFont
     }
-
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,42 +144,51 @@ fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = view
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-
-                dua.englishReference?.let { reference ->
-                    val lines = reference.split("\n", limit = 2)
-
-                    Text(
-                        buildAnnotatedString {
-                            if (lines.isNotEmpty()) {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.W200,
-                                        fontSize = 20.sp,
-                                        fontFamily = MyEnglishFont
-                                    )
-                                ) {
-                                    append(lines[0] + "\n")
+                if (isEnglish) {
+                    dua.englishReference?.let { reference ->
+                        val lines = reference.split("\n", limit = 2)
+                        Text(
+                            buildAnnotatedString {
+                                if (lines.isNotEmpty()) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.W200,
+                                            fontSize = 20.sp,
+                                            fontFamily = MyEnglishFont
+                                        )
+                                    ) { append(lines[0] + "\n") }
                                 }
-                            }
-                            if (lines.size > 1) {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 20.sp,
-                                        fontFamily = MyEnglishFont
-                                    )
-                                ) {
-                                    append(lines[1])
+                                if (lines.size > 1) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            fontFamily = MyEnglishFont
+                                        )
+                                    ) { append(lines[1]) }
                                 }
-                            }
-                        },
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        lineHeight = 28.sp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                            },
+                            textAlign = TextAlign.Center,
+                            color = Color.Black,
+                            lineHeight = 28.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
 
+                if (isUrdu) {
+                    dua.englishTranslation?.let {
+                        Text(
+                            text = it,
+                            fontSize = 20.sp,
+                            fontFamily = ArabicFont2,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 28.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 

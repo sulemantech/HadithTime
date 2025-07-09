@@ -359,7 +359,7 @@ fun SelectLevelDropdown(
                     modifier = Modifier
                         .fillMaxWidth(),
                       //  .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     for (row in 0 until 3) {
                         Row(
