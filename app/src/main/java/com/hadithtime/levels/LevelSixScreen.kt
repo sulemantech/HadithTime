@@ -23,6 +23,7 @@ import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
@@ -127,18 +128,37 @@ fun LevelSixScreen(
                     onNextClick = {
                         if (currentIndex < levelSixDuas.lastIndex) {
                             navController.navigate("titleScreenLevel6/6/${currentIndex + 1}")
+                        } else {
+                            // Jump to level 7, first dua if available
+                            val nextLevel = 7
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No next Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     onPreviousClick = {
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel6/6/${currentIndex - 1}")
+                        } else {
+                            // Jump to level 5, last dua if available
+                            val previousLevel = 5
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     level = 6,
-                    dua = dua,                // ✅ Pass the current dua here
-                    viewModel = viewModel     // ✅ Pass the viewmodel here
+                    dua = dua,
+                    viewModel = viewModel
                 )
             }
+
         }
     }
 

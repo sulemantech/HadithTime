@@ -1,11 +1,7 @@
 package com.hadithtime.components
 
 import android.os.Build
-import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -13,7 +9,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.hadithtime.ChooseLanguageScreen
-import com.hadithtime.FavoriteScreen
 import com.hadithtime.FontSizeAdjustmentScreen
 import com.hadithtime.LearningTrackerScreen
 import com.hadithtime.OnboardingPrefs
@@ -136,10 +131,6 @@ fun AppNavHost(navController: NavHostController) {
 
         composable("LearningTrackerScreen") {
             LearningTrackerScreen(navController)
-        }
-
-        composable("FavoriteScreen") {
-            FavoriteScreen(navController)
         }
 
         composable("settings") {

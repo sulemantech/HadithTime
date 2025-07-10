@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hadithtime.components.BottomNavigationBar
-import androidx.lifecycle.viewmodel.compose.viewModel // ✅ Make sure this is imported
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.GenderDialog
 import com.hadithtime.components.LanguageDialog
@@ -108,6 +108,7 @@ fun SettingScreen(
                 Text(
                     text = "Settings",
                     fontSize = 20.sp,
+                    color = colorResource(R.color.black),
                     fontFamily = MyCountFont,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -126,6 +127,7 @@ fun SettingScreen(
                 Text(
                     "Language",
                     fontSize = 18.sp,
+                    color = colorResource(R.color.black),
                     fontFamily = MyCountFont,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -145,6 +147,7 @@ fun SettingScreen(
                         Text(
                             "App Language",
                             fontSize = 16.sp,
+                            color = colorResource(R.color.black),
                             fontFamily = MyregularFont,
                             modifier = Modifier.padding(start = 8.dp)
                         )
@@ -152,8 +155,10 @@ fun SettingScreen(
 
                     val context = LocalContext.current
                     val scope = rememberCoroutineScope()
-                    val isEnglish by FontSizeManager.getEnglishToggle(context).collectAsState(initial = true)
-                    val isUrdu by FontSizeManager.getUrduToggle(context).collectAsState(initial = false)
+                    val isEnglish by FontSizeManager.getEnglishToggle(context)
+                        .collectAsState(initial = true)
+                    val isUrdu by FontSizeManager.getUrduToggle(context)
+                        .collectAsState(initial = false)
 
                     SettingSwitch(
                         icon = {
@@ -165,6 +170,7 @@ fun SettingScreen(
                         },
                         title = "English",
                         checked = isEnglish,
+                        textColor = Color.White,
                         onCheckedChange = {
                             scope.launch {
                                 FontSizeManager.saveEnglishToggle(context, it)
@@ -181,6 +187,7 @@ fun SettingScreen(
                             )
                         },
                         title = "Urdu",
+                        textColor = Color.White,
                         checked = isUrdu,
                         onCheckedChange = {
                             scope.launch {
@@ -200,18 +207,25 @@ fun SettingScreen(
             val selectedFont = viewModel.selectedFont
 
             item {
-                Text("Font Settings", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text(
+                    "Font Settings",
+                    fontSize = 18.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(R.color.black),
+                )
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(id = R.drawable.font),
                         contentDescription = "Dua Translation",
-                        modifier = Modifier.size(24.dp).padding(start = 8.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(start = 8.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Al Majeed Quran", fontSize = 16.sp,
+                        "Al Majeed Quran", fontSize = 16.sp, color = colorResource(R.color.black),
                         fontFamily = MyregularFont, modifier = Modifier.weight(1f)
                     )
                     RadioButton(
@@ -264,12 +278,15 @@ fun SettingScreen(
                         Image(
                             painter = painterResource(id = R.drawable.font_size),
                             contentDescription = "Font Size Icon",
-                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(start = 8.dp)
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Font Size",
                             fontSize = 16.sp,
+                            color = colorResource(R.color.black),
                             fontFamily = MyregularFont,
                             modifier = Modifier
                                 .weight(1f)
@@ -281,6 +298,7 @@ fun SettingScreen(
                     Text(
                         text = "ٱلْـحَـمْـدُ للهِ",
                         fontSize = fontSize.sp,
+                        color = colorResource(R.color.black),
                         fontFamily = MyArabicFont,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -323,7 +341,12 @@ fun SettingScreen(
             }
 
             item {
-                Text("Hadith Setting", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text(
+                    "Hadith Setting",
+                    fontSize = 18.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(R.color.black),
+                )
                 Spacer(Modifier.height(8.dp))
 
                 var showDialog by remember { mutableStateOf(false) }
@@ -346,13 +369,17 @@ fun SettingScreen(
                     Text(
                         text = "Hadith Translation",
                         fontSize = 16.sp,
+                        color = colorResource(R.color.black),
                         fontFamily = MyregularFont,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Box(
                         modifier = Modifier
-                            .background(color = colorResource(R.color.background_color), shape = RoundedCornerShape(8.dp))
+                            .background(
+                                color = colorResource(R.color.background_color),
+                                shape = RoundedCornerShape(8.dp)
+                            )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -363,7 +390,11 @@ fun SettingScreen(
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Image(painter = painterResource(id = R.drawable.button_dropdown), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
+                            Image(
+                                painter = painterResource(id = R.drawable.button_dropdown),
+                                contentDescription = "Repeat",
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
                 }
@@ -378,25 +409,13 @@ fun SettingScreen(
                 SettingSwitch(
                     icon = {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_eye),
-                            contentDescription = "Hadith Reference Icon",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    title = "Hadith Reference",
-                    checked = hadithReferenceEnabled,
-                    onCheckedChange = { hadithReferenceEnabled = it }
-                )
-
-                SettingSwitch(
-                    icon = {
-                        Image(
                             painter = painterResource(id = R.drawable.ic_next),
                             contentDescription = "Hadith Reference Icon",
                             modifier = Modifier.size(24.dp)
                         )
                     },
                     title = "Auto Next Hadith",
+                    textColor = Color.White,
                     checked = autoNextHadithEnabled,
                     onCheckedChange = { autoNextHadithEnabled = it }
                 )
@@ -410,7 +429,12 @@ fun SettingScreen(
             }
 
             item {
-                Text("Audio", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text(
+                    "Audio",
+                    fontSize = 18.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(R.color.black),
+                )
                 Spacer(Modifier.height(8.dp))
 
                 var showForGenderDialog by remember { mutableStateOf(false) }
@@ -433,12 +457,16 @@ fun SettingScreen(
                     Text(
                         text = "Choose Voice",
                         fontSize = 16.sp,
+                        color = colorResource(R.color.black),
                         fontFamily = MyregularFont,
                         modifier = Modifier.weight(1f),
                     )
                     Box(
                         modifier = Modifier
-                            .background(color = colorResource(R.color.background_color), shape = RoundedCornerShape(8.dp))
+                            .background(
+                                color = colorResource(R.color.background_color),
+                                shape = RoundedCornerShape(8.dp)
+                            )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -449,7 +477,11 @@ fun SettingScreen(
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Image(painter = painterResource(id = R.drawable.button_dropdown), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
+                            Image(
+                                painter = painterResource(id = R.drawable.button_dropdown),
+                                contentDescription = "Repeat",
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
                 }
@@ -469,6 +501,7 @@ fun SettingScreen(
                         )
                     },
                     title = "Reading Out Hadith Title",
+                    textColor = Color.White,
                     checked = readingTitleEnabled,
                     onCheckedChange = { readingTitleEnabled = it }
                 )
@@ -482,7 +515,12 @@ fun SettingScreen(
             }
 
             item {
-                Text("Notifications", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text(
+                    "Notifications",
+                    fontSize = 18.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(R.color.black),
+                )
                 Spacer(Modifier.height(8.dp))
 
                 SettingSwitch(
@@ -494,6 +532,7 @@ fun SettingScreen(
                         )
                     },
                     title = "Rewards",
+                    textColor = Color.White,
                     checked = rewardsEnabled,
                     onCheckedChange = { rewardsEnabled = it }
                 )
@@ -508,38 +547,51 @@ fun SettingScreen(
 
             item {
                 val context = LocalContext.current
-                Text("About", fontSize = 18.sp, fontFamily = MyCountFont)
+                Text(
+                    "About",
+                    fontSize = 18.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(R.color.black),
+                )
                 Spacer(Modifier.height(8.dp))
 
-                SettingRow(title = "About App",  icon = {
+                SettingRow(title = "About App", textColor = Color.White,
+                    icon = {
                     Image(
                         painter = painterResource(id = R.drawable.about_app),
                         contentDescription = "Hadith Reference Icon",
-                        modifier = Modifier.size(24.dp).padding(start = 8.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(start = 8.dp)
                     )
                 },
-                    onClick = {  }
+                    onClick = { }
                 )
 
                 SettingRow(
-                    title = "Rate App",
-                    icon = {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_rate_app),
-                            contentDescription = "Rate App Icon",
-                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
-                        )
-                    },
-                    onClick = { rateApp(context) }
+                    title = "Rate App",  textColor = Color.White,
+                icon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_rate_app),
+                        contentDescription = "Rate App Icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(start = 8.dp)
+                    )
+                },
+                onClick = { rateApp(context) }
                 )
 
                 SettingRow(
                     title = "Share App",
+                    textColor = Color.White,
                     icon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_share_app),
                             contentDescription = "Share App Icon",
-                            modifier = Modifier.size(24.dp).padding(start = 8.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(start = 8.dp)
                         )
                     },
                     onClick = { shareApp(context) }
@@ -585,12 +637,12 @@ fun shareApp(context: Context) {
     context.startActivity(Intent.createChooser(shareIntent, "Share via"))
 }
 
-
 @Composable
 fun SettingSwitch(
     icon: @Composable () -> Unit,
     title: String,
     checked: Boolean,
+    textColor: Color = Color.Black,
     onCheckedChange: (Boolean) -> Unit
 ) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
@@ -609,6 +661,7 @@ fun SettingSwitch(
             title,
             modifier = Modifier.weight(1f),
             fontSize = 16.sp,
+            color = Color.Black,
             fontFamily = MyregularFont,
         )
         Switch(
@@ -625,8 +678,10 @@ fun SettingSwitch(
 }
 
 @Composable
-fun SettingRow(title: String, icon: @Composable () -> Unit,
-               onClick: () -> Unit) {
+fun SettingRow(
+    title: String, icon: @Composable () -> Unit,
+    onClick: () -> Unit, textColor: Color = Color.Black,
+) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
     val MyregularFont = FontFamily(Font(R.font.fredoka_regular))
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
@@ -640,7 +695,7 @@ fun SettingRow(title: String, icon: @Composable () -> Unit,
     ) {
         icon()
         Spacer(Modifier.width(8.dp))
-        Text(title, modifier = Modifier.weight(1f),fontSize = 18.sp, fontFamily = MyregularFont)
+        Text(title, modifier = Modifier.weight(1f), fontSize = 18.sp, fontFamily = MyregularFont,  color = Color.Black,)
         Image(
             painter = painterResource(id = R.drawable.forward_arrow),
             contentDescription = "Hadith Reference Icon",

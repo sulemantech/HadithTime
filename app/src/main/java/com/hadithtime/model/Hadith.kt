@@ -13,7 +13,7 @@ data class Hadith(
     val arabicTitle: String,
     val englishReference: String?,
     val englishTranslation: String,
-    val audioUrl: String?,
+    val audioUrl: Int,
     val backgroundUrl: String?,
     val icon: Int,
     val level: Int,

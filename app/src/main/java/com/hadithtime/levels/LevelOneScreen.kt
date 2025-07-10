@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -126,11 +127,29 @@ fun LevelOneScreen(
                     onNextClick = {
                         if (currentIndex < levelOneDuas.lastIndex) {
                             navController.navigate("titleScreenLevel1/1/${currentIndex + 1}")
+                        } else {
+                            // Move to Level 2's first Dua
+                            val nextLevel = 2
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas available", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     onPreviousClick = {
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel1/1/${currentIndex - 1}")
+                        } else {
+                            // Move to Level 0's last Dua (if exists)
+                            val previousLevel = 0
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas available", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     level = 1,
@@ -138,9 +157,9 @@ fun LevelOneScreen(
                     viewModel = viewModel
                 )
             }
+
         }
     }
-
 }
 
 @Preview(showBackground = true)

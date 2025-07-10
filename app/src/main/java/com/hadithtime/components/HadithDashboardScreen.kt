@@ -3,6 +3,7 @@ package com.hadithtime.components
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -112,7 +113,10 @@ fun HadithDashboardScreen(
         }
     }
     val viewModel: HadithViewModel = viewModel()
-
+    val activity = context as? Activity
+    BackHandler {
+        activity?.finish()
+    }
     LaunchedEffect(Unit) {
         viewModel.checkAndPreloadIfEmpty(duas)
     }

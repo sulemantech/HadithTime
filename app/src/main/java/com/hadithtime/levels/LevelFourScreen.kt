@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -127,16 +128,33 @@ fun LevelFourScreen(
                     onNextClick = {
                         if (currentIndex < levelFourDuas.lastIndex) {
                             navController.navigate("titleScreenLevel4/4/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 5
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     onPreviousClick = {
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel4/4/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 3
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    },
+                    }
+                    ,
                     level = 4,
-                    dua = dua,                // ✅ Pass the current dua here
-                    viewModel = viewModel     // ✅ Pass the viewmodel here
+                    dua = dua,
+                    viewModel = viewModel
                 )
             }
         }

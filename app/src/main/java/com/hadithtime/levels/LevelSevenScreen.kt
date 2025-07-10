@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -123,11 +124,22 @@ fun LevelSevenScreen(
                     onNextClick = {
                         if (currentIndex < levelSevenDuas.lastIndex) {
                             navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
+                        } else {
+                            // No next level after 7 — show message or go to dashboard maybe
+                            Toast.makeText(context, "You've reached the final Dua!", Toast.LENGTH_SHORT).show()
                         }
                     },
                     onPreviousClick = {
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel7/7/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 6
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     level = 7,
@@ -135,6 +147,7 @@ fun LevelSevenScreen(
                     viewModel = viewModel
                 )
             }
+
         }
     }
 }

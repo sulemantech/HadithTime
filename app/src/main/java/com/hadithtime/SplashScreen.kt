@@ -84,7 +84,7 @@ fun SplashScreen(onFinished: (String) -> Unit) {
                 Image(
                     painter = painterResource(id = R.drawable.onboarding_logo),
                     contentDescription = "Hadith Icon",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(118.dp),
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))

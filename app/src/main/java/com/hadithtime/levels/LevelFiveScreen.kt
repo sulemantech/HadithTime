@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -65,10 +66,6 @@ fun LevelFiveScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.setLevels(listOf(5)) // ✅ so filteredDuas shows level 5 content
-    }
-
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
@@ -104,7 +101,7 @@ fun LevelFiveScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value // ← from your state
+                    val fontSize = viewModel.fontSize.value
 
                     currentDua?.let {
                         HadithCard(
@@ -125,11 +122,27 @@ fun LevelFiveScreen(
                     onNextClick = {
                         if (currentIndex < levelFiveDuas.lastIndex) {
                             navController.navigate("titleScreenLevel5/5/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 6
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     onPreviousClick = {
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel5/5/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 4
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     level = 5,
