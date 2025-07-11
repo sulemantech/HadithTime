@@ -153,10 +153,9 @@ fun HadithDashboardScreen(
                 .fillMaxSize()
             // .padding(paddingValues)
         ) {
-            // 1️⃣ LazyColumn for scrollable content
             LazyColumn(
                 state = scrollState,
-                contentPadding = PaddingValues(top = 380.dp),
+                contentPadding = PaddingValues(top = 390.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)

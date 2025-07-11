@@ -1,8 +1,14 @@
 package com.hadithtime.levels
 
+import android.app.Activity
+import android.os.Build
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -26,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -38,6 +46,7 @@ import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
 import com.hadithtime.duas
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun LevelFiveScreen(
     navController: NavController,
@@ -49,7 +58,6 @@ fun LevelFiveScreen(
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_title_four_color)
-    var arabicFontSize by remember { mutableStateOf(24.sp) }
     val viewModel: HadithViewModel = viewModel()
 
     val filteredDuas by viewModel.filteredDuas.collectAsState()
@@ -58,7 +66,18 @@ fun LevelFiveScreen(
     val context = LocalContext.current
     val fontSize = viewModel.fontSize.value
     val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
+    val activity = context as? Activity
 
+    // System UI setup
+    SideEffect {
+        activity?.let {
+            WindowCompat.setDecorFitsSystemWindows(it.window, false)
+        }
+        systemUiController.setStatusBarColor(color = statusBarColor)
+        systemUiController.setNavigationBarColor(color = navigationBarColor)
+    }
+
+    // Back press handling
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -66,12 +85,41 @@ fun LevelFiveScreen(
         }
     }
 
-    SideEffect {
-        systemUiController.setStatusBarColor(color = statusBarColor)
-        systemUiController.setNavigationBarColor(color = navigationBarColor)
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
+                        // Swipe right → previous
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel5/5/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 4
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        // Swipe left → next
+                        if (currentIndex < levelFiveDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel5/5/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 6
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
                 Image(
@@ -101,14 +149,11 @@ fun LevelFiveScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value
-
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
 
@@ -154,6 +199,8 @@ fun LevelFiveScreen(
     }
 }
 
+
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true)
 @Composable
 fun PreviewCleanlinessScreen5() {

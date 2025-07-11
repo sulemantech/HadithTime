@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -46,7 +48,6 @@ fun LevelThreeScreen(
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {},
     startIndex: Int = 0
-
 ) {
     var currentIndex by remember { mutableIntStateOf(startIndex) }
     val systemUiController = rememberSystemUiController()
@@ -73,13 +74,42 @@ fun LevelThreeScreen(
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
 
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel3/3/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 2
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas available", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        if (currentIndex < levelThreeDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel3/3/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 4
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas available", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua3),
@@ -108,16 +138,14 @@ fun LevelThreeScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value // ← from your state
-
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -129,7 +157,6 @@ fun LevelThreeScreen(
                         if (currentIndex < levelThreeDuas.lastIndex) {
                             navController.navigate("titleScreenLevel3/3/${currentIndex + 1}")
                         } else {
-                            // Go to Level 4 first dua if available
                             val nextLevel = 4
                             val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
                             if (nextLevelDuas.isNotEmpty()) {
@@ -143,7 +170,6 @@ fun LevelThreeScreen(
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel3/3/${currentIndex - 1}")
                         } else {
-                            // Go to Level 2 last dua if available
                             val previousLevel = 2
                             val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
                             if (previousLevelDuas.isNotEmpty()) {
@@ -158,10 +184,8 @@ fun LevelThreeScreen(
                     viewModel = viewModel
                 )
             }
-
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -169,7 +193,7 @@ fun LevelThreeScreen(
 @Composable
 fun PreviewCleanlinessScreen3() {
     HadithTimeTheme {
-        val navController = rememberNavController() // ✅ Create a mock NavController
+        val navController = rememberNavController()
         LevelThreeScreen(
             navController = navController,
             onNavigateToSettings = {},

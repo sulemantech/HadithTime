@@ -26,8 +26,10 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,17 +70,46 @@ fun LevelSixScreen(
             launchSingleTop = true
         }
     }
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel6/6/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 5
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        if (currentIndex < levelSixDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel6/6/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 7
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No next Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua6),
@@ -107,14 +138,11 @@ fun LevelSixScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value // ← from your state
-
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
 
@@ -129,7 +157,6 @@ fun LevelSixScreen(
                         if (currentIndex < levelSixDuas.lastIndex) {
                             navController.navigate("titleScreenLevel6/6/${currentIndex + 1}")
                         } else {
-                            // Jump to level 7, first dua if available
                             val nextLevel = 7
                             val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
                             if (nextLevelDuas.isNotEmpty()) {
@@ -143,7 +170,6 @@ fun LevelSixScreen(
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel6/6/${currentIndex - 1}")
                         } else {
-                            // Jump to level 5, last dua if available
                             val previousLevel = 5
                             val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
                             if (previousLevelDuas.isNotEmpty()) {
@@ -158,10 +184,8 @@ fun LevelSixScreen(
                     viewModel = viewModel
                 )
             }
-
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.S)

@@ -41,90 +41,124 @@ fun AppNavHost(navController: NavHostController) {
 
         composable("splash") {
             SplashScreen { route ->
-                navController.navigate(route) {
+                val targetRoute = if (route == "welcome") "Onboarding" else route
+                navController.navigate(targetRoute) {
                     popUpTo("splash") { inclusive = true }
                     launchSingleTop = true
                 }
             }
+
         }
 
-        composable("welcome") {
-            WelcomeScreen(navController = navController) {
-                navController.navigate("language")
-            }
+        composable("Onboarding") {
+            OnboardingScreen(navController)
         }
+//        composable("welcome") {
+//            WelcomeScreen(
+//                navController = navController,
+//                onContinueClick = {
+//                    navController.navigate("language")
+//                },
+//                onSwipeLeft = {
+//                    navController.navigate("language")
+//                }
+//            )
+//        }
+//
+//
+//        composable("language") {
+//            val context = LocalContext.current
+//            val scope = rememberCoroutineScope()
+//
+//            ChooseLanguageScreen(
+//                selectedLanguage = "English",
+//                onLanguageSelected = {},
+//                onNextClick = { navController.navigate("font") },
+//                onSkipClick = {
+//                    scope.launch {
+//                        OnboardingPrefs.setOnboardingCompleted(context, true)
+//                        navController.navigate("HadithDashboardScreen") {
+//                            popUpTo("splash") { inclusive = true }
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                },
+//                onBackClick = {
+//                    navController.popBackStack()
+//                },
+//                onSwipeLeft = {
+//                    navController.navigate("font")
+//                },
+//                onSwipeRight = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
+//
+//        composable("font") {
+//            val context = LocalContext.current
+//            val scope = rememberCoroutineScope()
+//
+//            FontSizeAdjustmentScreen(
+//                fontSize = 18f,
+//                onFontSizeChange = {},
+//                onNextClick = { navController.navigate("preferences") },
+//                onSkipClick = {
+//                    scope.launch {
+//                        OnboardingPrefs.setOnboardingCompleted(context, true)
+//                        navController.navigate("HadithDashboardScreen") {
+//                            popUpTo("splash") { inclusive = true }
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                },
+//                onContinueClick = {},
+//                onBackClick = {
+//                    navController.popBackStack()
+//                },
+//                onSwipeLeft = {
+//                    navController.navigate("preferences")
+//                },
+//                onSwipeRight = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
+//
+//        composable("preferences") {
+//            val context = LocalContext.current
+//            val scope = rememberCoroutineScope()
+//
+//            PreferencesScreen(
+//                isDailyReminderEnabled = true,
+//                isDarkModeEnabled = false,
+//                onDailyReminderChange = {},
+//                onDarkModeChange = {},
+//                onGetStartedClick = {},
+//                onNextClick = {
+//                    scope.launch {
+//                        OnboardingPrefs.setOnboardingCompleted(context, true)
+//                        navController.navigate("HadithDashboardScreen") {
+//                            popUpTo("splash") { inclusive = true }
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                },
+//                onContinueClick = {
+//                    scope.launch {
+//                        OnboardingPrefs.setOnboardingCompleted(context, true)
+//                        navController.navigate("HadithDashboardScreen") {
+//                            popUpTo("splash") { inclusive = true }
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                },
+//                onSwipeRight = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
 
-        composable("language") {
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            ChooseLanguageScreen(
-                selectedLanguage = "English",
-                onLanguageSelected = {},
-                onNextClick = { navController.navigate("font") },
-                onSkipClick = {
-                    scope.launch {
-                        OnboardingPrefs.setOnboardingCompleted(context, true)
-                        navController.navigate("HadithDashboardScreen") {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
-                }
-            )
-        }
-
-        composable("font") {
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            FontSizeAdjustmentScreen(
-                fontSize = 18f,
-                onFontSizeChange = {},
-                onNextClick = { navController.navigate("preferences") },
-                onSkipClick = {
-                    scope.launch {
-                        OnboardingPrefs.setOnboardingCompleted(context, true)
-                        navController.navigate("HadithDashboardScreen") {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
-                },
-                onContinueClick = {}
-            )
-        }
-
-        composable("preferences") {
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            PreferencesScreen(
-                isDailyReminderEnabled = true,
-                isDarkModeEnabled = false,
-                onDailyReminderChange = {},
-                onDarkModeChange = {},
-                onGetStartedClick = {},
-                onNextClick = {
-                    scope.launch {
-                        OnboardingPrefs.setOnboardingCompleted(context, true)
-                        navController.navigate("HadithDashboardScreen") {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
-                },
-                onContinueClick = {
-                    scope.launch {
-                        OnboardingPrefs.setOnboardingCompleted(context, true)
-                        navController.navigate("HadithDashboardScreen") {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
-                }
-            )
-        }
         composable("HadithDashboardScreen") {
             HadithDashboardScreen(navController, levels)
         }

@@ -3,6 +3,7 @@ package com.hadithtime.levels
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -44,14 +46,13 @@ fun LevelOneScreen(
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {},
     startIndex: Int = 0
-
 ) {
     var currentIndex by remember { mutableIntStateOf(startIndex) }
     val systemUiController = rememberSystemUiController()
     val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.level_one_color)
-    var arabicFontSize by remember { mutableStateOf(24.sp) }
     val viewModel: HadithViewModel = viewModel()
+    var arabicFontSize by remember { mutableStateOf(24.sp) }
 
     val filteredDuas by viewModel.filteredDuas.collectAsState()
     val levelOneDuas = filteredDuas.filter { it.level == 1 }
@@ -60,6 +61,11 @@ fun LevelOneScreen(
     val fontSize = viewModel.fontSize.value
     val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
 
+    SideEffect {
+        systemUiController.setStatusBarColor(color = statusBarColor)
+        systemUiController.setNavigationBarColor(color = navigationBarColor)
+    }
+
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
@@ -67,17 +73,42 @@ fun LevelOneScreen(
         }
     }
 
-    SideEffect {
-        systemUiController.setStatusBarColor(color = statusBarColor)
-        systemUiController.setNavigationBarColor(color = navigationBarColor)
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel1/1/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 0
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas available", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        if (currentIndex < levelOneDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel1/1/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 2
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas available", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
-
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua1),
@@ -106,14 +137,11 @@ fun LevelOneScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value // ← from your state
-
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
 
@@ -128,7 +156,6 @@ fun LevelOneScreen(
                         if (currentIndex < levelOneDuas.lastIndex) {
                             navController.navigate("titleScreenLevel1/1/${currentIndex + 1}")
                         } else {
-                            // Move to Level 2's first Dua
                             val nextLevel = 2
                             val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
                             if (nextLevelDuas.isNotEmpty()) {
@@ -142,7 +169,6 @@ fun LevelOneScreen(
                         if (currentIndex > 0) {
                             navController.navigate("titleScreenLevel1/1/${currentIndex - 1}")
                         } else {
-                            // Move to Level 0's last Dua (if exists)
                             val previousLevel = 0
                             val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
                             if (previousLevelDuas.isNotEmpty()) {
@@ -157,7 +183,6 @@ fun LevelOneScreen(
                     viewModel = viewModel
                 )
             }
-
         }
     }
 }

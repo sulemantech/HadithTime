@@ -3,6 +3,7 @@ package com.hadithtime.levels
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -44,7 +46,6 @@ fun LevelFourScreen(
     onNavigateToSettings: () -> Unit,
     onHomeClick: () -> Unit = {},
     startIndex: Int = 0
-
 ) {
     var currentIndex by remember { mutableIntStateOf(startIndex) }
     val systemUiController = rememberSystemUiController()
@@ -61,23 +62,57 @@ fun LevelFourScreen(
     val fontSize = viewModel.fontSize.value
     val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
 
+    // Handle system UI colors
+    SideEffect {
+        systemUiController.setStatusBarColor(color = statusBarColor)
+        systemUiController.setNavigationBarColor(color = navigationBarColor)
+    }
+
+    // Handle back press
     BackHandler {
         navController.navigate("HadithDashboardScreen") {
             popUpTo("HadithDashboardScreen") { inclusive = true }
             launchSingleTop = true
         }
     }
-    SideEffect {
-        systemUiController.setStatusBarColor(color = statusBarColor)
-        systemUiController.setNavigationBarColor(color = navigationBarColor)
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
 
+    // Main layout with swipe support
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel4/4/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 3
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        if (currentIndex < levelFourDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel4/4/${currentIndex + 1}")
+                        } else {
+                            val nextLevel = 5
+                            val nextLevelDuas = filteredDuas.filter { it.level == nextLevel }
+                            if (nextLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
+                            } else {
+                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
-
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua4),
@@ -102,19 +137,15 @@ fun LevelFourScreen(
                                 }
                             }
                         )
-
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    val fontSize = viewModel.fontSize.value // ← from your state
 
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
 
@@ -150,8 +181,7 @@ fun LevelFourScreen(
                                 Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    }
-                    ,
+                    },
                     level = 4,
                     dua = dua,
                     viewModel = viewModel

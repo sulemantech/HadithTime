@@ -100,6 +100,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.0.0")
     implementation("androidx.compose.foundation:foundation:1.6.0") // Or the latest version
     implementation("androidx.compose.material3:material3:1.2.0") // Or the latest version
+    implementation("androidx.compose.foundation:foundation:1.5.0")
 
 
 }

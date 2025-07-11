@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,14 +51,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -66,7 +72,9 @@ import com.hadithtime.components.BottomNavigationBar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.GenderDialog
+import com.hadithtime.components.GenderOptionRow
 import com.hadithtime.components.LanguageDialog
+import com.hadithtime.components.LanguageOptionRow
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -112,14 +120,14 @@ fun SettingScreen(
                     fontFamily = MyCountFont,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp),
+                        .padding(top = 20.dp),
                     textAlign = TextAlign.Center
                 )
                 Divider(
                     color = Color.Gray,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
 
@@ -133,10 +141,9 @@ fun SettingScreen(
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                    // App language label row
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().padding(start = 5.dp, bottom = 5.dp)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_app_lang),
@@ -351,6 +358,8 @@ fun SettingScreen(
 
                 var showDialog by remember { mutableStateOf(false) }
                 var selectedTranslation by rememberSaveable { mutableStateOf("English") }
+                var dropdownOffset by remember { mutableStateOf(Offset.Zero) }
+                val density = LocalDensity.current
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -376,11 +385,15 @@ fun SettingScreen(
                     )
                     Box(
                         modifier = Modifier
+                            .onGloballyPositioned { coordinates ->
+                                dropdownOffset = coordinates.positionInWindow()
+                            }
                             .background(
                                 color = colorResource(R.color.background_color),
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .clickable { showDialog = true }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -399,13 +412,44 @@ fun SettingScreen(
                     }
                 }
 
-                LanguageDialog(
-                    showDialog = showDialog,
-                    selectedLanguage = selectedTranslation,
-                    onSelect = { selectedTranslation = it },
-                    onDismiss = { showDialog = false }
-                )
-
+                DropdownMenu(
+                    expanded = showDialog,
+                    onDismissRequest = { showDialog = false },
+                    offset = with(density) {
+                        DpOffset(
+                            x = dropdownOffset.x.toDp() - 90.dp,
+                            y = dropdownOffset.y.toDp() + 56.dp
+                        )
+                    },
+                    modifier = Modifier
+                        .width(220.dp)
+                        .background(Color.White, RoundedCornerShape(6.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                ) {
+                    LanguageOptionRow(
+                        icon = R.drawable.ic_english,
+                        label = "English",
+                        isSelected = selectedTranslation == "English",
+                        onClick = {
+                            selectedTranslation = "English"
+                            showDialog = false
+                        }
+                    )
+                    Divider()
+                    LanguageOptionRow(
+                        icon = R.drawable.ic_urdu,
+                        label = "Urdu",
+                        isSelected = selectedTranslation == "Urdu",
+                        onClick = {
+                            selectedTranslation = "Urdu"
+                            showDialog = false
+                        }
+                    )
+                }
                 SettingSwitch(
                     icon = {
                         Image(
@@ -439,6 +483,8 @@ fun SettingScreen(
 
                 var showForGenderDialog by remember { mutableStateOf(false) }
                 var selectedGender by rememberSaveable { mutableStateOf("Male") }
+                var dropdownOffset by remember { mutableStateOf(Offset.Zero) }
+                val density = LocalDensity.current
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -485,12 +531,44 @@ fun SettingScreen(
                         }
                     }
                 }
-                GenderDialog(
-                    showDialog = showForGenderDialog,
-                    selectedLanguage = selectedGender,
-                    onSelect = { selectedGender = it },
-                    onDismiss = { showForGenderDialog = false }
-                )
+                DropdownMenu(
+                    expanded = showForGenderDialog,
+                    onDismissRequest = { showForGenderDialog = false },
+                    offset = with(density) {
+                        DpOffset(
+                            x = dropdownOffset.x.toDp() - 10.dp, // Almost aligned with dropdown icon
+                            y = dropdownOffset.y.toDp() + 76.dp  // Just below the box
+                        )
+                    },
+                    modifier = Modifier
+                        .width(220.dp)
+                        .background(Color.White, RoundedCornerShape(6.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                ) {
+                    GenderOptionRow(
+                        icon = R.drawable.ic_male,
+                        label = "Male",
+                        isSelected = selectedGender == "Male",
+                        onClick = {
+                            selectedGender = "Male"
+                            showForGenderDialog = false
+                        }
+                    )
+                    Divider()
+                    GenderOptionRow(
+                        icon = R.drawable.ic_female,
+                        label = "Female",
+                        isSelected = selectedGender == "Female",
+                        onClick = {
+                            selectedGender = "Female"
+                            showForGenderDialog = false
+                        }
+                    )
+                }
 
                 SettingSwitch(
                     icon = {

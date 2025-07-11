@@ -27,6 +27,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -38,7 +39,7 @@ fun BottomNavigationBar(navController: NavController) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     val context = LocalContext.current
 
-    Box(modifier = Modifier.padding()) {
+    Box(modifier = Modifier.padding().height(78.dp)) {
         NavigationBar(
             containerColor = Color.White,
             tonalElevation = 2.dp
@@ -73,6 +74,8 @@ fun BottomNavigationBar(navController: NavController) {
                 label = {
                     Text(
                         "Home",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = if (currentDestination == "HadithDashboardScreen")
                             colorResource(R.color.dashboard_color)
                         else
@@ -119,6 +122,8 @@ fun BottomNavigationBar(navController: NavController) {
                 label = {
                     Text(
                         "Favorite",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = if (currentDestination == "LearningTrackerScreen")
                             colorResource(R.color.dashboard_color)
                         else
@@ -165,6 +170,8 @@ fun BottomNavigationBar(navController: NavController) {
                 label = {
                     Text(
                         "Settings",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = if (currentDestination == "settings")
                             colorResource(R.color.dashboard_color)
                         else
@@ -203,6 +210,8 @@ fun BottomNavigationBar(navController: NavController) {
                 label = {
                     Text(
                         "Share",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = if (selectedTab == "share")
                             colorResource(R.color.dashboard_color)
                         else
@@ -247,6 +256,8 @@ fun BottomNavigationBar(navController: NavController) {
                 label = {
                     Text(
                         "info",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = if (currentDestination == "info")
                             colorResource(R.color.dashboard_color)
                         else

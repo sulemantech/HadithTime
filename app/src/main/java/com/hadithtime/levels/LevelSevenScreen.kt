@@ -3,6 +3,7 @@ package com.hadithtime.levels
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -65,17 +67,40 @@ fun LevelSevenScreen(
             launchSingleTop = true
         }
     }
+
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(currentIndex) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    if (dragAmount > 0) {
+                        if (currentIndex > 0) {
+                            navController.navigate("titleScreenLevel7/7/${currentIndex - 1}")
+                        } else {
+                            val previousLevel = 6
+                            val previousLevelDuas = filteredDuas.filter { it.level == previousLevel }
+                            if (previousLevelDuas.isNotEmpty()) {
+                                navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
+                            } else {
+                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        if (currentIndex < levelSevenDuas.lastIndex) {
+                            navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
+                        } else {
+                            Toast.makeText(context, "You've reached the final Dua!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
                 Image(
                     painter = painterResource(id = R.drawable.dua7),
@@ -104,16 +129,14 @@ fun LevelSevenScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val fontSize = viewModel.fontSize.value // ← from your state
-
                     currentDua?.let {
                         HadithCard(
                             dua = it,
                             fontSizeSp = fontSize,
                             isEnglish = isEnglish
-
                         )
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -125,7 +148,6 @@ fun LevelSevenScreen(
                         if (currentIndex < levelSevenDuas.lastIndex) {
                             navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
                         } else {
-                            // No next level after 7 — show message or go to dashboard maybe
                             Toast.makeText(context, "You've reached the final Dua!", Toast.LENGTH_SHORT).show()
                         }
                     },
@@ -147,7 +169,6 @@ fun LevelSevenScreen(
                     viewModel = viewModel
                 )
             }
-
         }
     }
 }

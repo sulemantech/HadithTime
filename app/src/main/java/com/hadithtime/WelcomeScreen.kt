@@ -3,6 +3,7 @@ package com.hadithtime
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +33,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -50,12 +54,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun WelcomeScreen(navController: NavController, onContinueClick: () -> Unit) {
+fun WelcomeScreen(
+    navController: NavController,
+    onContinueClick: () -> Unit,
+    onSwipeLeft: () -> Unit = {}
+) {
     val splashfont = FontFamily(Font(R.font.fredoka_semibold))
     val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
 
@@ -73,7 +82,7 @@ fun WelcomeScreen(navController: NavController, onContinueClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 200.dp)
+                .padding(top = 150.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -102,6 +111,7 @@ fun WelcomeScreen(navController: NavController, onContinueClick: () -> Unit) {
             )
         }
 
+        // Dot Indicator
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -121,6 +131,7 @@ fun WelcomeScreen(navController: NavController, onContinueClick: () -> Unit) {
             }
         }
 
+        // Continue Button
         Button(
             onClick = onContinueClick,
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.continue_bg)),
@@ -140,12 +151,17 @@ fun ChooseLanguageScreen(
     selectedLanguage: String,
     onLanguageSelected: (String) -> Unit,
     onNextClick: () -> Unit,
-    onSkipClick: () -> Unit
+    onSkipClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onSwipeLeft: () -> Unit = {},
+    onSwipeRight: () -> Unit = {}
 ) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_medium))
     val MyTextFont = FontFamily(Font(R.font.fredoka_regular))
     val MySkipFont = FontFamily(Font(R.font.fredoka_medium))
     var selectedLanguage by remember { mutableStateOf("English") }
+    val selectedLanguages = remember { mutableStateListOf<String>() }
+
 
     val languages = listOf(
         "English" to R.drawable.ic_english,
@@ -153,6 +169,7 @@ fun ChooseLanguageScreen(
         "Urdu" to R.drawable.ic_urdu,
         "Hindi" to R.drawable.ic_hindi
     )
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.welcom_logo),
@@ -160,21 +177,34 @@ fun ChooseLanguageScreen(
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
         )
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 45.dp, start = 28.dp, end = 28.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Back",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontFamily = MySkipFont,
+                modifier = Modifier.clickable { onBackClick() }
+            )
+
             Text(
                 text = "Skip",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontFamily = MySkipFont,
-                modifier = Modifier
-                    .clickable { onSkipClick() }
-                    .padding(top = 58.dp, end = 28.dp)
+                modifier = Modifier.clickable { onSkipClick() }
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp)
+                .padding(top = 80.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -208,13 +238,18 @@ fun ChooseLanguageScreen(
 
             Column {
                 languages.forEach { (name, icon) ->
+                    val isSelected = name in selectedLanguages
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 4.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (selectedLanguage == name) Color.White.copy(alpha = 0.1f) else Color.Transparent)
-                            .clickable { selectedLanguage = name }
+                            .background(if (isSelected) Color.White.copy(alpha = 0.1f) else Color.Transparent)
+                            .clickable {
+                                if (isSelected) selectedLanguages.remove(name)
+                                else selectedLanguages.add(name)
+                            }
                             .padding(start = 10.dp, top = 5.dp, bottom = 5.dp, end = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -231,7 +266,7 @@ fun ChooseLanguageScreen(
                             modifier = Modifier.weight(1f)
                         )
                         RadioButton(
-                            selected = selectedLanguage == name,
+                            selected = isSelected,
                             onClick = null,
                             enabled = false,
                             colors = RadioButtonDefaults.colors(
@@ -253,9 +288,9 @@ fun ChooseLanguageScreen(
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
-                        .size(if (it == 3) 10.dp else 8.dp)
+                        .size(if (it == 1) 10.dp else 8.dp)
                         .background(
-                            color = if (it == 3) Color.White else Color.White.copy(alpha = 0.5f),
+                            color = if (it == 1) Color.White else Color.White.copy(alpha = 0.5f),
                             shape = CircleShape
                         )
                 )
@@ -278,16 +313,6 @@ fun ChooseLanguageScreen(
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LanguageSelectionScreenPreview() {
-    ChooseLanguageScreen(
-        selectedLanguage = "English",
-        onLanguageSelected = {},
-        onNextClick = {},
-        onSkipClick = {}
-    )
-}
 
 @Composable
 fun FontSizeAdjustmentScreen(
@@ -296,6 +321,9 @@ fun FontSizeAdjustmentScreen(
     onContinueClick: () -> Unit,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onSwipeLeft: () -> Unit = {},
+    onSwipeRight: () -> Unit = {},
     viewModel: HadithViewModel = viewModel()
 
 ) {
@@ -304,6 +332,7 @@ fun FontSizeAdjustmentScreen(
     val MySkipFont = FontFamily(Font(R.font.fredoka_medium))
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
     val fontSize by viewModel.fontSize
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         // Background Image
@@ -313,22 +342,34 @@ fun FontSizeAdjustmentScreen(
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
         )
-        // Skip button
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 45.dp, start = 28.dp, end = 28.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Back",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontFamily = MySkipFont,
+                modifier = Modifier.clickable { onBackClick() }
+            )
+
             Text(
                 text = "Skip",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontFamily = MySkipFont,
-                modifier = Modifier
-                    .clickable { onSkipClick() }
-                    .padding(top = 58.dp, end = 28.dp)
+                modifier = Modifier.clickable { onSkipClick() }
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp)
+                .padding(top = 80.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -440,9 +481,9 @@ fun FontSizeAdjustmentScreen(
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
-                        .size(if (it == 3) 10.dp else 8.dp)
+                        .size(if (it == 2) 10.dp else 8.dp)
                         .background(
-                            color = if (it == 3) Color.White else Color.White.copy(alpha = 0.5f),
+                            color = if (it == 2) Color.White else Color.White.copy(alpha = 0.5f),
                             shape = CircleShape
                         )
                 )
@@ -464,18 +505,6 @@ fun FontSizeAdjustmentScreen(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun FontSizeAdjustmentScreenPreview() {
-    FontSizeAdjustmentScreen(
-        fontSize = 18f,
-        onFontSizeChange = {},
-        onContinueClick = {},
-        onNextClick = {},
-        onSkipClick = {}
-    )
-}
-
 @Composable
 fun PreferencesScreen(
     isDailyReminderEnabled: Boolean,
@@ -484,7 +513,8 @@ fun PreferencesScreen(
     onDarkModeChange: (Boolean) -> Unit,
     onGetStartedClick: () -> Unit,
     onNextClick: () -> Unit,
-    onContinueClick: () -> Unit
+    onContinueClick: () -> Unit,
+    onSwipeRight: () -> Unit
 ) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_medium))
     val MyTextFont = FontFamily(Font(R.font.fredoka_regular))
@@ -506,7 +536,7 @@ fun PreferencesScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp)
+                .padding(top = 80.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -733,7 +763,8 @@ fun PreferencesScreenPreview() {
         onDarkModeChange = {},
         onGetStartedClick = {},
         onNextClick = {},
-        onContinueClick = {}
+        onContinueClick = {},
+        onSwipeRight = {}
     )
 }
 
@@ -742,4 +773,30 @@ fun PreferencesScreenPreview() {
 fun WelcomeScreenPreview() {
     val navController = rememberNavController()
     WelcomeScreen(navController = navController, onContinueClick = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageSelectionScreenPreview() {
+    ChooseLanguageScreen(
+        selectedLanguage = "English",
+        onLanguageSelected = {},
+        onNextClick = {},
+        onSkipClick = {},
+        onBackClick = {},
+
+        )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FontSizeAdjustmentScreenPreview() {
+    FontSizeAdjustmentScreen(
+        fontSize = 18f,
+        onFontSizeChange = {},
+        onContinueClick = {},
+        onNextClick = {},
+        onSkipClick = {},
+        onBackClick = {}
+    )
 }

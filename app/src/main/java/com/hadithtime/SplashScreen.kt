@@ -37,19 +37,44 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 
+import android.app.Activity
+import android.os.Build
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun SplashScreen(onFinished: (String) -> Unit) {
-    val systemUiController = rememberSystemUiController()
+    val context = LocalContext.current
+    val view = LocalView.current
 
-    val NavigationBarColor = colorResource(id = R.color.white)
+    LaunchedEffect(Unit) {
+        val window = (context as? Activity)?.window ?: return@LaunchedEffect
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val controller = WindowInsetsControllerCompat(window, view)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+        controller.hide(WindowInsetsCompat.Type.navigationBars())
+    }
+
+    val systemUiController = rememberSystemUiController()
+    val navigationBarColor = colorResource(id = R.color.white)
     val statusBarColor = colorResource(id = R.color.white)
+
+    SideEffect {
+        systemUiController.setStatusBarColor(statusBarColor.copy(alpha = 0f))
+        systemUiController.setNavigationBarColor(navigationBarColor.copy(alpha = 0f))
+    }
+
     val splashfont = FontFamily(Font(R.font.fredoka_semibold))
     val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
-    SideEffect {
-        systemUiController.setStatusBarColor(color = statusBarColor)
-        systemUiController.setNavigationBarColor(color = NavigationBarColor)
-    }
-    val context = LocalContext.current
 
     val onboardingCompleted by produceState<Boolean?>(initialValue = null) {
         value = OnboardingPrefs.isOnboardingCompleted(context)
@@ -58,57 +83,55 @@ fun SplashScreen(onFinished: (String) -> Unit) {
     LaunchedEffect(onboardingCompleted) {
         if (onboardingCompleted != null) {
             delay(2000)
-            val route = if (onboardingCompleted == true) "HadithDashboardScreen" else "welcome"
+            val route = if (onboardingCompleted == true) "HadithDashboardScreen" else "Onboarding"
             onFinished(route)
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+
         Image(
             painter = painterResource(id = R.drawable.onboarding1),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
         )
-        Box(
+
+        Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth()
+                .padding(top = 48.dp), // manually push logo below status bar if needed
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 80.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.onboarding_logo),
-                    contentDescription = "Hadith Icon",
-                    modifier = Modifier.size(118.dp),
-                )
+            Image(
+                painter = painterResource(id = R.drawable.onboarding_logo),
+                contentDescription = "Hadith Icon",
+                modifier = Modifier.size(118.dp),
+            )
 
-                Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "Hadith Time",
-                    fontSize = 48.sp,
-                    fontFamily = splashfont,
-                    color = Color.White
-                )
+            Text(
+                text = "Hadith Time",
+                fontSize = 48.sp,
+                fontFamily = splashfont,
+                color = Color.White
+            )
 
-                Text(
-                    text = "Listen, Repeat, and Shine\n with Sunnah!",
-                    fontSize = 24.sp,
-                    color = Color.White,
-                    fontFamily = MyCountFont,
-                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                //  Spacer(modifier = Modifier.height(40.dp))
-            }
+            Text(
+                text = "Listen, Repeat, and Shine\n with Sunnah!",
+                fontSize = 24.sp,
+                color = Color.White,
+                fontFamily = MyCountFont,
+                modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp),
+                textAlign = TextAlign.Center
+            )
         }
-
     }
 }
 
@@ -126,6 +149,7 @@ object OnboardingPrefs {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true)
 @Composable
 fun SplashScreenPreview() {

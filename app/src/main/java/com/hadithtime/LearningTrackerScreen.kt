@@ -116,14 +116,14 @@ fun LearningTrackerScreen(
                     fontFamily = MyCountFont,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp),
+                        .padding(top = 20.dp),
                     textAlign = TextAlign.Center
                 )
                 Divider(
                     color = Color.Gray,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp)
+                        .padding(vertical = 15.dp)
                 )
                 val selectedFilter by viewModel.selectedFilter.collectAsState()
 
@@ -274,7 +274,7 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
         color = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
-           // .padding(horizontal = 4.dp)
+            .padding(horizontal = 7.dp)
             .clickable { onClick() }
     ) {
         Text(
@@ -292,47 +292,32 @@ fun SelectLevelDropdown(
     onLevelsSelected: (List<Int>) -> Unit
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
-    val displayedText =
-        if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
     val currentSelection = remember { mutableStateListOf<Int>().apply { addAll(selectedLevels) } }
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
-    val MyokFont = FontFamily(Font(R.font.fredoka_regular))
+
+    val displayedText =
+        if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
 
     Box {
         Button(
             onClick = { dialogOpen = true },
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
-            //  contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             shape = RoundedCornerShape(20.dp)
         ) {
             Text(text = displayedText, color = Color.White, fontFamily = MyCountFont)
-            Spacer(modifier = Modifier.width(8.dp))
-            Image(painter = painterResource(id = R.drawable.dropdown_arrow), contentDescription = "Repeat", modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.dropdown_arrow),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Color.White
+            )
         }
     }
 
     if (dialogOpen) {
         AlertDialog(
             onDismissRequest = { dialogOpen = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    dialogOpen = false
-                    onLevelsSelected(currentSelection.toList())
-                }) {
-                    Text(
-                        "OK", color = colorResource(R.color.filter_color),
-                        fontFamily = MyCountFont
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { dialogOpen = false }) {
-                    Text(
-                        "Cancel", color = colorResource(R.color.filter_color),
-                        fontFamily = MyCountFont
-                    )
-                }
-            },
             title = {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -340,15 +325,20 @@ fun SelectLevelDropdown(
                             painter = painterResource(id = R.drawable.clear),
                             contentDescription = null,
                             tint = Color.Black,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Clear Filter", fontFamily = MyCountFont, fontSize = 16.sp)
+                        Text(
+                            text = "Clear Filter",
+                            fontSize = 16.sp,
+                            fontFamily = MyCountFont,
+                            color = Color.Black
+                        )
                     }
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
-                          .padding(top = 4.dp),
+                            .padding(top = 4.dp),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
@@ -358,42 +348,70 @@ fun SelectLevelDropdown(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
-                      //  .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                        //.padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    for (row in 0 until 3) {
+                    // Manual grid layout, 3 chips per row
+                    val levels = (1..7).toList()
+                    val rows = levels.chunked(3)
+
+                    rows.forEach { row ->
                         Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            for (col in 1..3) {
-                                val level = row * 3 + col
-                                if (level <= 7) {
-                                    FilterChipDropDown(
-                                        label = "Level $level",
-                                        selected = level in currentSelection,
-                                        onClick = {
-                                            if (currentSelection.contains(level)) {
-                                                currentSelection.remove(level) // unselect
-                                            } else {
-                                                currentSelection.add(level)    // select
-                                            }
+                            row.forEach { level ->
+                                FilterChipDropDown(
+                                    label = "Level $level",
+                                    selected = level in currentSelection,
+                                    onClick = {
+                                        if (currentSelection.contains(level)) {
+                                            currentSelection.remove(level)
+                                        } else {
+                                            currentSelection.add(level)
                                         }
-                                    )
-                                }
+                                    }
+                                )
                             }
                         }
                     }
+
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
+                            .padding(top = 8.dp),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { dialogOpen = false }) {
+                            Text(
+                                text = "Cancel",
+                                fontFamily = MyCountFont,
+                                color = colorResource(R.color.filter_color)
+                            )
+                        }
+                        TextButton(onClick = {
+                            dialogOpen = false
+                            onLevelsSelected(currentSelection.toList())
+                        }) {
+                            Text(
+                                text = "OK",
+                                fontFamily = MyCountFont,
+                                color = colorResource(R.color.filter_color)
+                            )
+                        }
+                    }
                 }
             },
             shape = RoundedCornerShape(16.dp),
+            confirmButton = {},
+            dismissButton = {}
         )
     }
 }
@@ -413,7 +431,7 @@ fun FilterChipDropDown(label: String, selected: Boolean, onClick: () -> Unit) {
             )
             .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+          //  .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = label,

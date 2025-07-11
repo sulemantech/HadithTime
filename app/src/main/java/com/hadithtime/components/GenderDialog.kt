@@ -1,5 +1,6 @@
 package com.hadithtime.components
 
+import android.graphics.Rect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -36,7 +38,8 @@ fun GenderDialog(
     showDialog: Boolean,
     selectedLanguage: String,
     onSelect: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    anchorBounds: Rect? = null
 ) {
     if (!showDialog) return
 
@@ -86,31 +89,31 @@ fun GenderOptionRow(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .height(18.dp)
-            .clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = label,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text = label,
-            modifier = Modifier.weight(1f),
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        RadioButton(
-            selected = isSelected,
-            onClick = null,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = colorResource(R.color.filter_color),
-                unselectedColor = Color.Gray
-            )
-        )
-    }
+    DropdownMenuItem(
+        text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = icon),
+                    contentDescription = label,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = label,
+                    modifier = Modifier.weight(1f),
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+                RadioButton(
+                    selected = isSelected,
+                    onClick = null,
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = colorResource(R.color.filter_color),
+                        unselectedColor = Color.Gray
+                    )
+                )
+            }
+        },
+        onClick = onClick
+    )
 }
