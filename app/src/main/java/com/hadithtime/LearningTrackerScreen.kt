@@ -268,7 +268,7 @@ fun LearningTrackerScreen(
 @Composable
 fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val textColor = if (selected) Color.White else Color.Black
-    val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
+    val MyCountFont = FontFamily(Font(R.font.fredoka_medium))
 
     Surface(
         color = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg),
@@ -281,6 +281,7 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
             text = label,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             color = textColor,
+            fontSize = 14.sp,
             fontFamily = MyCountFont
         )
     }

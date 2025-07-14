@@ -64,5 +64,31 @@ object FontSizeManager {
         context.dataStore.edit { it[IS_URDU_ENABLED] = isEnabled }
     }
 
+    // Reading Title Toggle
+    private val READING_TITLE_KEY = booleanPreferencesKey("reading_title_enabled")
+
+    fun getReadingTitleFlow(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { it[READING_TITLE_KEY] ?: false }
+    }
+
+    suspend fun saveReadingTitleEnabled(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { it[READING_TITLE_KEY] = isEnabled }
+    }
+
+    // auto next Toggle
+
+    private val AUTO_NEXT_HADITH_KEY = booleanPreferencesKey("auto_next_hadith")
+
+    fun getAutoNextHadithFlow(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { prefs ->
+            prefs[AUTO_NEXT_HADITH_KEY] ?: false
+        }
+    }
+
+    suspend fun saveAutoNextHadith(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[AUTO_NEXT_HADITH_KEY] = isEnabled
+        }
+    }
 
 }

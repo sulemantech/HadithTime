@@ -1,6 +1,10 @@
 package com.hadithtime.components
 
 import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,6 +53,7 @@ import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.model.Hadith
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 @Composable
 fun PlayerControls(
@@ -59,23 +64,60 @@ fun PlayerControls(
     dua: Hadith,
     viewModel: HadithViewModel
 ) {
+
     val context = LocalContext.current
+
+    // Initialize TTS
+    val tts = remember {
+        TextToSpeech(context, null).apply {
+            language = Locale.US
+        }
+    }
+
+    val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
+
+    val mediaPlayer = remember {
+        MediaPlayer.create(context, dua.audioUrl)
+    }
+
+    val titlePlayer = remember {
+        MediaPlayer.create(context, dua.duaEnglishTitle)
+    }
+
     var isPlaying by remember { mutableStateOf(false) }
     var sliderValue by remember { mutableStateOf(0f) }
     var duration by remember { mutableStateOf(1f) }
 
-    val mediaPlayer = remember {
-        MediaPlayer.create(context, dua.audioUrl).apply {
-            setOnPreparedListener {
-                duration = it.duration.toFloat()
+// Setup player listeners once
+    DisposableEffect(Unit) {
+        mediaPlayer.setOnPreparedListener {
+            duration = it.duration.toFloat()
+        }
+
+        mediaPlayer.setOnCompletionListener {
+            isPlaying = false
+            sliderValue = 0f
+
+            if (viewModel.autoNextHadithEnabled.value) {
+                onNextClick()
             }
-            setOnCompletionListener {
-                isPlaying = false
-                sliderValue = 0f
-            }
+        }
+
+
+        titlePlayer.setOnCompletionListener {
+            mediaPlayer.start()
+            duration = mediaPlayer.duration.toFloat()
+            isPlaying = true
+        }
+
+        onDispose {
+            mediaPlayer.release()
+            titlePlayer.release()
+            tts.shutdown()
         }
     }
 
+// Update slider while playing
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             sliderValue = mediaPlayer.currentPosition.toFloat()
@@ -83,9 +125,22 @@ fun PlayerControls(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            mediaPlayer.release()
+    val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
+
+    LaunchedEffect(dua.id) {
+        if (autoNextHadithEnabled) {
+            if (readingTitleEnabled) {
+                titlePlayer.setOnCompletionListener {
+                    mediaPlayer.start()
+                    duration = mediaPlayer.duration.toFloat()
+                    isPlaying = true
+                }
+                titlePlayer.start()
+            } else {
+                mediaPlayer.start()
+                duration = mediaPlayer.duration.toFloat()
+                isPlaying = true
+            }
         }
     }
 
@@ -161,8 +216,6 @@ fun PlayerControls(
                 }
             }
 
-
-            // 🎚 Slider
             Slider(
                 value = sliderValue,
                 onValueChange = {
@@ -190,7 +243,6 @@ fun PlayerControls(
                 Text(formatTime(duration.toInt()), fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
             }
 
-            // 🎵 Controls
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -205,15 +257,19 @@ fun PlayerControls(
                 IconButton(onClick = onPreviousClick) {
                     Image(painter = painterResource(id = R.drawable.ic_previous), contentDescription = "Previous", modifier = Modifier.size(20.dp))
                 }
-
                 IconButton(onClick = {
                     if (isPlaying) {
                         mediaPlayer.pause()
+                        isPlaying = false
                     } else {
-                        mediaPlayer.start()
-                        duration = mediaPlayer.duration.toFloat()
+                        if (readingTitleEnabled) {
+                            titlePlayer.start()
+                        } else {
+                            mediaPlayer.start()
+                            duration = mediaPlayer.duration.toFloat()
+                            isPlaying = true
+                        }
                     }
-                    isPlaying = !isPlaying
                 }) {
                     Image(
                         painter = painterResource(id = if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play),
@@ -243,6 +299,8 @@ fun PlayerControls(
         }
     }
 }
+
+
 fun formatTime(milliseconds: Int): String {
     val totalSeconds = milliseconds / 1000
     val minutes = totalSeconds / 60

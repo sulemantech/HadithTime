@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class Hadith(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val Duaheading: String,
+    val duaEnglishTitle: Int,
     val arabic: String,
     val reference: String?,
     val arabicTitle: String,

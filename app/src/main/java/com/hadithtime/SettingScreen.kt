@@ -92,8 +92,8 @@ fun SettingScreen(
     var selectedFont by remember { mutableStateOf("Al Majeed Quran") }
 //    var fontSize by remember { mutableStateOf(16f) }
     var hadithReferenceEnabled by remember { mutableStateOf(false) }
-    var autoNextHadithEnabled by remember { mutableStateOf(false) }
-    var readingTitleEnabled by remember { mutableStateOf(false) }
+  //  var autoNextHadithEnabled by remember { mutableStateOf(false) }
+
     var rewardsEnabled by remember { mutableStateOf(false) }
     var showTranslationDialog by remember { mutableStateOf(false) }
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
@@ -450,6 +450,8 @@ fun SettingScreen(
                         }
                     )
                 }
+
+                val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
                 SettingSwitch(
                     icon = {
                         Image(
@@ -461,7 +463,7 @@ fun SettingScreen(
                     title = "Auto Next Hadith",
                     textColor = Color.White,
                     checked = autoNextHadithEnabled,
-                    onCheckedChange = { autoNextHadithEnabled = it }
+                    onCheckedChange = { viewModel.setautoNextHadithEnabled(it) }
                 )
                 Spacer(Modifier.height(16.dp))
                 Divider(
@@ -536,8 +538,8 @@ fun SettingScreen(
                     onDismissRequest = { showForGenderDialog = false },
                     offset = with(density) {
                         DpOffset(
-                            x = dropdownOffset.x.toDp() - 10.dp, // Almost aligned with dropdown icon
-                            y = dropdownOffset.y.toDp() + 76.dp  // Just below the box
+                            x = dropdownOffset.x.toDp() - 10.dp,
+                            y = dropdownOffset.y.toDp() + 76.dp
                         )
                     },
                     modifier = Modifier
@@ -569,6 +571,7 @@ fun SettingScreen(
                         }
                     )
                 }
+                val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
 
                 SettingSwitch(
                     icon = {
@@ -581,8 +584,10 @@ fun SettingScreen(
                     title = "Reading Out Hadith Title",
                     textColor = Color.White,
                     checked = readingTitleEnabled,
-                    onCheckedChange = { readingTitleEnabled = it }
+                    onCheckedChange = { viewModel.setReadingTitleEnabled(it) }
                 )
+
+
                 Spacer(Modifier.height(16.dp))
                 Divider(
                     color = Color.Gray,

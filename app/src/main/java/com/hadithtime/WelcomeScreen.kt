@@ -137,7 +137,7 @@ fun WelcomeScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.continue_bg)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 55.dp)
+                .padding(bottom = 75.dp)
                 .width(240.dp)
                 .height(48.dp)
         ) {
@@ -164,10 +164,10 @@ fun ChooseLanguageScreen(
 
 
     val languages = listOf(
-        "English" to R.drawable.ic_english,
-        "Arabic" to R.drawable.ic_arabic,
-        "Urdu" to R.drawable.ic_urdu,
-        "Hindi" to R.drawable.ic_hindi
+        Triple("English", R.drawable.ic_english, "English"),
+        Triple("Arabic", R.drawable.ic_arabic, "العربية"),
+        Triple("Urdu", R.drawable.ic_urdu, "اردو"),
+        Triple("Hindi", R.drawable.ic_hindi, "हिंदी")
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -237,7 +237,7 @@ fun ChooseLanguageScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Column {
-                languages.forEach { (name, icon) ->
+                languages.forEach { (name, icon,subtitle) ->
                     val isSelected = name in selectedLanguages
 
                     Row(
@@ -259,22 +259,34 @@ fun ChooseLanguageScreen(
                             modifier = Modifier.size(32.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = name,
-                            color = Color.White,
-                            fontSize = 16.sp,
+
+                        // Wrap Texts in Column
+                        Column(
                             modifier = Modifier.weight(1f)
-                        )
+                        ) {
+                            Text(
+                                text = name,
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = subtitle,
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 12.sp
+                            )
+                        }
+
                         RadioButton(
                             selected = isSelected,
                             onClick = null,
                             enabled = false,
                             colors = RadioButtonDefaults.colors(
-                                disabledSelectedColor = Color.White,
-                                disabledUnselectedColor = Color.White
+                                disabledSelectedColor =  colorResource(R.color.background_color),
+                                disabledUnselectedColor =  colorResource(R.color.background_color),
                             )
                         )
                     }
+
                 }
             }
         }
@@ -302,7 +314,7 @@ fun ChooseLanguageScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.continue_bg)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 55.dp)
+                .padding(bottom = 75.dp)
                 .width(240.dp)
                 .height(48.dp)
         ) {
@@ -495,7 +507,7 @@ fun FontSizeAdjustmentScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.continue_bg)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 55.dp)
+                .padding(bottom = 75.dp)
                 .width(240.dp)
                 .height(48.dp)
         ) {
@@ -704,7 +716,7 @@ fun PreferencesScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.continue_bg)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 55.dp)
+                .padding(bottom = 75.dp)
                 .width(240.dp)
                 .height(48.dp)
         ) {

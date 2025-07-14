@@ -146,7 +146,6 @@ fun LevelTwoScreen(
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
-
             currentDua?.let { dua ->
                 PlayerControls(
                     navController = navController,

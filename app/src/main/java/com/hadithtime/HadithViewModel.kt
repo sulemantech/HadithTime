@@ -13,13 +13,11 @@ import androidx.lifecycle.viewModelScope
 import com.hadithtime.components.FontSizeManager
 import com.hadithtime.model.HadithDatabase
 import com.hadithtime.model.Hadith
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -132,6 +130,44 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
             FontSizeManager.saveFontSize(context, newSize)
         }
     }
+
+    private val _readingTitleEnabled = MutableStateFlow(false)
+    val readingTitleEnabled: StateFlow<Boolean> = _readingTitleEnabled
+
+    fun setReadingTitleEnabled(enabled: Boolean) {
+        _readingTitleEnabled.value = enabled
+        viewModelScope.launch {
+            FontSizeManager.saveReadingTitleEnabled(context, enabled)
+        }
+    }
+    init {
+        viewModelScope.launch {
+            FontSizeManager.getReadingTitleFlow(context).collect {
+                _readingTitleEnabled.value = it
+            }
+        }
+    }
+
+    private val _autoNextHadithEnabled = MutableStateFlow(false)
+    val autoNextHadithEnabled: StateFlow<Boolean> = _autoNextHadithEnabled
+
+    fun setautoNextHadithEnabled(enabled: Boolean) {
+        _autoNextHadithEnabled.value = enabled
+        viewModelScope.launch {
+            FontSizeManager.saveAutoNextHadith(context, enabled)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            FontSizeManager.getAutoNextHadithFlow(context).collect {
+                _autoNextHadithEnabled.value = it
+            }
+        }
+    }
+
+
+
 }
 
 val duas = listOf(
@@ -142,8 +178,9 @@ val duas = listOf(
         reference = "(صحيح البخاري)",
         arabicTitle = "الْحَياءُ",
         englishReference = "The Messenger of Allah ﷺ said:\n “Modesty is a branch of faith.”",
+        duaEnglishTitle = R.raw.level1_english_title1,
         englishTranslation = "(Sahih al-Bukhari)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level1_hadees1,
         backgroundUrl = null,
         icon = R.drawable.ic_level1_dua1,
         level = 1
@@ -155,8 +192,9 @@ val duas = listOf(
         arabicTitle = "الإيمان",
         englishReference = "The Messenger of Allah ﷺ said:\n\"Say, ‘I believe in Allah’, then be steadfast.”",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level1_hadees2,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title2,
         icon = R.drawable.ic_level1_dua2,
         level = 1
     ),
@@ -167,8 +205,9 @@ val duas = listOf(
         arabicTitle = "فَضْلُ تَعَلُّمِ الْقُرْآنِ",
         englishReference = "The Messenger of Allah ﷺ said:\n The best amongst you is the one who learns the Qur'an and teaches it.\"",
         englishTranslation = "(Sahih al-Bukhari)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level1_hadees3,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level1_dua3,
         level = 1
     ),
@@ -179,8 +218,9 @@ val duas = listOf(
         arabicTitle = "الطّهارة",
         englishReference = "The Messenger of Allah ﷺ said:\n \"Cleanliness is half of faith \"",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level1_hadess4,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title4,
         icon = R.drawable.ic_level1_dua4,
         level = 1
     ),
@@ -193,8 +233,9 @@ val duas = listOf(
         arabicTitle = "   طَاعةُ النَّبيِّﷺ",
         englishReference = "The Messenger of Allah ﷺ said:\n \"Whoever obeys me will enter Paradise,",
         englishTranslation = "(Sahih al-Bukhari)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level2_hadees1,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level2_dua1,
         level = 2
     ),
@@ -205,8 +246,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Observed prayer at its prescribed time.”",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level2_hadees2,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level2_english_title2,
         icon = R.drawable.ic_level2_dua2,
         level = 2
     ),
@@ -217,8 +259,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Mention the Name of Allah and eat with your right hand.”",
         englishTranslation = "(Sahih al-Bukhari)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level2_hadees3,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level2_english_title3,
         icon = R.drawable.ic_level2_dua3,
         level = 2
     ),
@@ -229,8 +272,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “None of you should drink while standing.”",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level2_hadees4,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level2_english_title4,
         icon = R.drawable.ic_level2_dua4,
         level = 2
     ),
@@ -241,8 +285,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Do not abuse anyone.”",
         englishTranslation = "(Sunan Abi Dawud)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level2_hadees5,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level2_dua5,
         level = 2
     ),
@@ -255,8 +300,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Promote greeting amongst you.”",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees1,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua1,
         level = 3
     ),
@@ -267,8 +313,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n There is none worthy of worship except Allah.”",
         englishTranslation = "(Sunan al-Tirmidhi)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees2,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua2,
         level = 3
     ),
@@ -279,8 +326,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Whenever you ask (for anything), ask from Allah.”",
         englishTranslation = "(Sunan al-Tirmidhi)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees3,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua3,
         level = 3
     ),
@@ -291,8 +339,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Anyone who does not show mercy, will not be shown mercy.”",
         englishTranslation = "(Sahih al-Muslim)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees4,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua4,
         level = 3
     ),
@@ -303,8 +352,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n “Be conscious of Allah where ever you are.”",
         englishTranslation = "(Sunan al-Tirmidhi)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees5,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua5,
         level = 3
     ),
@@ -315,8 +365,9 @@ val duas = listOf(
         arabicTitle = "...",
         englishReference = "The Messenger of Allah ﷺ said:\n‘’Good word is a charity.”",
         englishTranslation = "(Sahih al-Bukhari)",
-        audioUrl = R.raw.dua01_part01_audio01_complete,
+        audioUrl = R.raw.level3_hadees6,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua6,
         level = 3
     ),
@@ -329,6 +380,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level3_dua7,
         level = 3
     ),
@@ -343,6 +395,7 @@ val duas = listOf(
         englishTranslation = "(Agreed Upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua1,
         level = 4
     ),
@@ -355,6 +408,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua2,
         level = 4
     ),
@@ -367,6 +421,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Ibn Majah)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua3,
         level = 4
     ),
@@ -379,6 +434,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Ibn Majah)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua4,
         level = 4
     ),
@@ -391,6 +447,7 @@ val duas = listOf(
         englishTranslation = "(An-Nasa'i)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua5,
         level = 4
     ),
@@ -403,6 +460,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua6,
         level = 4
     ),
@@ -415,6 +473,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level4_dua7,
         level = 4
     ),
@@ -430,6 +489,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua1,
         level = 5
     ),
@@ -442,6 +502,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua2,
         level = 5
     ),
@@ -454,6 +515,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua3,
         level = 5
     ),
@@ -466,6 +528,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua4,
         level = 5
     ),
@@ -478,6 +541,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua5,
         level = 5
     ),
@@ -491,6 +555,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua6,
         level = 5
     ),
@@ -508,6 +573,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua7,
         level = 5
     ),
@@ -521,6 +587,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level5_dua8,
         level = 5
     ),
@@ -536,6 +603,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua1,
         level = 6
     ),
@@ -553,6 +621,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua2,
         level = 6
     ),
@@ -565,6 +634,7 @@ val duas = listOf(
         englishTranslation = "(At-Tirmidhi and Ibn-Majahi)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua3,
         level = 6
     ),
@@ -577,6 +647,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua4,
         level = 6
     ),
@@ -594,6 +665,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua5,
         level = 6
     ),
@@ -607,6 +679,7 @@ val duas = listOf(
         englishTranslation = "(Sunan Abi Dawood)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua6,
         level = 6
     ),
@@ -619,6 +692,7 @@ val duas = listOf(
         englishTranslation = "(Al-Bukhari and Al-Muslim)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua7,
         level = 6
     ),
@@ -631,6 +705,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua8,
         level = 6
     ),
@@ -643,6 +718,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level6_dua9,
         level = 6
     ),
@@ -657,6 +733,7 @@ val duas = listOf(
         englishTranslation = "(Al-Tirmidhi)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua1,
         level = 7
     ),
@@ -669,6 +746,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua2,
         level = 7
     ),
@@ -682,6 +760,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Muslim)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua3,
         level = 7
     ),
@@ -694,6 +773,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua4,
         level = 7
     ),
@@ -706,6 +786,7 @@ val duas = listOf(
         englishTranslation = "(Sahih al-Bukhari)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua5,
         level = 7
     ),
@@ -718,6 +799,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua6,
         level = 7
     ),
@@ -730,6 +812,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua7,
         level = 7
     ),
@@ -742,6 +825,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua8,
         level = 7
     ),
@@ -754,6 +838,7 @@ val duas = listOf(
         englishTranslation = "(Agreed upon)",
         audioUrl = R.raw.dua01_part01_audio01_complete,
         backgroundUrl = null,
+        duaEnglishTitle = R.raw.level1_english_title1,
         icon = R.drawable.ic_level7_dua9,
         level = 7
     ),
