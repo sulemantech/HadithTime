@@ -91,4 +91,15 @@ object FontSizeManager {
         }
     }
 
+
+    // Reading Title Toggle
+    private val HADITH_REFERENCE_KEY = booleanPreferencesKey("hadith_reference_enabled")
+
+    fun getHadithReferenceFlow(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { it[READING_TITLE_KEY] ?: false }
+    }
+
+    suspend fun saveHadithReferenceEnabled(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { it[READING_TITLE_KEY] = isEnabled }
+    }
 }

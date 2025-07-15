@@ -131,16 +131,18 @@ fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = view
                 }
 
                 Spacer(modifier = Modifier.height(5.dp))
-
-                dua.reference?.let {
-                    Text(
-                        text = it,
-                        fontSize = 14.sp,
-                        fontFamily = MyEnglishFont,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+                val hadithReferenceEnabled1 by viewModel.HadithReferenceEnabled.collectAsState()
+                if (!hadithReferenceEnabled1) {
+                    dua.reference?.let {
+                        Text(
+                            text = it,
+                            fontSize = 14.sp,
+                            fontFamily = MyEnglishFont,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -191,15 +193,18 @@ fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = view
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+                val hadithReferenceEnabled by viewModel.HadithReferenceEnabled.collectAsState()
 
-                dua.englishTranslation?.let {
-                    Text(
-                        text = it,
-                        fontSize = 12.sp,
-                        fontFamily = MyEnglishFont,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
+                if (!hadithReferenceEnabled) {
+                    dua.englishTranslation?.let {
+                        Text(
+                            text = it,
+                            fontSize = 12.sp,
+                            fontFamily = MyEnglishFont,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }

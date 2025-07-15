@@ -1,5 +1,6 @@
 package com.hadithtime.levels
 
+import android.media.MediaPlayer
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -19,19 +21,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.model.LevelAssets
 import com.hadithtime.model.levelOneTexts
 import com.hadithtime.model.levelTwoTexts
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 @Composable
-fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) {
+fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int, viewModel: HadithViewModel = viewModel()) {
     val levelOneAssets = listOf(
         LevelAssets(
             background = R.drawable.level_two_bg,
@@ -80,13 +85,14 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
         )
     )
 
-    LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate("levelTwoScreen/$nextIndex")
-    }
+
+//    LaunchedEffect(Unit) {
+//        delay(2000)
+//        navController.navigate("levelTwoScreen/$nextIndex")
+//    }
 
     val assets = levelOneAssets.getOrElse(nextIndex) {
-        levelOneAssets.last() // fallback if index is out of range
+        levelOneAssets.last()
     }
     val text = levelTwoTexts.getOrElse(nextIndex) {
         levelTwoTexts.last()
@@ -97,11 +103,67 @@ fun TitleScreenLevel2(navController: NavController, level: Int, nextIndex: Int) 
 
     val MyEnglishFont = FontFamily(Font(R.font.sandy_kids))
     val MyArabicFont = FontFamily(Font(R.font.tinta_arabic))
+    val hadithList by viewModel.filteredDuas.collectAsState()
+
+    val context = LocalContext.current
+    val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)
     }
+
+    val currentHadith = hadithList.getOrNull(nextIndex) ?: return
+    val englishTitleRes = currentHadith.duaEnglishTitle
+    val arabicTitleRes = currentHadith.duaArabicTitle
+
+    val englishPlayer = remember(englishTitleRes) {
+        if (englishTitleRes != 0) MediaPlayer.create(context, englishTitleRes) else null
+    }
+
+    val arabicPlayer = remember(arabicTitleRes) {
+        if (arabicTitleRes != 0) MediaPlayer.create(context, arabicTitleRes) else null
+    }
+
+    var alreadyPlayed by remember(currentHadith.id) { mutableStateOf(false) }
+
+    LaunchedEffect(readingTitleEnabled, currentHadith.id) {
+        if (!alreadyPlayed) {
+            alreadyPlayed = true
+
+            if (readingTitleEnabled && englishPlayer != null && arabicPlayer != null) {
+                // Play English Title
+                suspendCancellableCoroutine<Unit> { cont ->
+                    englishPlayer.setOnCompletionListener {
+                        cont.resume(Unit) {}
+                    }
+                    englishPlayer.start()
+                }
+
+                // Play Arabic Title
+                suspendCancellableCoroutine<Unit> { cont ->
+                    arabicPlayer.setOnCompletionListener {
+                        cont.resume(Unit) {}
+                    }
+                    arabicPlayer.start()
+                }
+
+                // After both audio finishes
+                navController.navigate("levelTwoScreen/$nextIndex")
+            } else {
+                delay(2000)
+                navController.navigate("levelTwoScreen/$nextIndex")
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            englishPlayer?.release()
+            arabicPlayer?.release()
+        }
+    }
+
 
     val girlOffsetX = remember { Animatable(-300f) }
     val bubbleAlpha = remember { Animatable(0f) }

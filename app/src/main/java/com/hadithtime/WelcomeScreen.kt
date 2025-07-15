@@ -32,6 +32,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -526,13 +527,16 @@ fun PreferencesScreen(
     onGetStartedClick: () -> Unit,
     onNextClick: () -> Unit,
     onContinueClick: () -> Unit,
-    onSwipeRight: () -> Unit
+    onSwipeRight: () -> Unit,
+    viewModel: HadithViewModel = viewModel()
+
 ) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_medium))
     val MyTextFont = FontFamily(Font(R.font.fredoka_regular))
     val MySkipFont = FontFamily(Font(R.font.fredoka_medium))
     val MyArabicFont = FontFamily(Font(R.font.al_quran))
     val splashfont = FontFamily(Font(R.font.fredoka_semibold))
+    val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -590,7 +594,7 @@ fun PreferencesScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 2.dp)
                 ) {
-                    var readingTitleEnabled by remember { mutableStateOf(false) }
+                    val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
 
                     SettingSwitch2(
                         icon = {
@@ -605,8 +609,8 @@ fun PreferencesScreen(
                         },
                         title = "Auto Next Hadith",
                         textColor = Color.Black,
-                        checked = readingTitleEnabled,
-                        onCheckedChange = { readingTitleEnabled = it }
+                        checked = autoNextHadithEnabled,
+                        onCheckedChange = { viewModel.setautoNextHadithEnabled(it) }
                     )
                 }
 
@@ -669,7 +673,7 @@ fun PreferencesScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 2.dp)
                 ) {
-                    var readingTitleEnabled by remember { mutableStateOf(false) }
+                    val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
 
                     SettingSwitch2(
                         icon = {
@@ -685,7 +689,7 @@ fun PreferencesScreen(
                         title = "Reading Out Hadith Title",
                         textColor = Color.Black,
                         checked = readingTitleEnabled,
-                        onCheckedChange = { readingTitleEnabled = it }
+                        onCheckedChange = { viewModel.setReadingTitleEnabled(it) }
                     )
                 }
 
@@ -731,7 +735,7 @@ fun SettingSwitch2(
     title: String,
     checked: Boolean,
     textColor: Color = Color.White,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     val MyCountFont = FontFamily(Font(R.font.fredoka_semibold))
     val MyregularFont = FontFamily(Font(R.font.fredoka_regular))
@@ -752,6 +756,7 @@ fun SettingSwitch2(
             color = Color.White,
             fontFamily = MyregularFont,
         )
+
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,

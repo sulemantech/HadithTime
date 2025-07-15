@@ -91,7 +91,7 @@ fun SettingScreen(
     var selectedVoice by remember { mutableStateOf("Male") }
     var selectedFont by remember { mutableStateOf("Al Majeed Quran") }
 //    var fontSize by remember { mutableStateOf(16f) }
-    var hadithReferenceEnabled by remember { mutableStateOf(false) }
+ //   var hadithReferenceEnabled by remember { mutableStateOf(false) }
   //  var autoNextHadithEnabled by remember { mutableStateOf(false) }
 
     var rewardsEnabled by remember { mutableStateOf(false) }
@@ -450,6 +450,23 @@ fun SettingScreen(
                         }
                     )
                 }
+                val hadithReferenceEnabled by viewModel.HadithReferenceEnabled.collectAsState()
+
+                SettingSwitch(
+                    icon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_next),
+                            contentDescription = "Hadith Reference",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Hadith Reference",
+                    textColor = Color.White,
+                    checked = hadithReferenceEnabled,
+                    onCheckedChange = { isChecked ->
+                        viewModel.setaHadithReferenceEnabled(isChecked)
+                    }
+                )
 
                 val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
                 SettingSwitch(

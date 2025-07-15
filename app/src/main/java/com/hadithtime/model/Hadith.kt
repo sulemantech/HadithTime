@@ -9,6 +9,7 @@ data class Hadith(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val Duaheading: String,
     val duaEnglishTitle: Int,
+    val duaArabicTitle: Int,
     val arabic: String,
     val reference: String?,
     val arabicTitle: String,
