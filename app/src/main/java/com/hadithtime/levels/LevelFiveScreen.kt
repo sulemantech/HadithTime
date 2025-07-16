@@ -2,9 +2,6 @@ package com.hadithtime.levels
 
 import android.app.Activity
 import android.os.Build
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -16,12 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -32,12 +27,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
@@ -45,7 +39,7 @@ import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
-import com.hadithtime.duas
+
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun LevelFiveScreen(
@@ -100,7 +94,7 @@ fun LevelFiveScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
@@ -113,7 +107,7 @@ fun LevelFiveScreen(
                             if (nextLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
                             } else {
-                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                              //  Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -173,7 +167,7 @@ fun LevelFiveScreen(
                             if (nextLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
                             } else {
-                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },
@@ -186,7 +180,7 @@ fun LevelFiveScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                              //  Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },

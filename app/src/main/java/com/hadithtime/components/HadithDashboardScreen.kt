@@ -13,16 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,8 +26,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -68,16 +62,14 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.duas
-import com.hadithtime.levels.LevelFiveScreen
 import com.hadithtime.model.HadithCard
 import com.hadithtime.model.HadithDataProvider.levels
 import com.hadithtime.model.HadithLevel
-import com.hadithtime.model.levelTwoTexts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -259,7 +251,15 @@ fun HadithDashboardScreen(
                             horizontalArrangement = Arrangement.spacedBy(44.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            DashboardStatColumn("Library", R.drawable.group_card)
+                            Box(
+                                modifier = Modifier
+                                    .clickable {
+                                        navController.navigate("LearningTrackerScreen")
+                                    }
+                            ) {
+                                DashboardStatColumn("Library", R.drawable.group_card)
+                            }
+
                             DashboardStatColumn("02 of 49", R.drawable.group_card)
                             DashboardStatColumn("10 min", R.drawable.group_card)
                         }

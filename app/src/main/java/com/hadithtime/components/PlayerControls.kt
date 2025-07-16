@@ -52,7 +52,10 @@ import androidx.navigation.NavController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
 import com.hadithtime.model.Hadith
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
@@ -64,91 +67,82 @@ fun PlayerControls(
     dua: Hadith,
     viewModel: HadithViewModel
 ) {
-
     val context = LocalContext.current
-
-    // Initialize TTS
-    val tts = remember {
-        TextToSpeech(context, null).apply {
-            language = Locale.US
-        }
-    }
-
-    val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
-
-    val mediaPlayer = remember {
-        MediaPlayer.create(context, dua.audioUrl)
-    }
-
-    val titlePlayer = remember {
-        MediaPlayer.create(context, dua.duaEnglishTitle)
-    }
-
-    var isPlaying by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(0f) }
-    var duration by remember { mutableStateOf(1f) }
-
-// Setup player listeners once
-    DisposableEffect(Unit) {
-        mediaPlayer.setOnPreparedListener {
-            duration = it.duration.toFloat()
-        }
-
-        mediaPlayer.setOnCompletionListener {
-            isPlaying = false
-            sliderValue = 0f
-
-            if (viewModel.autoNextHadithEnabled.value) {
-                onNextClick()
-            }
-        }
-
-
-        titlePlayer.setOnCompletionListener {
-            mediaPlayer.start()
-            duration = mediaPlayer.duration.toFloat()
-            isPlaying = true
-        }
-
-        onDispose {
-            mediaPlayer.release()
-            titlePlayer.release()
-            tts.shutdown()
-        }
-    }
-
-// Update slider while playing
-    LaunchedEffect(isPlaying) {
-        while (isPlaying) {
-            sliderValue = mediaPlayer.currentPosition.toFloat()
-            delay(300L)
-        }
-    }
+    val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
 
     val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
-
-    LaunchedEffect(dua.id) {
-        if (autoNextHadithEnabled) {
-            if (readingTitleEnabled) {
-                titlePlayer.setOnCompletionListener {
-                    mediaPlayer.start()
-                    duration = mediaPlayer.duration.toFloat()
-                    isPlaying = true
-                }
-                titlePlayer.start()
-            } else {
-                mediaPlayer.start()
-                duration = mediaPlayer.duration.toFloat()
-                isPlaying = true
-            }
-        }
-    }
-
-    val MyCountFont = FontFamily(Font(R.font.fredoka_regular))
+    val hadithTranslationEnabled by viewModel.hadithTranslationEnabled.collectAsState()
     val filteredDuas by viewModel.filteredDuas.collectAsState()
+
     val updatedDua = filteredDuas.find { it.id == dua.id } ?: dua
     val currentIndex = filteredDuas.indexOfFirst { it.id == dua.id } + 1
     val totalCount = filteredDuas.size
+
+    val shouldAutoPlay by viewModel.shouldAutoPlay.collectAsState()
+
+    var isPlaying by remember { mutableStateOf(false) }
+
+    val mainPlayer = remember(dua.id) {
+        MediaPlayer.create(context, dua.audioUrl)
+    }
+
+    LaunchedEffect(dua.id, shouldAutoPlay) {
+        if (shouldAutoPlay) {
+            delay(100)
+            mainPlayer.start()
+            isPlaying = true
+            viewModel.consumeAutoPlayFlag()
+        }
+    }
+
+    val translationPlayer = remember(dua.id) {
+        if (dua.englishTranslationAudio != 0) MediaPlayer.create(context, dua.englishTranslationAudio) else null
+    }
+
+    var sliderValue by remember { mutableStateOf(0f) }
+    var duration by remember { mutableStateOf(1f) }
+
+    DisposableEffect(mainPlayer) {
+        mainPlayer.setOnCompletionListener {
+            isPlaying = false
+            sliderValue = 0f
+
+            if (hadithTranslationEnabled && translationPlayer != null) {
+                translationPlayer.setOnCompletionListener {
+                    if (autoNextHadithEnabled) {
+                        viewModel.triggerAutoPlayNext()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(100)
+                            onNextClick()
+                        }
+                    }
+                }
+                translationPlayer.start()
+            } else {
+                if (autoNextHadithEnabled) {
+                    viewModel.triggerAutoPlayNext()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(100)
+                        onNextClick()
+                    }
+                }
+            }
+        }
+
+        duration = mainPlayer.duration.toFloat()
+
+        onDispose {
+            mainPlayer.release()
+            translationPlayer?.release()
+        }
+    }
+
+    LaunchedEffect(isPlaying) {
+        while (isPlaying) {
+            sliderValue = mainPlayer.currentPosition.toFloat()
+            delay(300)
+        }
+    }
 
     val sliderColor = when (level) {
         1 -> colorResource(id = R.color.slider_level1)
@@ -157,7 +151,7 @@ fun PlayerControls(
         4 -> colorResource(id = R.color.slider_level4)
         5 -> colorResource(id = R.color.slider_level5)
         6 -> colorResource(id = R.color.slider_level6)
-        7 -> colorResource(id = R.color.slider_level7)
+        7 -> colorResource(id = R.color.slider_color)
         else -> colorResource(id = R.color.slider_color)
     }
 
@@ -184,20 +178,17 @@ fun PlayerControls(
                 val isMemorized = updatedDua.memorized
 
                 Surface(
-                    color = if (isMemorized) getLevelColor(level) else colorResource(id = R.color.white),
+                    color = if (isMemorized) getLevelColor(level) else Color.White,
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, getLevelColor(level)),
                     modifier = Modifier
                         .height(32.dp)
-                        .clickable {
-                            viewModel.toggleMemorized(updatedDua)
-                        }
+                        .clickable { viewModel.toggleMemorized(updatedDua) }
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(horizontal = 12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Text(
                             text = "Memorize",
@@ -216,11 +207,12 @@ fun PlayerControls(
                 }
             }
 
+            // Audio Slider
             Slider(
                 value = sliderValue,
                 onValueChange = {
                     sliderValue = it
-                    mediaPlayer.seekTo(it.toInt())
+                    mainPlayer.seekTo(it.toInt())
                 },
                 valueRange = 0f..duration,
                 modifier = Modifier
@@ -239,10 +231,21 @@ fun PlayerControls(
                     .padding(start = 7.dp, end = 7.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(formatTime(sliderValue.toInt()), fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
-                Text(formatTime(duration.toInt()), fontFamily = MyCountFont, fontSize = 14.sp, color = colorResource(R.color.black_arabic))
+                Text(
+                    text = formatTime(sliderValue.toInt()),
+                    fontSize = 14.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(id = R.color.black_arabic)
+                )
+                Text(
+                    text = formatTime(duration.toInt()),
+                    fontSize = 14.sp,
+                    fontFamily = MyCountFont,
+                    color = colorResource(id = R.color.black_arabic)
+                )
             }
 
+            // Player Controls
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -250,25 +253,29 @@ fun PlayerControls(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { /* Repeat logic */ }) {
-                    Image(painter = painterResource(id = R.drawable.ic_repeat), contentDescription = "Repeat", modifier = Modifier.size(24.dp))
+                IconButton(onClick = { /* TODO: Repeat logic */ }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_repeat),
+                        contentDescription = "Repeat",
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
 
                 IconButton(onClick = onPreviousClick) {
-                    Image(painter = painterResource(id = R.drawable.ic_previous), contentDescription = "Previous", modifier = Modifier.size(20.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_previous),
+                        contentDescription = "Previous",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
+
                 IconButton(onClick = {
                     if (isPlaying) {
-                        mediaPlayer.pause()
+                        mainPlayer.pause()
                         isPlaying = false
                     } else {
-                        if (readingTitleEnabled) {
-                            titlePlayer.start()
-                        } else {
-                            mediaPlayer.start()
-                            duration = mediaPlayer.duration.toFloat()
-                            isPlaying = true
-                        }
+                        mainPlayer.start()
+                        isPlaying = true
                     }
                 }) {
                     Image(
@@ -279,11 +286,14 @@ fun PlayerControls(
                 }
 
                 IconButton(onClick = onNextClick) {
-                    Image(painter = painterResource(id = R.drawable.icon_next), contentDescription = "Next", modifier = Modifier.size(20.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_next),
+                        contentDescription = "Next",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
 
                 val favoriteIcon = if (updatedDua.isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
-
                 IconButton(onClick = { viewModel.toggleFavorite(updatedDua) }) {
                     AnimatedContent(targetState = favoriteIcon, transitionSpec = {
                         fadeIn() togetherWith fadeOut()
@@ -299,7 +309,6 @@ fun PlayerControls(
         }
     }
 }
-
 
 fun formatTime(milliseconds: Int): String {
     val totalSeconds = milliseconds / 1000

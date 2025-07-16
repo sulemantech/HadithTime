@@ -10,6 +10,7 @@ data class Hadith(
     val Duaheading: String,
     val duaEnglishTitle: Int,
     val duaArabicTitle: Int,
+    val englishTranslationAudio: Int,
     val arabic: String,
     val reference: String?,
     val arabicTitle: String,

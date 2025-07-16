@@ -1,6 +1,5 @@
 package com.hadithtime.levels
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -30,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
@@ -38,7 +37,6 @@ import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
-import com.hadithtime.duas
 
 @Composable
 fun LevelFourScreen(
@@ -91,7 +89,7 @@ fun LevelFourScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
@@ -103,7 +101,7 @@ fun LevelFourScreen(
                             if (nextLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
                             } else {
-                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                               // Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -165,7 +163,7 @@ fun LevelFourScreen(
                             if (nextLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$nextLevel/$nextLevel/0")
                             } else {
-                                Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No more Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },
@@ -178,7 +176,7 @@ fun LevelFourScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },

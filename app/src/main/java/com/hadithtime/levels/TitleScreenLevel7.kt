@@ -21,12 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.R
 import com.hadithtime.model.LevelAssets
 import com.hadithtime.model.levelSevenTexts
-import com.hadithtime.model.levelSixTexts
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

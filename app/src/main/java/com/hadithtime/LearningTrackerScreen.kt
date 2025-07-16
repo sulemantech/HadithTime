@@ -108,7 +108,7 @@ fun LearningTrackerScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
-                    .padding(18.dp)
+                    .padding(top = 18.dp)
             ) {
                 Text(
                     text = "Learning Tracker",
@@ -119,8 +119,9 @@ fun LearningTrackerScreen(
                         .padding(top = 20.dp),
                     textAlign = TextAlign.Center
                 )
+
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 15.dp)
@@ -169,8 +170,7 @@ fun LearningTrackerScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {
-                            },
+                            onClick = {},
                             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -195,13 +195,12 @@ fun LearningTrackerScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {
-
-                                Toast.makeText(
-                                    context,
-                                    "Play Favorite clicked!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                onClick = {
+                                    val targetDua = filteredDuas.firstOrNull()
+                                    if (targetDua != null) {
+                                        viewModel.triggerAutoPlayNext()
+                                        navController.navigate("TitleScreenLevel1/${targetDua.id}/${targetDua.level}")
+                                    }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
                         ) {
@@ -223,7 +222,7 @@ fun LearningTrackerScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp, horizontal = 15.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -243,7 +242,7 @@ fun LearningTrackerScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 15.dp, bottom = 10.dp)
+                        .padding(15.dp)
                 ) {
                     itemsIndexed(filteredDuas) { index, hadith ->
                         val levelNumber = hadith.level
@@ -272,14 +271,14 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
 
     Surface(
         color = if (selected) colorResource(R.color.filter_color) else colorResource(R.color.filter_color_bg),
-        shape = RoundedCornerShape(20.dp),
+        shape = CircleShape,
         modifier = Modifier
-            .padding(horizontal = 7.dp)
+            .padding(horizontal = 2.dp)
             .clickable { onClick() }
     ) {
         Text(
             text = label,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             color = textColor,
             fontSize = 14.sp,
             fontFamily = MyCountFont
@@ -299,26 +298,25 @@ fun SelectLevelDropdown(
     val displayedText =
         if (selectedLevels.isEmpty()) "Select" else selectedLevels.joinToString(", ") { " $it" }
 
-    Box {
-        Button(
-            onClick = { dialogOpen = true },
-            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Text(text = displayedText, color = Color.White, fontFamily = MyCountFont)
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                painter = painterResource(id = R.drawable.dropdown_arrow),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = Color.White
-            )
-        }
+    Button(
+        onClick = { dialogOpen = true },
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(text = displayedText, color = Color.White, fontFamily = MyCountFont)
+        Spacer(modifier = Modifier.width(4.dp))
+        Icon(
+            painter = painterResource(id = R.drawable.dropdown_arrow),
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = Color.White
+        )
     }
 
     if (dialogOpen) {
         AlertDialog(
             onDismissRequest = { dialogOpen = false },
+            shape = RoundedCornerShape(16.dp),
             title = {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -339,27 +337,28 @@ fun SelectLevelDropdown(
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp),
+                            .padding(top = 6.dp),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
                 }
             },
             text = {
+                // This is the fix 👇
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                        //.padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxWidth()
+                        .heightIn(min = 100.dp, max = 300.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Manual grid layout, 3 chips per row
                     val levels = (1..7).toList()
                     val rows = levels.chunked(3)
 
                     rows.forEach { row ->
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            modifier = Modifier.fillMaxWidth() .padding(start = 10.dp, end = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(32.dp)
                         ) {
                             row.forEach { level ->
                                 FilterChipDropDown(
@@ -380,14 +379,15 @@ fun SelectLevelDropdown(
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
+                            .padding(top = 0.dp),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(top = 4.dp, end = 12.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(onClick = { dialogOpen = false }) {
@@ -410,8 +410,7 @@ fun SelectLevelDropdown(
                     }
                 }
             },
-            shape = RoundedCornerShape(16.dp),
-            confirmButton = {},
+            confirmButton = {}, // Material3 requirement
             dismissButton = {}
         )
     }
@@ -419,28 +418,29 @@ fun SelectLevelDropdown(
 
 @Composable
 fun FilterChipDropDown(label: String, selected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (selected) colorResource(R.color.filter_color) else Color.Transparent
+    val backgroundColor = if (selected) colorResource(R.color.filter_color) else Color.White
     val textColor = if (selected) Color.White else Color.Black
     val myFont = FontFamily(Font(R.font.fredoka_semibold))
+
     Box(
         modifier = Modifier
-            .padding(end = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
             .border(
                 width = 1.dp,
-                color = if (selected) Color.Black else Color.Gray,
+                color = if (selected) Color.Transparent else Color.Gray,
                 shape = RoundedCornerShape(16.dp)
             )
-            .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .clickable { onClick() }
-          //  .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
     ) {
         Text(
             text = label,
             color = textColor,
-            fontFamily = myFont
+            fontFamily = myFont,
+            fontSize = 12.sp
         )
     }
-
 }
 
 @Composable
@@ -468,7 +468,6 @@ fun Hadith(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-           // .background(Color.White)
             .clickable(
                 interactionSource = interactionSource,
                 indication = rememberRipple(
@@ -503,48 +502,24 @@ fun Hadith(
                     .padding(end = 9.dp)
             ) {
                 hadith.englishReference?.let { reference ->
-                    val lines = reference.split("\n", limit = 2)
-                    val annotatedString = buildAnnotatedString {
-                        if (lines.isNotEmpty()) {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.W200,
-                                    fontSize = 16.sp,
-                                    fontFamily = MyEnglishFont
-                                )
-                            ) { append(lines[0] + "\n") }
-                        }
-                        if (lines.size > 1) {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    fontFamily = MyEnglishFont
-                                )
-                            ) { append(lines[1]) }
-                        }
-                    }
-                    Box(
-                        modifier = Modifier.horizontalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            text = annotatedString,
-                            style = LocalTextStyle.current.copy(
-                                color = Color.Black,
-                                lineHeight = 28.sp
-                            ),
-                            maxLines = 2,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    Text(
+                        text = reference,
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontFamily = MyEnglishFont,
+                        fontWeight = FontWeight.W400,
+                        lineHeight = 28.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-
             }
 
             Box(
                 modifier = Modifier
-                    .width(4.dp)
-                    .height(34.dp),
+                    .width(6.dp)
+                    .height(35.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(

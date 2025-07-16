@@ -64,17 +64,6 @@ object FontSizeManager {
         context.dataStore.edit { it[IS_URDU_ENABLED] = isEnabled }
     }
 
-    // Reading Title Toggle
-    private val READING_TITLE_KEY = booleanPreferencesKey("reading_title_enabled")
-
-    fun getReadingTitleFlow(context: Context): Flow<Boolean> {
-        return context.dataStore.data.map { it[READING_TITLE_KEY] ?: false }
-    }
-
-    suspend fun saveReadingTitleEnabled(context: Context, isEnabled: Boolean) {
-        context.dataStore.edit { it[READING_TITLE_KEY] = isEnabled }
-    }
-
     // auto next Toggle
 
     private val AUTO_NEXT_HADITH_KEY = booleanPreferencesKey("auto_next_hadith")
@@ -91,15 +80,35 @@ object FontSizeManager {
         }
     }
 
-
-    // Reading Title Toggle
+    private val READING_TITLE_KEY = booleanPreferencesKey("reading_title_enabled")
     private val HADITH_REFERENCE_KEY = booleanPreferencesKey("hadith_reference_enabled")
+    private val HADITH_TRANALATION_KEY = booleanPreferencesKey("hadith_translation_enabled")
 
-    fun getHadithReferenceFlow(context: Context): Flow<Boolean> {
+    // --- Reading Title ---
+    fun getReadingTitleFlow(context: Context): Flow<Boolean> {
         return context.dataStore.data.map { it[READING_TITLE_KEY] ?: false }
     }
 
-    suspend fun saveHadithReferenceEnabled(context: Context, isEnabled: Boolean) {
+    suspend fun saveReadingTitleEnabled(context: Context, isEnabled: Boolean) {
         context.dataStore.edit { it[READING_TITLE_KEY] = isEnabled }
     }
+
+    // --- Hadith Reference ---
+    fun getHadithReferenceFlow(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { it[HADITH_REFERENCE_KEY] ?: false }
+    }
+
+    suspend fun saveHadithReferenceEnabled(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { it[HADITH_REFERENCE_KEY] = isEnabled }
+    }
+
+    // --- Hadith Reference ---
+    fun gethadithTranslationFlow(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { it[HADITH_TRANALATION_KEY] ?: true }
+    }
+
+    suspend fun savehadithTranslationEnabled(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { it[HADITH_TRANALATION_KEY] = isEnabled }
+    }
+
 }

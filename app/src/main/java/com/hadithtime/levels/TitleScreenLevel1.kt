@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
@@ -98,7 +97,8 @@ fun TitleScreenLevel1(
 
     val hadithList by viewModel.filteredDuas.collectAsState()
    // val currentHadith = hadithList.find { it.level == level } ?: return
-    val currentHadith = hadithList.getOrNull(nextIndex) ?: return
+    val levelOneHadiths = hadithList.filter { it.level == 1 }
+    val currentHadith = levelOneHadiths.getOrNull(nextIndex) ?: return
 
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)

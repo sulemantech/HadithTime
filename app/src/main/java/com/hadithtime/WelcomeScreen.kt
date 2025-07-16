@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -692,6 +693,31 @@ fun PreferencesScreen(
                         onCheckedChange = { viewModel.setReadingTitleEnabled(it) }
                     )
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 2.dp)
+                ) {
+
+                    val hadithTranslationEnabled by viewModel.hadithTranslationEnabled.collectAsState()
+                    SettingSwitch2(
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_reading),
+                                contentDescription = "Dark Mode Icon",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(end = 4.dp),
+                                tint = Color.White
+                            )
+                        },
+                        title = "Reading Out Hadith Translation",
+                        textColor = Color.Black,
+                        checked = hadithTranslationEnabled,
+                        onCheckedChange = { viewModel.sethadithTranslationEnabled(it) }
+                    )
+                }
 
             }
         }
@@ -760,6 +786,7 @@ fun SettingSwitch2(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            modifier = Modifier.scale(0.75f),
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = colorResource(R.color.background_color),

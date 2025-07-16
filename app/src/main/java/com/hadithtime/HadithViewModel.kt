@@ -140,11 +140,14 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
             FontSizeManager.saveReadingTitleEnabled(context, enabled)
         }
     }
-    init {
+
+    private val _hadithTranslationEnabled = MutableStateFlow(false)
+    val hadithTranslationEnabled: StateFlow<Boolean> = _hadithTranslationEnabled
+
+    fun sethadithTranslationEnabled(enabled: Boolean) {
+        _hadithTranslationEnabled.value = enabled
         viewModelScope.launch {
-            FontSizeManager.getReadingTitleFlow(context).collect {
-                _readingTitleEnabled.value = it
-            }
+            FontSizeManager.savehadithTranslationEnabled(context, enabled)
         }
     }
 
@@ -166,11 +169,11 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private val _HadithReferenceEnabled = MutableStateFlow(false)
-    val HadithReferenceEnabled: StateFlow<Boolean> = _HadithReferenceEnabled
+    private val _hadithReferenceEnabled = MutableStateFlow(false)
+    val hadithReferenceEnabled: StateFlow<Boolean> = _hadithReferenceEnabled
 
-    fun setaHadithReferenceEnabled(enabled: Boolean) {
-        _HadithReferenceEnabled.value = enabled
+    fun setHadithReferenceEnabled(enabled: Boolean) {
+        _hadithReferenceEnabled.value = enabled
         viewModelScope.launch {
             FontSizeManager.saveHadithReferenceEnabled(context, enabled)
         }
@@ -178,11 +181,37 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         viewModelScope.launch {
-            FontSizeManager.getHadithReferenceFlow(context).collect {
-                _HadithReferenceEnabled.value = it
+            // Separate coroutine for readingTitle
+            launch {
+                FontSizeManager.getReadingTitleFlow(context).collect {
+                    _readingTitleEnabled.value = it
+                }
+            }
+
+            // Separate coroutine for hadithReference
+            launch {
+                FontSizeManager.getHadithReferenceFlow(context).collect {
+                    _hadithReferenceEnabled.value = it
+                }
+            }
+            launch {
+                FontSizeManager.gethadithTranslationFlow(context).collect {
+                    _hadithTranslationEnabled.value = it
+                }
             }
         }
     }
+    private val _shouldAutoPlay = MutableStateFlow(false)
+    val shouldAutoPlay: StateFlow<Boolean> = _shouldAutoPlay
+
+    fun triggerAutoPlayNext() {
+        _shouldAutoPlay.value = true
+    }
+
+    fun consumeAutoPlayFlag() {
+        _shouldAutoPlay.value = false
+    }
+
 }
 
 val duas = listOf(
@@ -198,6 +227,7 @@ val duas = listOf(
         audioUrl = R.raw.l01_h01_ar_text,
         backgroundUrl = null,
         duaArabicTitle= R.raw.l01_h01_title_ar,
+        englishTranslationAudio= R.raw.l01_h01_1ext_en,
         icon = R.drawable.ic_level1_dua1,
         level = 1
     ),
@@ -213,6 +243,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l01_h02_en_title,
         icon = R.drawable.ic_level1_dua2,
         duaArabicTitle= R.raw.l01_h02_ar_title,
+        englishTranslationAudio= R.raw.l01_h02_en_text,
+
         level = 1
     ),
     Hadith(
@@ -227,6 +259,8 @@ val duas = listOf(
         duaArabicTitle= R.raw.l01_h03_title_ar,
         duaEnglishTitle = R.raw.l01_h03_en_title,
         icon = R.drawable.ic_level1_dua3,
+        englishTranslationAudio= R.raw.l01_h03_text_en,
+
         level = 1
     ),
     Hadith(
@@ -241,6 +275,8 @@ val duas = listOf(
         backgroundUrl = null,
         duaEnglishTitle = R.raw.l01_h04_en_title,
         icon = R.drawable.ic_level1_dua4,
+        englishTranslationAudio= R.raw.l01_h04_text_en,
+
         level = 1
     ),
 
@@ -257,6 +293,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l02_h01_title_en,
         icon = R.drawable.ic_level2_dua1,
         duaArabicTitle= R.raw.l02_h01_title_ar,
+        englishTranslationAudio= R.raw.l02_h01_text_en,
+
         level = 2
     ),
     Hadith(
@@ -271,6 +309,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l02_h02_title_en,
         icon = R.drawable.ic_level2_dua2,
         duaArabicTitle= R.raw.l02_h02_ar_title,
+        englishTranslationAudio= R.raw.l02_h02_en_text,
 
         level = 2
     ),
@@ -286,6 +325,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l02_h03_title_en,
         icon = R.drawable.ic_level2_dua3,
         duaArabicTitle= R.raw.l02_h03_ar_title,
+        englishTranslationAudio= R.raw.l02_h03_en_text,
+
         level = 2
     ),
     Hadith(
@@ -300,6 +341,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l02_h04_title_en,
         icon = R.drawable.ic_level2_dua4,
         duaArabicTitle= R.raw.l02_h04_ar_title,
+        englishTranslationAudio= R.raw.l02_h04_en_text,
+
         level = 2
     ),
     Hadith(
@@ -314,6 +357,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l02_h05_title_en,
         icon = R.drawable.ic_level2_dua5,
         duaArabicTitle= R.raw.l02_h05_ar_title,
+        englishTranslationAudio= R.raw.l02_h05_en_text,
+
         level = 2
     ),
 
@@ -330,6 +375,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h01_title_en,
         icon = R.drawable.ic_level3_dua1,
         duaArabicTitle= R.raw.l03_h01_ar_title,
+        englishTranslationAudio= R.raw.l03_h01_en_text,
 
         level = 3
     ),
@@ -345,6 +391,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h02_title_en,
         icon = R.drawable.ic_level3_dua2,
         duaArabicTitle= R.raw.l03_h02_ar_title,
+        englishTranslationAudio= R.raw.l03_h02_en_text,
+
         level = 3
     ),
     Hadith(
@@ -359,6 +407,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h03_title_en,
         icon = R.drawable.ic_level3_dua3,
         duaArabicTitle= R.raw.l03_h03_ar_title,
+        englishTranslationAudio= R.raw.l03_h03_en_text,
 
         level = 3
     ),
@@ -374,6 +423,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h04_title_en,
         icon = R.drawable.ic_level3_dua4,
         duaArabicTitle= R.raw.l03_h04_ar_title,
+        englishTranslationAudio= R.raw.l03_h04_en_text,
+
         level = 3
     ),
     Hadith(
@@ -388,6 +439,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h05_title_en,
         icon = R.drawable.ic_level3_dua5,
         duaArabicTitle= R.raw.l03_h05_ar_title,
+        englishTranslationAudio= R.raw.l03_h05_en_text,
+
         level = 3
     ),
     Hadith(
@@ -402,6 +455,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h06_title_en,
         icon = R.drawable.ic_level3_dua6,
         duaArabicTitle= R.raw.l03_h06_ar_title,
+        englishTranslationAudio= R.raw.l03_h06_en_text,
+
         level = 3
     ),
     Hadith(
@@ -416,6 +471,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level3_dua7,
         duaArabicTitle= R.raw.l03_h07_ar_title,
+        englishTranslationAudio= R.raw.l03_h07_en_text,
+
         level = 3
     ),
 
@@ -432,6 +489,8 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua1,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
+
 
         level = 4
     ),
@@ -447,6 +506,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua2,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -462,6 +522,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua3,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -477,6 +538,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua4,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -492,6 +554,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua5,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -507,6 +570,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua6,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -522,6 +586,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level4_dua7,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 4
     ),
@@ -540,6 +605,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua1,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -555,6 +621,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua2,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -570,6 +637,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua3,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -585,6 +653,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua4,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -600,6 +669,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua5,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -616,6 +686,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua6,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -636,6 +707,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua7,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -652,6 +724,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level5_dua8,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 5
     ),
@@ -670,6 +743,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua1,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -690,6 +764,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua2,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -705,6 +780,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua3,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -720,6 +796,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua4,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -740,6 +817,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua5,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -756,6 +834,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua6,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -771,6 +850,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua7,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -786,6 +866,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua8,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -801,6 +882,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level6_dua9,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 6
     ),
@@ -818,6 +900,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua1,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -833,6 +916,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua2,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -849,6 +933,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua3,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -864,6 +949,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua4,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -879,6 +965,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua5,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -894,6 +981,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua6,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -909,6 +997,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua7,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -924,6 +1013,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua8,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),
@@ -939,6 +1029,7 @@ val duas = listOf(
         duaEnglishTitle = R.raw.l03_h07_title_en,
         icon = R.drawable.ic_level7_dua9,
         duaArabicTitle= R.raw.l01_h01_en_title,
+        englishTranslationAudio= R.raw.l01_h01_title_ar,
 
         level = 7
     ),

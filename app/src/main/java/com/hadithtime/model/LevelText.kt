@@ -6,25 +6,25 @@ data class LevelText(
 )
 val levelOneTexts = listOf(
     LevelText("الْحَياءُ", "1. Modesty"),
-    LevelText("الإِيمَانُ", "2. Faith"),
+    LevelText("الإِيمَانُ", "2. Believe"),
     LevelText("فَضْلُ تَعَلُّمِ الْقُرْآنِ", "3. Learning\n   the Qur'an"),
     LevelText("الطَّهَارَةُ", "4. Cleanliness")
 )
 val levelTwoTexts = listOf(
     LevelText("طَاعَةُ النَّبِيِّ ﷺ", "1. Obey the\n   Prophet ﷺ"),
     LevelText("الصَّلَاةُ", "2. Prayer"),
-    LevelText("آدَابُ الْأَكْلِ", "3. Etiquette\n   of  Eating"),
-    LevelText("أَدَبُ الشُّرْبِ", "4. Etiquette\n   of Drinking"),
-    LevelText("أدَبُ الْكَلَامِ", "5. Manners\n   of Speaking"),
+    LevelText("آدَابُ الْأَكْلِ", "3. Eating\n Etiquette"),
+    LevelText("أَدَبُ الشُّرْبِ", "4. Drinking\n Etiquette"),
+    LevelText("أدَبُ الْكَلَامِ", "5. Speech\n Etiquette"),
 )
 val levelThreeTexts = listOf(
     LevelText("إفْشَاءُ السَّلامِ", "1. Spreading\n  Salam"),
-    LevelText("أفْضَلُ الذِّكْرِ", "2. The  Best \n of  Dhikr"),
+    LevelText("أفْضَلُ الذِّكْرِ", "2. Best \n Dhikr"),
     LevelText(" الدُّعاءُ", "3. Supplication"),
     LevelText(" الرَّحْمَةُ", "4. Mercy"),
-    LevelText(" التَّقْوَى", "5. God\n-consciousness"),
-    LevelText(" الْكَلِمَةُ الطَّيِّبَةُ", "6. The \n Good Word"),
-    LevelText("الصُّحْبَةُ الصَّالِحَةُ", "7. Righteous \n Companionship"),
+    LevelText(" التَّقْوَى", "5. Allah\n-consciousness"),
+    LevelText(" الْكَلِمَةُ الطَّيِّبَةُ", "6. A \n Good Word"),
+    LevelText("الصُّحْبَةُ الصَّالِحَةُ", "7. Good \n Company"),
 )
 val levelFourTexts = listOf(
     LevelText("أُخُوَّةُ المُسْلِمِ", "1. Muslim\nBrotherhood"),

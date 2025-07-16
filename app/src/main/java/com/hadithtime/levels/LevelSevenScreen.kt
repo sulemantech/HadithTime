@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.hadithtime.ui.theme.HadithTimeTheme
+import com.hadithtime.ui.theme.HadithTimeTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hadithtime.HadithViewModel
 import com.hadithtime.R
@@ -38,7 +38,6 @@ import com.hadithtime.components.FontSizeManager
 import com.hadithtime.components.HadithCard
 import com.hadithtime.components.PlayerControls
 import com.hadithtime.components.TopBar
-import com.hadithtime.duas
 
 @Composable
 fun LevelSevenScreen(
@@ -87,14 +86,14 @@ fun LevelSevenScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
                         if (currentIndex < levelSevenDuas.lastIndex) {
                             navController.navigate("titleScreenLevel7/7/${currentIndex + 1}")
                         } else {
-                            Toast.makeText(context, "You've reached the final Dua!", Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(context, "You've reached the final Dua!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -160,7 +159,7 @@ fun LevelSevenScreen(
                             if (previousLevelDuas.isNotEmpty()) {
                                 navController.navigate("titleScreenLevel$previousLevel/$previousLevel/${previousLevelDuas.lastIndex}")
                             } else {
-                                Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(context, "No previous Duas!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     },

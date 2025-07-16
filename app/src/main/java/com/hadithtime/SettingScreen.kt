@@ -51,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -124,7 +125,7 @@ fun SettingScreen(
                     textAlign = TextAlign.Center
                 )
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 15.dp)
@@ -143,12 +144,14 @@ fun SettingScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(start = 5.dp, bottom = 5.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 5.dp, bottom = 5.dp)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_app_lang),
                             contentDescription = "App Language Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
@@ -172,7 +175,7 @@ fun SettingScreen(
                             Image(
                                 painter = painterResource(id = R.drawable.ic_en),
                                 contentDescription = "English",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier
                             )
                         },
                         title = "English",
@@ -190,7 +193,7 @@ fun SettingScreen(
                             Image(
                                 painter = painterResource(id = R.drawable.ic_pk),
                                 contentDescription = "Urdu",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier
                             )
                         },
                         title = "Urdu",
@@ -205,10 +208,10 @@ fun SettingScreen(
 
                 }
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
             val selectedFont = viewModel.selectedFont
@@ -227,7 +230,6 @@ fun SettingScreen(
                         painter = painterResource(id = R.drawable.font),
                         contentDescription = "Dua Translation",
                         modifier = Modifier
-                            .size(24.dp)
                             .padding(start = 8.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -250,7 +252,7 @@ fun SettingScreen(
                         painter = painterResource(id = R.drawable.font),
                         contentDescription = "Dua Translation",
                         modifier = Modifier
-                            .size(24.dp)
+                           // .size(18.dp)
                             .padding(start = 8.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -286,7 +288,7 @@ fun SettingScreen(
                             painter = painterResource(id = R.drawable.font_size),
                             contentDescription = "Font Size Icon",
                             modifier = Modifier
-                                .size(24.dp)
+                              //  .size(18.dp)
                                 .padding(start = 8.dp)
                         )
                         Spacer(Modifier.width(8.dp))
@@ -339,12 +341,12 @@ fun SettingScreen(
                     }
                 }
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
+                        .padding(vertical = 15.dp)
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(6.dp))
             }
 
             item {
@@ -372,7 +374,7 @@ fun SettingScreen(
                     Image(
                         painter = painterResource(id = R.drawable.ic_translation),
                         contentDescription = "Hadith Translation",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
@@ -390,7 +392,7 @@ fun SettingScreen(
                             }
                             .background(
                                 color = colorResource(R.color.background_color),
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                             .clickable { showDialog = true }
@@ -450,22 +452,19 @@ fun SettingScreen(
                         }
                     )
                 }
-                val hadithReferenceEnabled by viewModel.HadithReferenceEnabled.collectAsState()
-
+                val hadithReferenceEnabled by viewModel.hadithReferenceEnabled.collectAsState()
                 SettingSwitch(
                     icon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_next),
                             contentDescription = "Hadith Reference",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
                         )
                     },
                     title = "Hadith Reference",
                     textColor = Color.White,
                     checked = hadithReferenceEnabled,
-                    onCheckedChange = { isChecked ->
-                        viewModel.setaHadithReferenceEnabled(isChecked)
-                    }
+                    onCheckedChange = { viewModel.setHadithReferenceEnabled(it) }
                 )
 
                 val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
@@ -474,7 +473,7 @@ fun SettingScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_next),
                             contentDescription = "Hadith Reference Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
                         )
                     },
                     title = "Auto Next Hadith",
@@ -482,12 +481,12 @@ fun SettingScreen(
                     checked = autoNextHadithEnabled,
                     onCheckedChange = { viewModel.setautoNextHadithEnabled(it) }
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(6.dp))
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
 
@@ -516,7 +515,7 @@ fun SettingScreen(
                     Image(
                         painter = painterResource(id = R.drawable.ic_speaker),
                         contentDescription = "Choose Voice",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
@@ -589,13 +588,12 @@ fun SettingScreen(
                     )
                 }
                 val readingTitleEnabled by viewModel.readingTitleEnabled.collectAsState()
-
                 SettingSwitch(
                     icon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_reading),
-                            contentDescription = "Hadith Reference Icon",
-                            modifier = Modifier.size(24.dp)
+                            contentDescription = "Reading Out Hadith Title",
+                            modifier = Modifier
                         )
                     },
                     title = "Reading Out Hadith Title",
@@ -604,13 +602,27 @@ fun SettingScreen(
                     onCheckedChange = { viewModel.setReadingTitleEnabled(it) }
                 )
 
+                val hadithTranslationEnabled by viewModel.hadithTranslationEnabled.collectAsState()
+                SettingSwitch(
+                    icon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_reading),
+                            contentDescription = "Reading Out Hadith Translation",
+                            modifier = Modifier
+                        )
+                    },
+                    title = "Reading Out Hadith Translation",
+                    textColor = Color.White,
+                    checked = hadithTranslationEnabled,
+                    onCheckedChange = { viewModel.sethadithTranslationEnabled(it) }
+                )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(6.dp))
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
 
@@ -628,7 +640,7 @@ fun SettingScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_reward),
                             contentDescription = "Hadith Reference Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
                         )
                     },
                     title = "Rewards",
@@ -636,12 +648,12 @@ fun SettingScreen(
                     checked = rewardsEnabled,
                     onCheckedChange = { rewardsEnabled = it }
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(6.dp))
                 Divider(
-                    color = Color.Gray,
+                    color = Color.Gray.copy(alpha = 0.2f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 20.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
 
@@ -661,7 +673,7 @@ fun SettingScreen(
                         painter = painterResource(id = R.drawable.about_app),
                         contentDescription = "Hadith Reference Icon",
                         modifier = Modifier
-                            .size(24.dp)
+                           // .size(18.dp)
                             .padding(start = 8.dp)
                     )
                 },
@@ -675,7 +687,7 @@ fun SettingScreen(
                         painter = painterResource(id = R.drawable.ic_rate_app),
                         contentDescription = "Rate App Icon",
                         modifier = Modifier
-                            .size(24.dp)
+                           // .size(18.dp)
                             .padding(start = 8.dp)
                     )
                 },
@@ -690,7 +702,7 @@ fun SettingScreen(
                             painter = painterResource(id = R.drawable.ic_share_app),
                             contentDescription = "Share App Icon",
                             modifier = Modifier
-                                .size(24.dp)
+                               // .size(18.dp)
                                 .padding(start = 8.dp)
                         )
                     },
@@ -767,6 +779,7 @@ fun SettingSwitch(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            modifier = Modifier.scale(0.75f),
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = colorResource(R.color.filter_color),
@@ -774,6 +787,7 @@ fun SettingSwitch(
                 uncheckedTrackColor = colorResource(R.color.filter_color_unchecked)
             )
         )
+
     }
 }
 

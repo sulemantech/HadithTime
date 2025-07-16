@@ -14,6 +14,7 @@ foundationAndroid = "1.7.2"
 animationCoreAndroid = "1.7.2"
 roomCommonJvm = "2.7.2"
 annotations = "15.0"
+appcompat = "1.7.1"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -36,6 +37,7 @@ androidx-foundation-android = { group = "androidx.compose.foundation", name = "f
 androidx-animation-core-android = { group = "androidx.compose.animation", name = "animation-core-android", version.ref = "animationCoreAndroid" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

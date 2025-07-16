@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.HadithTime" parent="android:Theme.Material.Light.NoActionBar">
         <!-- This line disables forced dark mode from Android 10+ -->
         <item name="android:forceDarkAllowed">false</item>

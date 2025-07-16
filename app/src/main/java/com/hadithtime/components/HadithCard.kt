@@ -131,7 +131,7 @@ fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = view
                 }
 
                 Spacer(modifier = Modifier.height(5.dp))
-                val hadithReferenceEnabled1 by viewModel.HadithReferenceEnabled.collectAsState()
+                val hadithReferenceEnabled1 by viewModel.hadithReferenceEnabled.collectAsState()
                 if (!hadithReferenceEnabled1) {
                     dua.reference?.let {
                         Text(
@@ -193,7 +193,7 @@ fun HadithCard(dua: Hadith, fontSizeSp: Float, viewModel: HadithViewModel = view
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-                val hadithReferenceEnabled by viewModel.HadithReferenceEnabled.collectAsState()
+                val hadithReferenceEnabled by viewModel.hadithReferenceEnabled.collectAsState()
 
                 if (!hadithReferenceEnabled) {
                     dua.englishTranslation?.let {
