@@ -23,5 +23,12 @@ interface HadithDao {
 
     @Query("SELECT * FROM duas WHERE level IN (:levels)")
     fun getDuasByLevels(levels: List<Int>): Flow<List<Hadith>>
+
+    @Query("UPDATE duas SET isFavorite = :isFav WHERE id = :id")
+    suspend fun updateFavorite(id: Int, isFav: Boolean)
+
+    @Query("UPDATE duas SET memorized = :isMemorized WHERE id = :id")
+    suspend fun updateMemorized(id: Int, isMemorized: Boolean)
+
 }
 

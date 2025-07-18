@@ -66,17 +66,13 @@ class HadithViewModel(application: Application) : AndroidViewModel(application) 
 
     fun toggleFavorite(hadith: Hadith) {
         viewModelScope.launch {
-            val updatedDua = hadith.copy(isFavorite = !hadith.isFavorite)
-            duaDao.updateDua(updatedDua)
-            Log.d("HadithViewModel", "Updated dua ${hadith.id} favorite=${updatedDua.isFavorite}")
+            duaDao.updateFavorite(hadith.id, !hadith.isFavorite)
         }
     }
 
     fun toggleMemorized(hadith: Hadith) {
         viewModelScope.launch {
-            val updatedDua = hadith.copy(memorized = !hadith.memorized)
-            duaDao.updateDua(updatedDua)
-            Log.d("HadithViewModel", "Updated dua ${hadith.id} memorized=${updatedDua.memorized}")
+            duaDao.updateMemorized(hadith.id, !hadith.memorized)
         }
     }
 

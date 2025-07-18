@@ -170,7 +170,13 @@ fun LearningTrackerScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {},
+                            onClick = {
+                                val targetDua = filteredDuas.firstOrNull()
+                                if (targetDua != null) {
+                                    viewModel.triggerAutoPlayNext()
+                                    navController.navigate("TitleScreenLevel/${targetDua.id}/${targetDua.level}")
+                                }
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -199,7 +205,7 @@ fun LearningTrackerScreen(
                                     val targetDua = filteredDuas.firstOrNull()
                                     if (targetDua != null) {
                                         viewModel.triggerAutoPlayNext()
-                                        navController.navigate("TitleScreenLevel1/${targetDua.id}/${targetDua.level}")
+                                        navController.navigate("TitleScreenLevel/${targetDua.id}/${targetDua.level}")
                                     }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.filter_color)),
