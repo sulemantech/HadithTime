@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -501,16 +502,18 @@ fun SettingScreen(
 
                 var showForGenderDialog by remember { mutableStateOf(false) }
                 var selectedGender by rememberSaveable { mutableStateOf("Male") }
-                var dropdownOffset by remember { mutableStateOf(Offset.Zero) }
+//                var dropdownOffset by remember { mutableStateOf(Offset.Zero) }
+//                val density = LocalDensity.current
+
+                var dropdownOffset by remember { mutableStateOf(IntOffset.Zero) }
                 val density = LocalDensity.current
+                fun Offset.toIntOffset() = IntOffset(x.toInt(), y.toInt())
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp, start = 8.dp, bottom = 5.dp)
-                        .clickable { showForGenderDialog = true }
-
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_speaker),
@@ -523,13 +526,19 @@ fun SettingScreen(
                         fontSize = 16.sp,
                         color = colorResource(R.color.black),
                         fontFamily = MyregularFont,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
                     )
+
+                    // 💡 Wrap this Box to capture its position
                     Box(
                         modifier = Modifier
+                            .onGloballyPositioned { coordinates ->
+                                dropdownOffset = coordinates.localToWindow(Offset.Zero).toIntOffset()
+                            }
+                            .clickable { showForGenderDialog = true }
                             .background(
                                 color = colorResource(R.color.background_color),
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
@@ -549,13 +558,14 @@ fun SettingScreen(
                         }
                     }
                 }
+
                 DropdownMenu(
                     expanded = showForGenderDialog,
                     onDismissRequest = { showForGenderDialog = false },
                     offset = with(density) {
                         DpOffset(
-                            x = dropdownOffset.x.toDp() - 10.dp,
-                            y = dropdownOffset.y.toDp() + 76.dp
+                            x = dropdownOffset.x.toDp() + 140.dp,
+                            y = dropdownOffset.y.toDp() + 115.dp
                         )
                     },
                     modifier = Modifier

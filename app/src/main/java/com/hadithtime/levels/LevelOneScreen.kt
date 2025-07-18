@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,6 +60,11 @@ fun LevelOneScreen(
     val fontSize = viewModel.fontSize.value
     val isEnglish by FontSizeManager.getLanguagePreference(context).collectAsState(initial = true)
 
+    LaunchedEffect(Unit) {
+        if (viewModel.autoNextHadithEnabled.value) {
+            viewModel.triggerAutoPlayNext()
+        }
+    }
     SideEffect {
         systemUiController.setStatusBarColor(color = statusBarColor)
         systemUiController.setNavigationBarColor(color = navigationBarColor)

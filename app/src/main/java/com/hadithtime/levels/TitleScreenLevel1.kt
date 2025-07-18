@@ -35,7 +35,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-@SuppressLint("RememberReturnType")
+@SuppressLint("RememberReturnType", "UnusedBoxWithConstraintsScope")
 @Composable
 fun TitleScreenLevel1(
     navController: NavController, level: Int, nextIndex: Int,
@@ -242,8 +242,10 @@ fun TitleScreenLevel1(
                 contentAlignment = Alignment.TopCenter
             ) {
                 BoxWithConstraints {
-                    val maxWidth = constraints.maxWidth.toFloat()
                     var textSize by remember { mutableStateOf(38.sp) }
+                    val minSize = 12.sp
+
+                    var readyToDraw by remember { mutableStateOf(false) }
 
                     Text(
                         text = text.arabicText,
@@ -252,12 +254,16 @@ fun TitleScreenLevel1(
                         maxLines = 1,
                         softWrap = false,
                         onTextLayout = { result ->
-                            if (result.didOverflowWidth) {
-                                textSize *= 0.10f
+                            if (result.didOverflowWidth && textSize > minSize) {
+                                textSize *= 0.9f
+                            } else {
+                                readyToDraw = true
                             }
                         },
                         color = colorResource(R.color.bubble_text),
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .alpha(if (readyToDraw) 1f else 0f) // Hide until ready
                     )
                 }
             }

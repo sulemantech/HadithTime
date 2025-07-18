@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -73,57 +74,71 @@ fun PlayerControls(
     val autoNextHadithEnabled by viewModel.autoNextHadithEnabled.collectAsState()
     val hadithTranslationEnabled by viewModel.hadithTranslationEnabled.collectAsState()
     val filteredDuas by viewModel.filteredDuas.collectAsState()
+    val shouldAutoPlay by viewModel.shouldAutoPlay.collectAsState()
 
     val updatedDua = filteredDuas.find { it.id == dua.id } ?: dua
     val currentIndex = filteredDuas.indexOfFirst { it.id == dua.id } + 1
     val totalCount = filteredDuas.size
 
-    val shouldAutoPlay by viewModel.shouldAutoPlay.collectAsState()
-
     var isPlaying by remember { mutableStateOf(false) }
+    var repeatEnabled by remember { mutableStateOf(false) }
 
     val mainPlayer = remember(dua.id) {
         MediaPlayer.create(context, dua.audioUrl)
     }
 
-    LaunchedEffect(dua.id, shouldAutoPlay) {
-        if (shouldAutoPlay) {
-            delay(100)
-            mainPlayer.start()
-            isPlaying = true
-            viewModel.consumeAutoPlayFlag()
-        }
-    }
-
     val translationPlayer = remember(dua.id) {
-        if (dua.englishTranslationAudio != 0) MediaPlayer.create(context, dua.englishTranslationAudio) else null
+        if (dua.englishTranslationAudio != 0) MediaPlayer.create(
+            context,
+            dua.englishTranslationAudio
+        ) else null
     }
 
     var sliderValue by remember { mutableStateOf(0f) }
     var duration by remember { mutableStateOf(1f) }
 
+    LaunchedEffect(mainPlayer, shouldAutoPlay, autoNextHadithEnabled) {
+        if (shouldAutoPlay || autoNextHadithEnabled) {
+            while (mainPlayer.duration == 0) {
+                delay(50)
+            }
+            delay(100)
+            mainPlayer.start()
+            isPlaying = true
+            if (shouldAutoPlay) {
+                viewModel.consumeAutoPlayFlag()
+            }
+        }
+    }
+
     DisposableEffect(mainPlayer) {
         mainPlayer.setOnCompletionListener {
-            isPlaying = false
-            sliderValue = 0f
+            if (repeatEnabled) {
+                mainPlayer.seekTo(0)
+                mainPlayer.start()
+                isPlaying = true
+            } else {
+                isPlaying = false
+                sliderValue = 0f
 
-            if (hadithTranslationEnabled && translationPlayer != null) {
-                translationPlayer.setOnCompletionListener {
+                if (hadithTranslationEnabled && translationPlayer != null) {
+                    translationPlayer.setOnCompletionListener {
+                        if (autoNextHadithEnabled) {
+                            viewModel.triggerAutoPlayNext()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(100)
+                                onNextClick()
+                            }
+                        }
+                    }
+                    translationPlayer.start()
+                } else {
                     if (autoNextHadithEnabled) {
                         viewModel.triggerAutoPlayNext()
                         CoroutineScope(Dispatchers.Main).launch {
                             delay(100)
                             onNextClick()
                         }
-                    }
-                }
-                translationPlayer.start()
-            } else {
-                if (autoNextHadithEnabled) {
-                    viewModel.triggerAutoPlayNext()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(100)
-                        onNextClick()
                     }
                 }
             }
@@ -176,7 +191,6 @@ fun PlayerControls(
                 )
 
                 val isMemorized = updatedDua.memorized
-
                 Surface(
                     color = if (isMemorized) getLevelColor(level) else Color.White,
                     shape = RoundedCornerShape(20.dp),
@@ -253,11 +267,15 @@ fun PlayerControls(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { /* TODO: Repeat logic */ }) {
+                IconButton(onClick = {
+                    repeatEnabled = !repeatEnabled
+                }) {
+                    val repeatIconTint = if (repeatEnabled) sliderColor else Color.Gray
                     Image(
                         painter = painterResource(id = R.drawable.ic_repeat),
                         contentDescription = "Repeat",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
+                        colorFilter = ColorFilter.tint(repeatIconTint)
                     )
                 }
 
@@ -293,7 +311,8 @@ fun PlayerControls(
                     )
                 }
 
-                val favoriteIcon = if (updatedDua.isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
+                val favoriteIcon =
+                    if (updatedDua.isFavorite) R.drawable.icon_filled_favorite else R.drawable.icon_favorite
                 IconButton(onClick = { viewModel.toggleFavorite(updatedDua) }) {
                     AnimatedContent(targetState = favoriteIcon, transitionSpec = {
                         fadeIn() togetherWith fadeOut()
@@ -316,6 +335,7 @@ fun formatTime(milliseconds: Int): String {
     val seconds = totalSeconds % 60
     return String.format("%01d:%02d", minutes, seconds)
 }
+
 @Composable
 fun getLevelColor(level: Int): Color {
     return when (level) {
